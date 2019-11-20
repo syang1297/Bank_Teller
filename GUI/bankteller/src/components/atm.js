@@ -69,10 +69,71 @@ export default class ATM extends Component {
     } else {
       return(
         <div>
-
+          <div>
+            <Row>
+              <Button variant="light" size="lg" type="button" onClick={this.depositPressed.bind(this)} name="Deposit" active>
+                Deposit
+              </Button>
+              <Button variant="light" size="lg" type="button" onClick={this.topupPressed.bind(this)} name="Top-Up" active>
+                Top-Up
+              </Button>
+              <Button variant="light" size="lg" type="button" onClick={this.withdrawalPressed.bind(this)} name="Withdrawal" active>
+                Withdrawal
+              </Button>
+              <Button variant="light" size="lg" type="button" onClick={this.purchasePressed.bind(this)} name="Purchase" active>
+                Purchase
+              </Button>
+            </Row>
+            <Row>
+              <Button variant="light" size="lg" type="button" onClick={this.transferPressed.bind(this)} name="Transfer" active>
+                Transfer
+              </Button>
+              <Button variant="light" size="lg" type="button" onClick={this.collectPressed.bind(this)} name="Collect" active>
+                Collect
+              </Button>
+              <Button variant="light" size="lg" type="button" onClick={this.wirePressed.bind(this)} name="Wire" active>
+                Wire
+              </Button>
+              <Button variant="light" size="lg" type="button" onClick={this.payfriendPressed.bind(this)} name="Pay Friend" active>
+                Pay Friend
+              </Button>
+            </Row>
+          </div>
         </div>
       )
-    }
-    
+    }    
   }
+
+  depositPressed(){
+    console.log('Button clicked is: Deposit');
+  }
+
+  topupPressed(){
+    console.log('Button clicked is: Top-Up');
+  }
+
+  withdrawalPressed(){
+    console.log('Button clicked is: Withdrawal');
+  }
+
+  purchasePressed(){
+    console.log('Button clicked is: Purchase');
+  }
+
+  transferPressed(){
+    console.log('Button clicked is: Transfer');
+  }
+
+  collectPressed(){
+    console.log('Button clicked is: Collect');
+  }
+
+  wirePressed(){
+    console.log('Button clicked is: Wire');
+  }
+
+  payfriendPressed(){
+    console.log('Button clicked is: Pay Friend');
+  }
+
 }
