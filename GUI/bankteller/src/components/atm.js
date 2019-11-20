@@ -45,7 +45,7 @@ export default class ATM extends Component {
     console.log('Button clicked is: Deposit');
   }
 
-  topupPressed(){
+  topUpPressed(){
     console.log('Button clicked is: Top-Up');
   }
 
@@ -69,7 +69,7 @@ export default class ATM extends Component {
     console.log('Button clicked is: Wire');
   }
 
-  payfriendPressed(){
+  payFriendPressed(){
     console.log('Button clicked is: Pay Friend');
   }
 
@@ -122,30 +122,30 @@ export default class ATM extends Component {
           </div>
           <div>
             <Row>
-              <Button variant="light" size="lg" type="button" onClick={this.depositPressed.bind(this)} name="Deposit" active>
+              <Button variant="light" size="lg" type="button" onClick={this.depositPressed.bind(this)} name="deposit" active>
                 Deposit
               </Button>
-              <Button variant="light" size="lg" type="button" onClick={this.topupPressed.bind(this)} name="Top-Up" active>
+              <Button variant="light" size="lg" type="button" onClick={this.topUpPressed.bind(this)} name="topUp" active>
                 Top-Up
               </Button>
-              <Button variant="light" size="lg" type="button" onClick={this.withdrawalPressed.bind(this)} name="Withdrawal" active>
+              <Button variant="light" size="lg" type="button" onClick={this.withdrawalPressed.bind(this)} name="withdrawal" active>
                 Withdrawal
               </Button>
-              <Button variant="light" size="lg" type="button" onClick={this.purchasePressed.bind(this)} name="Purchase" active>
+              <Button variant="light" size="lg" type="button" onClick={this.purchasePressed.bind(this)} name="purchase" active>
                 Purchase
               </Button>
             </Row>
             <Row>
-              <Button variant="light" size="lg" type="button" onClick={this.transferPressed.bind(this)} name="Transfer" active>
+              <Button variant="light" size="lg" type="button" onClick={this.transferPressed.bind(this)} name="transfer" active>
                 Transfer
               </Button>
-              <Button variant="light" size="lg" type="button" onClick={this.collectPressed.bind(this)} name="Collect" active>
+              <Button variant="light" size="lg" type="button" onClick={this.collectPressed.bind(this)} name="collect" active>
                 Collect
               </Button>
-              <Button variant="light" size="lg" type="button" onClick={this.wirePressed.bind(this)} name="Wire" active>
+              <Button variant="light" size="lg" type="button" onClick={this.wirePressed.bind(this)} name="wire" active>
                 Wire
               </Button>
-              <Button variant="light" size="lg" type="button" onClick={this.payfriendPressed.bind(this)} name="Pay Friend" active>
+              <Button variant="light" size="lg" type="button" onClick={this.payFriendPressed.bind(this)} name="payFriend" active>
                 Pay Friend
               </Button>
             </Row>
