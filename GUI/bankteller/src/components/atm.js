@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Form, Button, Col, Row} from 'react-bootstrap'
+import {Form, Button, Col, Row, ToggleButton,ToggleButtonGroup} from 'react-bootstrap'
 import Cookies from 'universal-cookie';
 
 import '../css/atm.css';
@@ -12,10 +12,11 @@ export default class ATM extends Component {
     this.taxID = React.createRef();
     this.pin = React.createRef();
     this.errorMessage="dada"
-
+    this.value=-1;
   }
 
   state={
+    accountSelected:-1,
     showError:false
   }
 
@@ -30,6 +31,15 @@ export default class ATM extends Component {
       console.log(cookies.get("taxID"))
     }
   }
+  handleAccountSelection(val){
+    this.setState({
+      accountSelected:val
+    }, () => {
+      console.log("state: " + this.state.accountSelected)
+    })
+   
+  }
+
   render() {
     if(cookies.get("taxID")==null){
       return (
@@ -67,9 +77,16 @@ export default class ATM extends Component {
         </div>
       )
     } else {
+      
       return(
-        <div>
-
+        <div className="homebox">
+          <div className="accountsArea">
+          <ToggleButtonGroup name="accounts" type="radio" value={this.value} onChange={this.handleAccountSelection.bind(this)}>
+            <ToggleButton value={1}>Account 1</ToggleButton>
+            <ToggleButton value={2}>Account 2</ToggleButton>
+            <ToggleButton value={3}>Account 3</ToggleButton>
+          </ToggleButtonGroup>
+          </div>
         </div>
       )
     }
