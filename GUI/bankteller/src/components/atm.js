@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {Form, Button, Col, Row, ToggleButton,ToggleButtonGroup} from 'react-bootstrap'
 import Cookies from 'universal-cookie';
 
-import '../css/atm.css';
+import '../css/pages.css';
 
 let cookies = new Cookies();
 
