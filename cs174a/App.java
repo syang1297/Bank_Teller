@@ -54,8 +54,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##YoutNetID";
-		final String DB_PASSWORD = "YourPassword";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -106,4 +106,42 @@ public class App implements Testable
 	{
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
 	}
+
+	/**
+	 * Set up system, initialize any necessary variables, open connection to DB, etc.
+	 * You MUST IMPLEMENT AT LEAST THIS FUNCTION, EVEN IF IT'S EMPTY.
+	 * @return a string "r", where r = 0 for success, 1 for error.
+	 */
+	String initializeSystem(){
+		return "r";
+	}
+
+	/**
+	 * Destroy all of the tables in your DB.
+	 * @return a string "r", where r = 0 for success, 1 for error.
+	 */
+	String dropTables(){
+		return "r";
+	}
+
+	/**
+	 * Create all of your tables in your DB.
+	 * @return a string "r", where r = 0 for success, 1 for error.
+	 */
+	String createTables(){
+		return "r";
+	}
+
+	/**
+	 * Set system's date.
+	 * @param year Valid 4-digit year, e.g. 2019.
+	 * @param month Valid month, where 1: January, ..., 12: December.
+	 * @param day Valid day, from 1 to 31, depending on the month (and if it's a leap year).
+	 * @return a string "r yyyy-mm-dd", where r = 0 for success, 1 for error; and yyyy-mm-dd is the new system's date, e.g. 2012-09-16.
+	 */
+	String setDate( int year, int month, int day){
+		return "r yyyy-mm-dd";
+	}
+
+
 }
