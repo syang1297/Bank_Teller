@@ -25,15 +25,20 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
-			app.exampleAccessToDB();                // Example on how to connect to the DB.
+			// app.exampleAccessToDB();                // Example on how to connect to the DB.
 
 			// Example tests.  We'll overwrite your Main.main() function with our final tests.
-			r = app.listClosedAccounts();
-			System.out.println( r );
+			// r = app.listClosedAccounts();
+			// System.out.println( r );
 
 			// Another example test.
-			r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "account1", 1234.56, "theTaxID", "Im YoungMing", "Known" );
-			System.out.println( r );
+			// r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "account1", 1234.56, "theTaxID", "Im YoungMing", "Known" );
+			// System.out.println( r );
+
+			r = app.createTables();
+			System.out.println(r);
+			r = app.dropTables();
+			System.out.println(r);
 		}
 	}
 	//!### FINALIZAMOS

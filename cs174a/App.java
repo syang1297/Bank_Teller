@@ -90,6 +90,193 @@ public class App implements Testable
 	}
 
 	/**
+	 * Destroy all of the tables in your DB.
+	 * @return a string "r", where r = 0 for success, 1 for error.
+	 */
+	String dropTables(){
+		System.out.println("Dropping tables in database...............");
+		Statement stmt = _connection.createStatement();
+
+		try {
+			System.out.println("Dropping table GlobalDate");
+			String sql = "DROP TABLE GlobalDate";
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			System.out.println("Failed to drop table GlobalDate");
+			return "1";
+		}
+
+		try {
+			System.out.println("Dropping table Customer");
+			String sql = "DROP TABLE Customer";
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			System.out.println("Failed to drop table Customer");
+			return "1";
+		}
+
+		try {
+			System.out.println("Dropping table AccountPrimarilyOwns");
+			String sql = "DROP TABLE AccountPrimarilyOwns";
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			System.out.println("Failed to drop table AccountPrimarilyOwns");
+			return "1";
+		}
+
+		try {
+			System.out.println("Dropping table Owns");
+			String sql = "DROP TABLE Owns";
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			System.out.println("Failed to drop table Owns");
+			return "1";
+		}
+
+		try {
+			System.out.println("Dropping table TransactionBelongs");
+			String sql = "DROP TABLE TransactionBelongs";
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			System.out.println("Failed to drop table TransactionBelongs");
+			return "1";
+		}
+
+		try {
+			System.out.println("Dropping table PocketAccountLinkedWith");
+			String sql = "DROP TABLE PocketAccountLinkedWith";
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			System.out.println("Failed to drop table PocketAccountLinkedWith");
+			return "1";
+		}
+
+		return "r";
+	}
+
+	/**
+	 * Create all of your tables in your DB.
+	 * @return a string "r", where r = 0 for success, 1 for error.
+	 */
+	String createTables(){
+		System.out.println("Creating tables in database.................");
+		Statement stmt = _connection.createStatement();
+		try {
+			System.out.println("Creating table GlobalDate");
+			String sql = "CREATE TABLE GlobalDate(" + 
+							"date DATE," + 
+							"PRIMARY KEY (date))";
+			stmt.executeUpdate(sql);
+			
+		} catch (Exception e) {
+			System.out.println("Failed to create table GlobalDate.");
+			return "1";
+		}
+
+		try {
+			System.out.println("Creating table Customer.");
+			String sql = "CREATE TABLE Customer(" + 
+							"taxID INTEGER," +
+							"address CHAR (*)," + 
+							"pin INTEGER," + 
+							"name CHAR(*)," + 
+							"PRIMARY KEY (taxID))";
+			
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			System.out.println("Failed to create table Customer.");
+			return "1";
+		}
+
+		try {
+			System.out.println("Creating table AccountPrimarilyOwns.");
+			String sql = "CREATE TABLE AccountPrimarilyOwns(" +
+							"accountID INTEGER,"  +
+							"taxID INTEGER NOT NULL," +
+							"bankBranch CHAR(*)," +
+							"balance INTEGER," +
+							"balanceEndDate CHAR(*)," +
+							"balanceStartDate CHAR(*)," +
+							"isClosed BOOLEAN," +
+							"interestRate REAL," +
+							"type CHAR(*)," +
+							"interestAdded BOOLEAN," +
+							"PRIMARY KEY(accountID, taxID)," +
+							"FOREIGN KEY (taxID) REFERENCES" +
+							"Customer ON DELETE CASCADE))";
+			stmt.executeUpdate(sql);
+		} catch (Exception e) {
+			System.out.println("Failed to table AccountPrimarilyOwns.");
+			return "1";
+		}
+
+		try {
+			System.out.println("Creating table Owns.");
+			String sql = "CREATE TABLE Owns("  +
+							"accountID INTEGER," +
+							"taxID INTEGER," +
+							"PRIMARY KEY(accountID, taxID)," +
+							"FOREIGN KEY(accountID) REFERENCES AccountPrimarilyOwns," +
+							"FOREIGN KEY(taxID) REFERENCES Customer)";
+			stmt.executeUpdate(sql);			
+		} catch (Exception e) {
+			System.out.println("Failed to create table Owns.");
+			return "1";
+		}
+
+		try {
+			System.out.println("Creating table TransactionBelongs");
+			String sql = "CREATE TABLE TransactionBelongs(" +
+							"amount REAL," +
+							"fee INTEGER," +
+							"type CHAR(*)," +
+							"date DATE," +
+							"checkNo INTEGER," +
+							"transactionID INTEGER," +
+							"accountID INTEGER NOT NULL," +
+							"FOREIGN KEY(accountID) REFERENCES" +
+							"AccountPrimarilyOwns ON DELETE CASCADE," +
+							"PRIMARY KEY(transactionID, accountID))";
+			stmt.executeUpdate(sql);			
+		} catch (Exception e) {
+			System.out.println("Failed to create table TransactionBelongs.");
+			return "1";
+		}
+
+		try {
+			System.out.println("Creating table PocketAccountLinkedWith");
+			String sql = "CREATE TABLE PocketAccountLinkedWith("  +
+							"accountID INTEGER," +
+							"otherAccountID INTEGER NOT NULL," +
+							"feePaid BOOLEAN," +
+							"PRIMARY KEY (accountID, otherAccountID)," +
+							"FOREIGN KEY (accountID) REFERENCES " +
+							"AccountPrimarilyOwns ON DELETE CASCADE," +
+							"FOREIGN KEY accountID REFERENCES" +
+							"OtherAccount ON DELETE CASCADE)";			
+			stmt.executeUpdate(sql);			
+		} catch (Exception e) {
+			System.out.println("Failed to create table PocketAccountLinkedWith.");
+			return "1";
+		}
+
+		System.out.println("All database tables successfully created");
+		return "0";
+	}
+
+	/**
+	 * Set system's date.
+	 * @param year Valid 4-digit year, e.g. 2019.
+	 * @param month Valid month, where 1: January, ..., 12: December.
+	 * @param day Valid day, from 1 to 31, depending on the month (and if it's a leap year).
+	 * @return a string "r yyyy-mm-dd", where r = 0 for success, 1 for error; and yyyy-mm-dd is the new system's date, e.g. 2012-09-16.
+	 */
+	String setDate( int year, int month, int day){
+		return "r yyyy-mm-dd";
+	}
+
+
+	/**
 	 * Example of one of the testable functions.
 	 */
 	@Override
@@ -105,42 +292,6 @@ public class App implements Testable
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
-	}
-
-	/**
-	 * Set up system, initialize any necessary variables, open connection to DB, etc.
-	 * You MUST IMPLEMENT AT LEAST THIS FUNCTION, EVEN IF IT'S EMPTY.
-	 * @return a string "r", where r = 0 for success, 1 for error.
-	 */
-	String initializeSystem(){
-		return "r";
-	}
-
-	/**
-	 * Destroy all of the tables in your DB.
-	 * @return a string "r", where r = 0 for success, 1 for error.
-	 */
-	String dropTables(){
-		return "r";
-	}
-
-	/**
-	 * Create all of your tables in your DB.
-	 * @return a string "r", where r = 0 for success, 1 for error.
-	 */
-	String createTables(){
-		return "r";
-	}
-
-	/**
-	 * Set system's date.
-	 * @param year Valid 4-digit year, e.g. 2019.
-	 * @param month Valid month, where 1: January, ..., 12: December.
-	 * @param day Valid day, from 1 to 31, depending on the month (and if it's a leap year).
-	 * @return a string "r yyyy-mm-dd", where r = 0 for success, 1 for error; and yyyy-mm-dd is the new system's date, e.g. 2012-09-16.
-	 */
-	String setDate( int year, int month, int day){
-		return "r yyyy-mm-dd";
 	}
 
 
