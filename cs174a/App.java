@@ -1,4 +1,4 @@
-//compile from Bank_Teller directory: javac -classpath /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar:. cs174a/Testable.java cs174a/Customer.java cs174a/App.java cs174a/Main.java cs174a/Teller.java cs174a/ATM.java
+//compile from Bank_Teller directory: javac -classpath /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar:. cs174a/Testable.java cs174a/Customer.java cs174a/App.java cs174a/Main.java cs174a/Teller.java cs174a/ATM.java cs174a/Helper.java
 //run from Bank_Teller directory to run program: java -classpath /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar:. cs174a.Main
 
 //Commands TAs will use to run program
@@ -373,31 +373,31 @@ public class App implements Testable
 
 	}
 
-	Date getDate(){
-        Date currDate = null;
-        try {
-            System.out.println("Connecting to database for date...");
-            Statement stmt = _connection.createStatement();
-            try {
-                String sql = "SELECT globalDate " +
-                			"FROM GlobalDate";
-				ResultSet rs = stmt.executeQuery(sql);
-				while(rs.next()){
-					currDate = rs.getDate("globalDate");
-				}
-				rs.close();
-                return currDate;
-            } catch (Exception e) {
-                System.out.println("Failed to select date from GlobalDate....");
-                System.out.println(e);
-                return currDate;
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to connect to database....");
-            System.out.println(e);
-            return currDate;
-        }
-    }
+	// Date getDate(){
+    //     Date currDate = null;
+    //     try {
+    //         System.out.println("Connecting to database for date...");
+    //         Statement stmt = _connection.createStatement();
+    //         try {
+    //             String sql = "SELECT globalDate " +
+    //             			"FROM GlobalDate";
+	// 			ResultSet rs = stmt.executeQuery(sql);
+	// 			while(rs.next()){
+	// 				currDate = rs.getDate("globalDate");
+	// 			}
+	// 			rs.close();
+    //             return currDate;
+    //         } catch (Exception e) {
+    //             System.out.println("Failed to select date from GlobalDate....");
+    //             System.out.println(e);
+    //             return currDate;
+    //         }
+    //     } catch (Exception e) {
+    //         System.out.println("Failed to connect to database....");
+    //         System.out.println(e);
+    //         return currDate;
+    //     }
+    // }
 
 	/**
 	 * Create a new checking or savings account.
@@ -418,7 +418,88 @@ public class App implements Testable
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
-		if(accountType == POCKET){
+		String interestRate = "";
+		switch(accountType){
+			case STUDENT_CHECKING:
+				interestRate = "0";
+				break;
+			case INTEREST_CHECKING:
+				interestRate = "3.00";
+				break;
+			case SAVINGS:
+				interestRate = "4.80";
+				break;
+			case POCKET:
+				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+		}
+
+		//check account id doesn't already exist in db
+		try{
+			Statement stmt = _connection.createStatement();
+			try {
+				String sql = "SELECT accountID " +
+								"FROM AccountPrimarilyOwns";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					int aid = rs.getInt("accountID");
+					String dbID = Integer.toString(aid);
+					if(id.equals(dbID)){
+						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+					}
+				}
+				rs.close();
+			} catch (Exception e) {
+				System.out.println(e);
+				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+			}
+		} catch(Exception e){
+			System.out.println(e);
+            return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+		}
+
+		//check for initial balance.... if it's null, set to 100
+		if(initialBalance <= 0 ){
+			initialBalance = 100.00;
+		}
+
+		//if taxID doesn't exist in customer table... create new customer
+		//return w/ error if new customer needed but the parameters are null
+		try {
+			Statement stmt = _connection.createStatement();
+			try {
+				String sql = "SELECT taxID " + 
+								"FROM Customer " +
+								"WHERE taxID EQUALS " + tin;
+				ResultSet rs = stmt.executeQuery(sql);
+				if(rs == null){
+					//TODO: HASHING FUNCTION FOR PIN
+					if(address == null || name == null){
+						System.out.println("Address and Name cannot be null because we are inserting a new customer");
+						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+					}
+					sql = "INSERT INTO Customer " +
+							"VALUES (" + tin + ", " + address + ", 1234, " + name + ")";
+				}
+				//update account table to reflect customer
+				try {
+					//TODO: BANKBRANCH, balanceEendDate, balanceStartDate
+					sql = "INSERT INTO AccountPrimarilyOwns " + 
+								"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
+								", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
+								", 0)";
+				} catch (Exception e) {
+					System.out.println("Unable to write to account table");
+					System.out.println(e);
+					return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+				}
+			} catch (Exception e) {
+				System.out.println("Failed to select taxID from Customer table");
+				System.out.println(e);
+				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+			}
+		} catch (Exception e) {
+			System.out.println("getStatement() failed");
+			System.out.println(e);
 			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;

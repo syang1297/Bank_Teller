@@ -57,4 +57,8 @@ public class Customer {
         return;
     }
 
+    int hashPin(int pin){
+        return 1234;
+    }
+
 }

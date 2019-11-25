@@ -33,8 +33,8 @@ public class Main
 			r = app.createTables();
 			r = app.setDate(4000, 2, 18);
 			System.out.println(r);
-			Date date = app.getDate();
-			System.out.println(date);
+			// Date date = app.getDate();
+			// System.out.println(date);
 			r = app.dropTables();
 		}
 	}
