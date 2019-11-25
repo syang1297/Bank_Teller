@@ -1,7 +1,9 @@
-//
+//compile from Bank_Teller directory: javac -classpath /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar:. cs174a/Testable.java cs174a/Customer.java cs174a/App.java cs174a/Main.java cs174a/Teller.java cs174a/ATM.java
 //run from Bank_Teller directory to run program: java -classpath /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar:. cs174a.Main
 
-
+//Commands TAs will use to run program
+//compile: javac -d out/ -cp /path/to/ojdbc8.jar cs174a/*.java		# out/ is where .class files are saved to.
+//run: java -cp /path/to/ojdbc8.jar:out:. cs174a.Main
 
 package cs174a;                                             // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
 
@@ -180,10 +182,9 @@ public class App implements Testable
 			try {
 				System.out.println("Creating table GlobalDate");
 				String sql = "CREATE TABLE GlobalDate (" + 
-								"year CHAR(4)," +
-								"month CHAR(2)," +
-								"day CHAR(2)," + 
-								"PRIMARY KEY (year,month,day))";
+								"num INTEGER,"+
+								"globalDate char(10),"+ 
+								"PRIMARY KEY (num))";
 				stmt.executeUpdate(sql);
 				
 			} catch (Exception e) {
@@ -215,8 +216,8 @@ public class App implements Testable
 								"taxID INTEGER NOT NULL," +
 								"bankBranch CHAR(32)," +
 								"balance INTEGER," +
-								"balanceEndDate CHAR(32)," +
-								"balanceStartDate CHAR(32)," +
+								"balanceEndDate CHAR(10)," +
+								"balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
 								"interestRate REAL," +
 								"accountType CHAR(32)," +
@@ -252,7 +253,7 @@ public class App implements Testable
 								"amount REAL," +
 								"fee INTEGER," +
 								"transType CHAR(32)," +
-								"transDate DATE," +
+								"transDate CHAR(10)," +
 								"checkNo INTEGER," +
 								"transactionID INTEGER," +
 								"aID INTEGER NOT NULL," +
@@ -307,6 +308,12 @@ public class App implements Testable
 		String stringYear = Integer.toString(year);
 		String stringMonth = Integer.toString(month);
 		String stringDay = Integer.toString(day);
+		if(stringMonth.length()<2){
+			stringMonth="0"+stringMonth;
+		}
+		if(stringDay.length()<2){
+			stringDay="0"+stringDay;
+		}
 		String res = stringYear+"-"+stringMonth+"-"+stringDay;
 		if(stringYear.length() != 4) {
 			System.out.println("Wrong year digits");
@@ -357,7 +364,7 @@ public class App implements Testable
 				Statement stmt = _connection.createStatement();
 				System.out.println("Writing to table GlobalDate");
 				try{
-					String sqlDate = stringYear+","+stringMonth+","+stringDay;
+					String sqlDate = "1,"+stringYear+stringMonth+stringDay;
 					String sql = "INSERT INTO GlobalDate VALUES ("+sqlDate+")";
 					stmt.executeUpdate(sql);
 				} catch(Exception e) {
@@ -372,12 +379,29 @@ public class App implements Testable
 
 	}
 
+
 	/**
-	 * Another example.
+	 * Create a new checking or savings account.
+	 * If customer is new, then their name and address should be provided.
+	 * @param accountType New account's checking or savings type.
+	 * @param id New account's ID.
+	 * @param initialBalance Initial account balance.
+	 * @param tin Account's owner Tax ID number - it may belong to an existing or new customer.
+	 * @param name [Optional] If customer is new, this is the customer's name.
+	 * @param address [Optional] If customer is new, this is the customer's address.
+	 * @return a string "r aid type balance tin", where
+	 *         r = 0 for success, 1 for error;
+	 *         aid is the new account id;
+	 *         type is the new account's type (see the enum codes above, e.g. INTEREST_CHECKING);
+	 *         balance is the account's initial balance with 2 decimal places (e.g. 1000.34, as with %.2f); and
+	 *         tin is the Tax ID of account's primary owner.
 	 */
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
+		if(accountType == AccountType.POCKET){
+			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+		}
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
 	}
 

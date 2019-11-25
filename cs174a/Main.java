@@ -2,6 +2,11 @@ package cs174a;                         // THE BASE PACKAGE FOR YOUR APP MUST BE
 
 // DO NOT REMOVE THIS IMPORT.
 import cs174a.Testable.*;
+import cs174a.Helper.*;
+import cs174a.Customer.*;
+import cs174a.ATM.*;
+import cs174a.Teller.*;
+import java.util.*;
 
 /**
  * This is the class that launches your application.
@@ -37,10 +42,18 @@ public class Main
 
 			
 			//System.out.println(r);
+			//r = app.dropTables();
+			//r = app.createTables();
+			//
+
+			//System.out.println(r);
+			//Date date = app.getDate();
+			//System.out.println(date);
 			r = app.dropTables();
-			r = app.createTables();
+			app.createTables();
 			r = app.setDate(4000, 2, 20);
-			System.out.println(r);
+			Helper helper= new Helper();
+			System.out.println(helper.getDate());
 		}
 	}
 	//!### FINALIZAMOS
