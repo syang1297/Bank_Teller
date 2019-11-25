@@ -180,8 +180,10 @@ public class App implements Testable
 			try {
 				System.out.println("Creating table GlobalDate");
 				String sql = "CREATE TABLE GlobalDate (" + 
-								"globalDate DATE," + 
-								"PRIMARY KEY (globalDate))";
+								"year CHAR(4)," +
+								"month CHAR(2)," +
+								"day CHAR(2)," + 
+								"PRIMARY KEY (year,month,day))";
 				stmt.executeUpdate(sql);
 				
 			} catch (Exception e) {
@@ -349,14 +351,14 @@ public class App implements Testable
 		} else if(month>12 || month<1){
 			System.out.println("month bad");
 			return "1 "+res;
-		} else {
-			try {
+		}
+		try {
 				System.out.println("Connecting to database...............");
 				Statement stmt = _connection.createStatement();
 				System.out.println("Writing to table GlobalDate");
-				Date d = Date.valueOf(res);
 				try{
-					String sql = "INSERT INTO GlobalDate VALUES (d)";
+					String sqlDate = stringYear+","+stringMonth+","+stringDay;
+					String sql = "INSERT INTO GlobalDate VALUES ("+sqlDate+")";
 					stmt.executeUpdate(sql);
 				} catch(Exception e) {
 					System.out.println("Failed to write date to DB.");
@@ -366,7 +368,6 @@ public class App implements Testable
 				System.out.println("Failed to connect to DB.");
 				System.out.println(e);
 			}
-		}
 		return "0 "+res;
 
 	}

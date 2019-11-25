@@ -35,10 +35,11 @@ public class Main
 			// r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "account1", 1234.56, "theTaxID", "Im YoungMing", "Known" );
 			// System.out.println( r );
 
-			//r = app.createTables();
+			
 			//System.out.println(r);
-			//r = app.dropTables();
-			r = app.setDate(4000, 2, 30);
+			r = app.dropTables();
+			r = app.createTables();
+			r = app.setDate(4000, 2, 20);
 			System.out.println(r);
 		}
 	}
