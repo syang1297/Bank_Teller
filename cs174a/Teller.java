@@ -1,9 +1,11 @@
-//package cs174a;    
+package cs174a;    
 
 import cs174a.Customer.*;
+import java.util.*;
 
 public class Teller {
     private Customer customer;
+    private Helper helper;
 
     //constructor
     Teller(){
@@ -44,7 +46,7 @@ public class Teller {
     }
 
     //create new account and store on db
-    void createAccount(String type, List<Integer> coOwners, double balance, string accountID){
+    void createAccount(String type, List<Integer> coOwners, double balance, String accountID){
         return;
     }
 

@@ -1,7 +1,9 @@
-//
+//compile from Bank_Teller directory: javac -classpath /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar:. cs174a/Testable.java cs174a/Customer.java cs174a/App.java cs174a/Main.java cs174a/Teller.java cs174a/ATM.java
 //run from Bank_Teller directory to run program: java -classpath /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar:. cs174a.Main
 
-
+//Commands TAs will use to run program
+//compile: javac -d out/ -cp /path/to/ojdbc8.jar cs174a/*.java		# out/ is where .class files are saved to.
+//run: java -cp /path/to/ojdbc8.jar:out:. cs174a.Main
 
 package cs174a;                                             // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
 
@@ -60,8 +62,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##andrewdoan";
-		final String DB_PASSWORD = "3772365";
+		final String DB_USER = "c##syang01";
+		final String DB_PASSWORD = "4621538";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -371,12 +373,54 @@ public class App implements Testable
 
 	}
 
+	Date getDate(){
+        Date currDate = null;
+        try {
+            System.out.println("Connecting to database for date...");
+            Statement stmt = _connection.createStatement();
+            try {
+                String sql = "SELECT globalDate " +
+                			"FROM GlobalDate";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					currDate = rs.getDate("globalDate");
+				}
+				rs.close();
+                return currDate;
+            } catch (Exception e) {
+                System.out.println("Failed to select date from GlobalDate....");
+                System.out.println(e);
+                return currDate;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to connect to database....");
+            System.out.println(e);
+            return currDate;
+        }
+    }
+
 	/**
-	 * Another example.
+	 * Create a new checking or savings account.
+	 * If customer is new, then their name and address should be provided.
+	 * @param accountType New account's checking or savings type.
+	 * @param id New account's ID.
+	 * @param initialBalance Initial account balance.
+	 * @param tin Account's owner Tax ID number - it may belong to an existing or new customer.
+	 * @param name [Optional] If customer is new, this is the customer's name.
+	 * @param address [Optional] If customer is new, this is the customer's address.
+	 * @return a string "r aid type balance tin", where
+	 *         r = 0 for success, 1 for error;
+	 *         aid is the new account id;
+	 *         type is the new account's type (see the enum codes above, e.g. INTEREST_CHECKING);
+	 *         balance is the account's initial balance with 2 decimal places (e.g. 1000.34, as with %.2f); and
+	 *         tin is the Tax ID of account's primary owner.
 	 */
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
+		if(accountType == POCKET){
+			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+		}
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
 	}
 

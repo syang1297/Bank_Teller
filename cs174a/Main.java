@@ -2,6 +2,11 @@ package cs174a;                         // THE BASE PACKAGE FOR YOUR APP MUST BE
 
 // DO NOT REMOVE THIS IMPORT.
 import cs174a.Testable.*;
+import cs174a.Helper.*;
+import cs174a.Customer.*;
+import cs174a.ATM.*;
+import cs174a.Teller.*;
+import java.util.*;
 
 /**
  * This is the class that launches your application.
@@ -25,21 +30,12 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
-			// app.exampleAccessToDB();                // Example on how to connect to the DB.
-
-			// Example tests.  We'll overwrite your Main.main() function with our final tests.
-			// r = app.listClosedAccounts();
-			// System.out.println( r );
-
-			// Another example test.
-			// r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "account1", 1234.56, "theTaxID", "Im YoungMing", "Known" );
-			// System.out.println( r );
-
-			//r = app.createTables();
-			//System.out.println(r);
-			//r = app.dropTables();
-			r = app.setDate(4000, 2, 30);
+			r = app.createTables();
+			r = app.setDate(4000, 2, 18);
 			System.out.println(r);
+			Date date = app.getDate();
+			System.out.println(date);
+			r = app.dropTables();
 		}
 	}
 	//!### FINALIZAMOS

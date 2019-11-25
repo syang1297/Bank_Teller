@@ -1,8 +1,9 @@
-//package cs174a;    
+package cs174a;    
 
 public class ATM {
 
     private Customer customer;
+    private Helper helper;
 
     ATM(){
 

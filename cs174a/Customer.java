@@ -1,19 +1,21 @@
-//package cs174a;    
-
+package cs174a;    
+import java.util.*;
+import cs174a.Helper.*;
 
 public class Customer {
     private int taxID;
-    Date date;
+    private Helper helper;
     
     //constructor
-    Customer(){
-
+    Customer(int tax){
+        this.taxID = tax;
     }
 
     //taxID getter
     int getTaxID(){
         return taxID;
     }
+
 
     //get name from db for the customer
     String getName(){
@@ -55,8 +57,4 @@ public class Customer {
         return;
     }
 
-    //get global date from db
-    String getDate(){
-        return "stub";
-    }
 }
