@@ -35,7 +35,30 @@ public class Main
 			System.out.println(r);
 			// Date date = app.getDate();
 			// System.out.println(date);
+			// app.exampleAccessToDB();                // Example on how to connect to the DB.
+
+			// Example tests.  We'll overwrite your Main.main() function with our final tests.
+			// r = app.listClosedAccounts();
+			// System.out.println( r );
+
+			// Another example test.
+			// r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "account1", 1234.56, "theTaxID", "Im YoungMing", "Known" );
+			// System.out.println( r );
+
+			
+			//System.out.println(r);
+			//r = app.dropTables();
+			//r = app.createTables();
+			//
+
+			//System.out.println(r);
+			//Date date = app.getDate();
+			//System.out.println(date);
 			r = app.dropTables();
+			app.createTables();
+			r = app.setDate(4000, 2, 20);
+			Helper helper= new Helper();
+			System.out.println(helper.getDate());
 		}
 	}
 	//!### FINALIZAMOS

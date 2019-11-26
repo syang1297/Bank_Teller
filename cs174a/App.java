@@ -62,8 +62,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -182,8 +182,9 @@ public class App implements Testable
 			try {
 				System.out.println("Creating table GlobalDate");
 				String sql = "CREATE TABLE GlobalDate (" + 
-								"globalDate DATE," + 
-								"PRIMARY KEY (globalDate))";
+								"num INTEGER,"+
+								"globalDate char(10),"+ 
+								"PRIMARY KEY (num))";
 				stmt.executeUpdate(sql);
 				
 			} catch (Exception e) {
@@ -215,8 +216,8 @@ public class App implements Testable
 								"taxID INTEGER NOT NULL," +
 								"bankBranch CHAR(32)," +
 								"balance INTEGER," +
-								"balanceEndDate CHAR(32)," +
-								"balanceStartDate CHAR(32)," +
+								"balanceEndDate CHAR(10)," +
+								"balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
 								"interestRate REAL," +
 								"accountType CHAR(32)," +
@@ -252,7 +253,7 @@ public class App implements Testable
 								"amount REAL," +
 								"fee INTEGER," +
 								"transType CHAR(32)," +
-								"transDate DATE," +
+								"transDate CHAR(10)," +
 								"checkNo INTEGER," +
 								"transactionID INTEGER," +
 								"aID INTEGER NOT NULL," +
@@ -307,6 +308,12 @@ public class App implements Testable
 		String stringYear = Integer.toString(year);
 		String stringMonth = Integer.toString(month);
 		String stringDay = Integer.toString(day);
+		if(stringMonth.length()<2){
+			stringMonth="0"+stringMonth;
+		}
+		if(stringDay.length()<2){
+			stringDay="0"+stringDay;
+		}
 		String res = stringYear+"-"+stringMonth+"-"+stringDay;
 		if(stringYear.length() != 4) {
 			System.out.println("Wrong year digits");
@@ -351,14 +358,14 @@ public class App implements Testable
 		} else if(month>12 || month<1){
 			System.out.println("month bad");
 			return "1 "+res;
-		} else {
-			try {
+		}
+		try {
 				System.out.println("Connecting to database...............");
 				Statement stmt = _connection.createStatement();
 				System.out.println("Writing to table GlobalDate");
-				Date d = Date.valueOf(res);
 				try{
-					String sql = "INSERT INTO GlobalDate VALUES (d)";
+					String sqlDate = "1,"+stringYear+stringMonth+stringDay;
+					String sql = "INSERT INTO GlobalDate VALUES ("+sqlDate+")";
 					stmt.executeUpdate(sql);
 				} catch(Exception e) {
 					System.out.println("Failed to write date to DB.");
@@ -368,11 +375,11 @@ public class App implements Testable
 				System.out.println("Failed to connect to DB.");
 				System.out.println(e);
 			}
-		}
 		return "0 "+res;
 
 	}
 
+<<<<<<< HEAD
 	// Date getDate(){
     //     Date currDate = null;
     //     try {
@@ -398,6 +405,8 @@ public class App implements Testable
     //         return currDate;
     //     }
     // }
+=======
+>>>>>>> master
 
 	/**
 	 * Create a new checking or savings account.
@@ -418,6 +427,7 @@ public class App implements Testable
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
+<<<<<<< HEAD
 		String interestRate = "";
 		switch(accountType){
 			case STUDENT_CHECKING:
@@ -500,6 +510,9 @@ public class App implements Testable
 		} catch (Exception e) {
 			System.out.println("getStatement() failed");
 			System.out.println(e);
+=======
+		if(accountType == AccountType.POCKET){
+>>>>>>> master
 			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
