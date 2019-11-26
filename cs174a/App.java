@@ -379,34 +379,6 @@ public class App implements Testable
 
 	}
 
-<<<<<<< HEAD
-	// Date getDate(){
-    //     Date currDate = null;
-    //     try {
-    //         System.out.println("Connecting to database for date...");
-    //         Statement stmt = _connection.createStatement();
-    //         try {
-    //             String sql = "SELECT globalDate " +
-    //             			"FROM GlobalDate";
-	// 			ResultSet rs = stmt.executeQuery(sql);
-	// 			while(rs.next()){
-	// 				currDate = rs.getDate("globalDate");
-	// 			}
-	// 			rs.close();
-    //             return currDate;
-    //         } catch (Exception e) {
-    //             System.out.println("Failed to select date from GlobalDate....");
-    //             System.out.println(e);
-    //             return currDate;
-    //         }
-    //     } catch (Exception e) {
-    //         System.out.println("Failed to connect to database....");
-    //         System.out.println(e);
-    //         return currDate;
-    //     }
-    // }
-=======
->>>>>>> master
 
 	/**
 	 * Create a new checking or savings account.
@@ -427,7 +399,6 @@ public class App implements Testable
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
-<<<<<<< HEAD
 		String interestRate = "";
 		switch(accountType){
 			case STUDENT_CHECKING:
@@ -510,9 +481,6 @@ public class App implements Testable
 		} catch (Exception e) {
 			System.out.println("getStatement() failed");
 			System.out.println(e);
-=======
-		if(accountType == AccountType.POCKET){
->>>>>>> master
 			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
