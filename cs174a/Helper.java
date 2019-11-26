@@ -10,6 +10,8 @@ public class Helper{
 
     }
     
+    //add transaction function
+
     //verifies supplied taxID exists in database
     boolean verifyTaxIDExists(int taxID){
         // try {
