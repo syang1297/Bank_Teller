@@ -501,6 +501,12 @@ public class App implements Testable
 	 */
 	@Override
 	public String createPocketAccount( String id, String linkedId, double initialTopUp, String tin ){
+		//check if account ID doesnt exist already, then check if linkedID exists, 
+		//check that the linkedID is not closed
+		//check that that the customers tax ID number is associated with the linkedID
+		//Check that initialTopUp doesnt drain the linkedID account balance
+		//Check that the linkedID is not a pocket
+		//add to linkedWith table
 		return "r";
 	}
 
@@ -514,6 +520,11 @@ public class App implements Testable
 	 */
 	@Override
 	public String createCustomer( String accountId, String tin, String name, String address ){
+		//create new customer and add them as a cowowner to existing account
+		//Check if account exists, and that it isn't marked for close
+		//check customer exists already, and if they are return
+		//check if theyre associated with the account already, and if they are return
+		//add to owns table
 		return "r";
 	}
 
@@ -528,6 +539,10 @@ public class App implements Testable
 	 */
 	@Override
 	public String deposit( String accountId, double amount ){
+		//check accountID exists 
+		//note: Teller function will check if account id belongs to customer
+		//check amount is not negative
+		//grab current account balance and add to new balance and add it to accountprimarily owns table
 		return "r";
 	}
 
@@ -540,6 +555,9 @@ public class App implements Testable
 	 */
 	@Override
 	public String showBalance( String accountId ){
+		//check if account exists
+		//note: Teller function will check if account id belongs to customer
+		//return balance
 		return "r";
 	}
 
@@ -554,6 +572,11 @@ public class App implements Testable
 	 */
 	@Override
 	public String topUp( String accountId, double amount ){
+		//check if accountID exists and is pocket account
+		//note: Teller function will check if account id belongs to customer
+		//amount is not negative
+		//if fee has not been applied apply $5 fee and mark fee as paid for the month
+		//check if amount will not close the parent account
 		return "r";
 	}
 
@@ -569,6 +592,12 @@ public class App implements Testable
 	 */
 	@Override
 	public String payFriend( String from, String to, double amount ){
+		//check if from exists and is pocket
+		//check if from belongs to customer
+		//check if to exists and is pocket
+		//check if amount is negative
+		//check if amount closes from account
+		//get new balances and write to table for both accounts
 		return "r";
 	}
 
@@ -576,8 +605,8 @@ public class App implements Testable
 	 * Example of one of the testable functions.
 	 */
 	@Override
-	public String listClosedAccounts()
-	{
+	public String listClosedAccounts(){
+		//get all accountIDs with true for customer bool and print
 		return "0 it works!";
 	}
 
