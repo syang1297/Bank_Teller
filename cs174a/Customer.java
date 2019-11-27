@@ -53,7 +53,7 @@ public class Customer {
     }
 
     //set global date in db
-    void setDate(Date date){
+    void setDate(String date){
         return;
     }
 
