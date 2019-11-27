@@ -396,6 +396,7 @@ public class App implements Testable
 	 *         balance is the account's initial balance with 2 decimal places (e.g. 1000.34, as with %.2f); and
 	 *         tin is the Tax ID of account's primary owner.
 	 */
+	//add to transaction
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
@@ -440,7 +441,7 @@ public class App implements Testable
 
 		//check for initial balance.... if it's null, set to 100
 		if(initialBalance <= 0 ){
-			initialBalance = 100.00;
+			initialBalance = 1000.00;
 		}
 
 		//if taxID doesn't exist in customer table... create new customer
@@ -463,7 +464,7 @@ public class App implements Testable
 				}
 				//update account table to reflect customer
 				try {
-					//TODO: BANKBRANCH, balanceEendDate, balanceStartDate
+					//TODO: BANKBRANCH, balanceEndDate, balanceStartDate
 					sql = "INSERT INTO AccountPrimarilyOwns " + 
 								"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
 								", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
@@ -480,6 +481,16 @@ public class App implements Testable
 			}
 		} catch (Exception e) {
 			System.out.println("getStatement() failed");
+			System.out.println(e);
+			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+		}
+
+		try {
+			//no fee because not a pocket account
+			sql = "INSERT INTO TransactionBelongs " +
+					"VALUES (" + amount + ", 0, " + accountType + ", " + 
+		} catch (Exception e) {
+			System.out.println("Adding to transaction table failed");
 			System.out.println(e);
 			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
