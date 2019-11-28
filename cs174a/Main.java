@@ -30,8 +30,9 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
-			r = app.createTables();
-			r = app.setDate(4000, 2, 18);
+			// app.dropTables();
+			// r = app.createTables();
+			// r = app.setDate(4000, 2, 18);
 			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1234", 100.00, "4321", "Bob", "66 DP");
 			
 		}

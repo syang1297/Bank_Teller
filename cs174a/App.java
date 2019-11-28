@@ -185,7 +185,7 @@ public class App implements Testable
 				System.out.println("Creating table GlobalDate");
 				String sql = "CREATE TABLE GlobalDate (" + 
 								"num INTEGER,"+
-								"globalDate char(10),"+ 
+								"globalDate VARCHAR(10),"+ 
 								"PRIMARY KEY (num))";
 				stmt.executeUpdate(sql);
 				
@@ -199,9 +199,9 @@ public class App implements Testable
 				System.out.println("Creating table Customer.");
 				String sql = "CREATE TABLE Customer(" + 
 								"taxID INTEGER," +
-								"addr CHAR (32)," + 
+								"addr VARCHAR (32)," + 
 								"pin INTEGER," + 
-								"name CHAR(32)," + 
+								"name VARCHAR(32)," + 
 								"PRIMARY KEY (taxID))";
 				
 				stmt.executeUpdate(sql);
@@ -216,13 +216,13 @@ public class App implements Testable
 				String sql = "CREATE TABLE AccountPrimarilyOwns(" +
 								"accountID INTEGER,"  +
 								"taxID INTEGER NOT NULL," +
-								"bankBranch CHAR(32)," +
+								"bankBranch VARCHAR(32)," +
 								"balance INTEGER," +
 								// "balanceEndDate CHAR(10)," +
 								// "balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
 								"interestRate REAL," +
-								"accountType CHAR(32)," +
+								"accountType VARCHAR(32)," +
 								"interestAdded NUMBER(1)," +
 								"PRIMARY KEY(accountID, taxID)," +
 								"FOREIGN KEY (taxID) REFERENCES " +
@@ -254,8 +254,8 @@ public class App implements Testable
 				String sql = "CREATE TABLE TransactionBelongs(" +
 								"amount REAL," +
 								"fee INTEGER," +
-								"transType CHAR(32)," +
-								"transDate CHAR(10)," +
+								"transType VARCHAR(32)," +
+								"transDate VARCHAR(10)," +
 								"checkNo INTEGER," +
 								"transactionID INTEGER," +
 								"aID INTEGER NOT NULL," +
@@ -420,6 +420,7 @@ public class App implements Testable
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
+				System.out.println("Checking if accountID exists...");
 				String sql = "SELECT accountID " +
 								"FROM AccountPrimarilyOwns";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -427,8 +428,10 @@ public class App implements Testable
 					int aid = rs.getInt("accountID");
 					String dbID = Integer.toString(aid);
 					if(id.equals(dbID)){
+						System.out.println("AccountID exists already");
 						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 					}
+					System.out.println("AccountID does not exists already");
 				}
 				rs.close();
 			} catch (Exception e) {
@@ -452,18 +455,30 @@ public class App implements Testable
 		try {
 			Statement stmt = _connection.createStatement();
 			try {
+				System.out.println("Checking if customer taxID exists...");
 				String sql = "SELECT taxID " + 
 								"FROM Customer " +
-								"WHERE taxID EQUALS " + tin;
+								"WHERE taxID = " + tin      ;
 				ResultSet rs = stmt.executeQuery(sql);
-				if(rs == null){
+				if (rs.next() == false) {
 					//TODO: HASHING FUNCTION FOR PIN
-					if(address == null || name == null){
-						System.out.println("Address and Name cannot be null because we are inserting a new customer");
+					try {
+						System.out.println("Inserting new customer since taxID doesn't exist");
+						if(address == null || name == null){
+							System.out.println("Address and Name cannot be null because we are inserting a new customer");
+							return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+						}
+						String sqlValues = tin + ",'" + address + "',1234,'" + name+"'";
+						sql = "INSERT INTO Customer " +
+								"VALUES (" + sqlValues + ")";
+						System.out.println(sql);
+						stmt.executeUpdate(sql);
+					} catch (Exception e) {
+						System.out.println("Unable to write to customer table");
+						System.out.println(e);
 						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 					}
-					sql = "INSERT INTO Customer " +
-							"VALUES (" + tin + ", " + address + ", 1234, " + name + ")";
+					
 				}
 				//update account table to reflect customer
 				try {
@@ -476,6 +491,7 @@ public class App implements Testable
 								"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
 								", " + "0, " + interestRate + ", " + accountType +
 								", 0)";
+					stmt.executeUpdate(sql);
 				} catch (Exception e) {
 					System.out.println("Unable to write to account table");
 					System.out.println(e);
