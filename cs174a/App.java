@@ -214,7 +214,7 @@ public class App implements Testable
 								"accountID INTEGER,"  +
 								"taxID INTEGER NOT NULL," +
 								"bankBranch CHAR(32)," +
-								"balance INTEGER," +
+								"balance DOUBLE," +
 								"balanceEndDate CHAR(10)," +
 								"balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
@@ -509,7 +509,95 @@ public class App implements Testable
 		//Check that initialTopUp doesnt drain the linkedID account balance
 		//Check that the linkedID is not a pocket
 		//add to linkedWith table
-		return "r";
+		// String initialBalance = "";
+		int linkedIsClosed = 0;
+		double linkedAccountInitBalance = 0.0;
+		String acctType = "";
+		boolean linkedAccountExists = false;
+		String dbID = "";
+		int aid = 0;
+		try {
+			Statement stmt = _connection.createStatement();
+			try {
+				String sql = "SELECT accountID " +
+								"FROM PocketAccountLinkedWith";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					aid = rs.getInt("accountID");
+					dbID = Integer.toString(aid);
+					if(id.equals(dbID)){
+						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+					}
+				}
+				rs.close();
+				try {
+					sql = "SELECT accountID " +
+							"FROM AccountPrimarilyOwns";
+					rs = stmt.executeQuery(sql);
+					while(rs.next()){
+						aid = rs.getInt("accountID");
+						dbID = Integer.toString(aid);
+						if(linkedId.equals(dbID)){
+							linkedIsClosed = rs.getInt("isClosed");
+							linkedAccountInitBalance = rs.getDouble("balance");
+							acctType = rs.getString("accountType");
+							linkedAccountExists = true;
+							break;
+						}
+					}
+					if(linkedAccountExists == false || linkedIsClosed == 1 || linkedAccountInitBalance - initialTopUp <= 0.01 || acctType.equals("POCKET") || acctType.equals("POCKET")){
+						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+					}
+					//TODO: update startDate, endDate
+					try {
+						sql = "UPDATE AccountPrimarilyOwns " +
+							"SET balance = " + Double.toString(linkedAccountInitBalance - initialTopUp) + 
+							" " + "WHERE accountId = " + dbID + ")";
+					stmt.executeUpdate(sql);
+					rs.close();
+					//TODO: check customerId is associated w/ this linked account by calling verifyTaxId
+					} catch (Exception e) {
+						System.out.println("Failed to update linkedWith account");
+						System.out.println(e);
+						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+					}
+					// rs.close();
+					try {
+						//TODO: actual value for bankBranch, startDate, endDate
+						sql = "INSERT INTO AccountPrimarilyOwns " +
+								"VALUES (" + id + ", " + tin + ", bankBranch test, " + initialTopUp + ", " +
+								"1234, " + helper.getDate() + ", 0, 0.0, POCKET, 0)";
+						stmt.executeQuery(sql);
+						try {
+							sql = "INSERT INTO PocketAccountLinkedWith " +
+									"VALUES (" + id + ", " + tin + ", 0)"; 
+							stmt.executeQuery(sql);
+						} catch (Exception e) {
+							System.out.println("Failed to add new pocketAccount to Pocket table");
+							System.out.println(e);
+							return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;						
+						}
+					} catch (Exception e) {
+						System.out.println("Failed to add pocketAccount to AccountPrimarilyOwns");
+						System.out.println(e);
+						return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;						
+					}				
+				} catch (Exception e) {
+					System.out.println("Failed to check if linkedwith account exists");
+					System.out.println(e);
+					return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;
+				}
+			} catch (Exception e) {
+				System.out.println("Failed to check if PocketAccount already exists");
+				System.out.println(e);
+				return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+			}
+		} catch (Exception e) {
+			System.out.println("getStatement() failed");
+			System.out.println(e);
+			return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+		}
+		return "0 " + id + " POCKET " + initialTopUp + " " + tin;
 	}
 
 	/**
