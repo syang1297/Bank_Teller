@@ -218,8 +218,8 @@ public class App implements Testable
 								"taxID INTEGER NOT NULL," +
 								"bankBranch CHAR(32)," +
 								"balance DOUBLE," +
-								"balanceEndDate CHAR(10)," +
-								"balanceStartDate CHAR(10)," +
+								// "balanceEndDate CHAR(10)," +
+								// "balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
 								"interestRate REAL," +
 								"accountType CHAR(32)," +
@@ -229,7 +229,7 @@ public class App implements Testable
 								"Customer ON DELETE CASCADE)";
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
-				System.out.println("Failed to table AccountPrimarilyOwns.");
+				System.out.println("Failed to create table AccountPrimarilyOwns.");
 				System.out.println(e);
 				return "1";
 			}
@@ -432,10 +432,12 @@ public class App implements Testable
 				}
 				rs.close();
 			} catch (Exception e) {
+				System.out.println("Failed to select from AccountPrimarilyOwns");
 				System.out.println(e);
 				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 			}
 		} catch(Exception e){
+			System.out.println("Failed to connect to DB");
 			System.out.println(e);
             return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
@@ -466,9 +468,13 @@ public class App implements Testable
 				//update account table to reflect customer
 				try {
 					//TODO: BANKBRANCH, balanceEndDate, balanceStartDate
+					// sql = "INSERT INTO AccountPrimarilyOwns " + 
+					// 			"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
+					// 			", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
+					// 			", 0)";
 					sql = "INSERT INTO AccountPrimarilyOwns " + 
 								"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
-								", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
+								", " + "0, " + interestRate + ", " + accountType +
 								", 0)";
 				} catch (Exception e) {
 					System.out.println("Unable to write to account table");

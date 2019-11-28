@@ -33,7 +33,7 @@ public class Main
 			r = app.createTables();
 			r = app.setDate(4000, 2, 18);
 			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1234", 100.00, "4321", "Bob", "66 DP");
-			r = app.dropTables();
+			
 		}
 	}
 	//!### FINALIZAMOS
