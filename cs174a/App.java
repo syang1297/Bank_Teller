@@ -471,7 +471,7 @@ public class App implements Testable
 						String sqlValues = tin + ",'" + address + "',1234,'" + name+"'";
 						sql = "INSERT INTO Customer " +
 								"VALUES (" + sqlValues + ")";
-						System.out.println(sql);
+
 						stmt.executeUpdate(sql);
 					} catch (Exception e) {
 						System.out.println("Unable to write to customer table");
@@ -488,9 +488,10 @@ public class App implements Testable
 					// 			", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
 					// 			", 0)";
 					sql = "INSERT INTO AccountPrimarilyOwns " + 
-								"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
-								", " + "0, " + interestRate + ", " + accountType +
-								", 0)";
+								"VALUES (" + id + ", " + tin + ",'" + "bankBranch1" + "', " + initialBalance +
+								", " + "0, " + interestRate + ", '" + accountType +
+								"', 0)";
+					System.out.println(sql);
 					stmt.executeUpdate(sql);
 				} catch (Exception e) {
 					System.out.println("Unable to write to account table");

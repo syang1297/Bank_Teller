@@ -116,21 +116,26 @@ public class Helper{
             try {
                 String sql = "SELECT accountType " +
                                 "FROM AccountPrimarilyOwns " +
-                                "WHERE accountID = aID";
+                                "WHERE accountID = "+aID;
                 ResultSet rs = stmt.executeQuery(sql);
-                String acctType = rs.getString("accountType");
+                String acctType="";
+                while(rs.next()){
+					acctType = rs.getString("accountType");
+				}
                 // String acct = (String) acctType;
                 switch(acctType){
                     case "STUDENT_CHECKING":                       
                     case "INTEREST_CHECKING":
                         if(transType == TransactionType.TOPUP || transType == TransactionType.PURCHASE || transType == TransactionType.PAYFRIEND
                         || transType == TransactionType.COLLECT){
-                        return "0";
+                            System.out.println("Invalid transaction/account type combo");
+                            return "0";
                         }                         
                         break;
                     case "SAVINGS":
                         if(transType == TransactionType.TOPUP || transType == TransactionType.PURCHASE || transType == TransactionType.PAYFRIEND
                         || transType == TransactionType.COLLECT || transType == TransactionType.WRITECHECK){
+                            System.out.println("Invalid transaction/account type combo");
                             return "0";
                         }                         
                         break;
@@ -148,17 +153,35 @@ public class Helper{
                             // }
                         }
                         else{
+                            System.out.println("Invalid transaction/account type combo");
                             return "0";
                         }  
                         break;
                 }
                     try {
-                        sql = "INSERT INTO TransactionBelongs " +
-                                "VALUES (" + amount + ", " + fee + ", " + transType + ", " + 
-                                this.getDate() + ", " + checkNumber + ", " + transactionID + 
-                                ", " + aID + ")"; 
+                        System.out.println("Getting taxID...");
+                        sql = "SELECT taxID " +
+                                        "FROM AccountPrimarilyOwns " +
+                                        "WHERE accountID = "+aID;
+                        rs = stmt.executeQuery(sql);
+                        int taxID=0;
+                        while(rs.next()){
+                            taxID = rs.getInt("taxID");
+                        }
+                        try {
+                            System.out.println("Trying to add to transactions...");
+                            sql = "INSERT INTO TransactionBelongs " +
+                                    "VALUES (" + amount + ", " + fee + ", '" + transType + "', '" + 
+                                    this.getDate() + "', " + checkNumber + ", " + transactionID + 
+                                    ", " + aID + "," + taxID + ")"; 
+                            stmt.executeUpdate(sql);
+                            } catch (Exception e) {
+                                System.out.println("Adding to transaction table failed");
+                                System.out.println(e);
+                                return "0";
+                            }  
                     } catch (Exception e) {
-                        System.out.println("Adding to transaction table failed");
+                        System.out.println("Getting taxID failed");
                         System.out.println(e);
                         return "0";
                     }  
@@ -172,6 +195,7 @@ public class Helper{
             System.out.println(e);
             return "0";
         }
+        System.out.println("Added transaction.")
         return "1";
     }
 
