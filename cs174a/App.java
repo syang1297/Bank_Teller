@@ -217,7 +217,7 @@ public class App implements Testable
 								"accountID INTEGER,"  +
 								"taxID INTEGER NOT NULL," +
 								"bankBranch CHAR(32)," +
-								"balance DOUBLE," +
+								"balance INTEGER," +
 								// "balanceEndDate CHAR(10)," +
 								// "balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
