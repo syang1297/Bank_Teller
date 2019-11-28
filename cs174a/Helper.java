@@ -54,7 +54,7 @@ public class Helper{
                 }
             StringBuilder temp = new StringBuilder(res);
             res="";
-            for(int i=0;i<temp.capacity();i++){
+            for(int i=0;i<temp.length();i++){
                 res=res+temp.charAt(i);
                 if(i==3 || i==5){
                     res=res+"-";
