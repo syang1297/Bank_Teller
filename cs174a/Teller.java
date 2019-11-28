@@ -1,6 +1,8 @@
 package cs174a;    
 
 import cs174a.Customer.*;
+import cs174a.Testable.*;
+import cs174a.App.*;
 import java.util.*;
 
 public class Teller {
@@ -9,7 +11,8 @@ public class Teller {
 
     //constructor
     Teller(){
-
+        //TODO: creating actual customer from teller interface
+        this.customer = new Customer(1234);
     }
 
     //add check transaction to an account
@@ -46,7 +49,21 @@ public class Teller {
     }
 
     //create new account and store on db
-    void createAccount(String type, List<Integer> coOwners, double balance, String accountID){
+    void createAccount(AccountType type, List<Integer> coOwners, double balance, String accountID, String linkedId){
+        // switch(type){
+        //     case STUDENT_CHECKING:
+        //         createCheckingsSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+        //         break;
+        //     case INTEREST_CHECKING:
+        //         createCheckingsSavingsAccount(AccountType.INTEREST_CHECKING, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+        //         break;
+        //     case SAVINGS:
+        //         createCheckingsSavingsAccount(AccountType.SAVINGS, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+        //         break;
+        //     case POCKET:
+        //         createPocketAccount(accountID, linkedId, balance, Integer.toString(customer.getTaxID()));
+        //         break;
+        // }
         return;
     }
 

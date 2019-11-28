@@ -16,7 +16,7 @@ import java.sql.Date;
 import java.util.Properties;
 import oracle.jdbc.pool.OracleDataSource;
 import oracle.jdbc.OracleConnection;
-
+import cs174a.Helper.*;
 /**
  * The most important class for your application.
  * DO NOT CHANGE ITS SIGNATURE.
@@ -24,14 +24,13 @@ import oracle.jdbc.OracleConnection;
 public class App implements Testable
 {
 	private OracleConnection _connection;                   // Example connection object to your DB.
-
+	private Helper helper;
 	/**
 	 * Default constructor.
 	 * DO NOT REMOVE.
 	 */
-	App()
-	{
-		// TODO: Any actions you need.
+	App(){
+		this.helper = new Helper();
 	}
 
 	/**
@@ -440,7 +439,7 @@ public class App implements Testable
 		}
 
 		//check for initial balance.... if it's null, set to 100
-		if(initialBalance <= 0 ){
+		if(initialBalance <= 1000.00 ){
 			initialBalance = 1000.00;
 		}
 
@@ -484,16 +483,8 @@ public class App implements Testable
 			System.out.println(e);
 			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
-
-		try {
-			//no fee because not a pocket account
-			sql = "INSERT INTO TransactionBelongs " +
-					"VALUES (" + amount + ", 0, " + accountType + ", " + 
-		} catch (Exception e) {
-			System.out.println("Adding to transaction table failed");
-			System.out.println(e);
-			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
-		}
+		//add to transaction table
+		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id);
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
 	}
 

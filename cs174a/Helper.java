@@ -1,6 +1,6 @@
 package cs174a;
 
-import java.util.*;
+import cs174a.Testable.*;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,6 +12,27 @@ import oracle.jdbc.OracleConnection;
 import java.lang.StringBuilder;
 
 public class Helper{
+
+    enum TransactionType {
+        DEPOSIT,
+        TOPUP,
+        WITHDRAWAL,
+        PURCHASE,
+        TRANSFER,
+        COLLECT,
+        PAYFRIEND,
+        WIRE,
+        WRITECHECK,
+        ACCRUEINTEREST
+    }
+    
+    // enum AccountType {
+	// 	STUDENT_CHECKING,
+	// 	INTEREST_CHECKING,
+	// 	SAVINGS,
+	// 	POCKET
+    // }
+    
     private OracleConnection _connection;
     Helper(){
         final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
@@ -78,6 +99,85 @@ public class Helper{
         //     return false;
         // }
         return false;
+    }
+    //checkNo = 0 means there's no check associated
+    //return 0 means it failed (possibly due to incorrect accounttype with transaction type);
+    String addTransaction(double amount, TransactionType transType, int checkNo,
+                            String aID){
+        String transactionID = this.newTransactionID();
+        String fee = "0";
+        String checkNumber = Integer.toString(checkNo);
+        //TODO: check if this transaction is allowed according to account 
+        //TODO: check if it's the first transaction of the month to add $5 fee
+        //if it's a pocket account
+        try {
+            Statement stmt = _connection.createStatement();
+            //check if transaction type is allowed for type of account
+            try {
+                String sql = "SELECT accountType " +
+                                "FROM AccountPrimarilyOwns " +
+                                "WHERE accountID = aID";
+                ResultSet rs = stmt.executeQuery(sql);
+                String acctType = rs.getString("accountType");
+                // String acct = (String) acctType;
+                switch(acctType){
+                    case "STUDENT_CHECKING":                       
+                    case "INTEREST_CHECKING":
+                        if(transType == TransactionType.TOPUP || transType == TransactionType.PURCHASE || transType == TransactionType.PAYFRIEND
+                        || transType == TransactionType.COLLECT){
+                        return "0";
+                        }                         
+                        break;
+                    case "SAVINGS":
+                        if(transType == TransactionType.TOPUP || transType == TransactionType.PURCHASE || transType == TransactionType.PAYFRIEND
+                        || transType == TransactionType.COLLECT || transType == TransactionType.WRITECHECK){
+                            return "0";
+                        }                         
+                        break;
+                    case "POCKET":
+                        if(transType == TransactionType.TOPUP || transType == TransactionType.PURCHASE || transType == TransactionType.PAYFRIEND
+                        || transType == TransactionType.COLLECT ){
+                            //Shouldn't be necessary because we're adding feePaid before adding to transaction table
+                            // sql = "SELECT feePaid " + 
+                            //         "FROM PocketAccountLinkedWith " +
+                            //         "WHERE accountID = aID";
+                            // Resultset rs = stmt.executeQuery(sql);
+                            // String feePaid = rs.getString("feePaid");
+                            // if(feePaid.equals("0")){
+                            //     amount += 5;
+                            // }
+                        }
+                        else{
+                            return "0";
+                        }  
+                        break;
+                }
+                    try {
+                        sql = "INSERT INTO TransactionBelongs " +
+                                "VALUES (" + amount + ", " + fee + ", " + transType + ", " + 
+                                this.getDate() + ", " + checkNumber + ", " + transactionID + 
+                                ", " + aID + ")"; 
+                    } catch (Exception e) {
+                        System.out.println("Adding to transaction table failed");
+                        System.out.println(e);
+                        return "0";
+                    }  
+            } catch (Exception e) {
+                System.out.println("Checking if transaction type allowed failed");
+                System.out.println(e);
+                return "0";
+            }                   
+        } catch (Exception e) {
+            System.out.println("Creating statement failed");
+            System.out.println(e);
+            return "0";
+        }
+        return "1";
+    }
+
+    //TODO: creates new transaction id
+    String newTransactionID(){
+        return "1234";
     }
 
 }

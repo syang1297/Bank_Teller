@@ -32,7 +32,8 @@ public class Main
 		{
 			r = app.createTables();
 			r = app.setDate(4000, 2, 18);
-			System.out.println(r);
+			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1234", 100.00, "4321", "Bob", "66 DP");
+			// System.out.println(r);
 			// Date date = app.getDate();
 			// System.out.println(date);
 			// app.exampleAccessToDB();                // Example on how to connect to the DB.
@@ -55,10 +56,10 @@ public class Main
 			//Date date = app.getDate();
 			//System.out.println(date);
 			r = app.dropTables();
-			app.createTables();
-			r = app.setDate(4000, 2, 20);
-			Helper helper= new Helper();
-			System.out.println(helper.getDate());
+			// app.createTables();
+			// r = app.setDate(4000, 2, 20);
+			// Helper helper= new Helper();
+			// System.out.println(helper.getDate());
 		}
 	}
 	//!### FINALIZAMOS
