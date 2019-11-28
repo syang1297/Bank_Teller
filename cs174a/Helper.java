@@ -180,4 +180,8 @@ public class Helper{
         return "1234";
     }
 
+    boolean accountIdExists(String accountID, String table){
+        return false;
+    }
+
 }

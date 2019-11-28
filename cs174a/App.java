@@ -17,6 +17,9 @@ import java.util.Properties;
 import oracle.jdbc.pool.OracleDataSource;
 import oracle.jdbc.OracleConnection;
 import cs174a.Helper.*;
+import cs174a.Teller.*;
+import cs174a.Customer.*;
+import cs174a.ATM.*;
 /**
  * The most important class for your application.
  * DO NOT CHANGE ITS SIGNATURE.
@@ -413,7 +416,6 @@ public class App implements Testable
 			case POCKET:
 				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
-
 		//check account id doesn't already exist in db
 		try{
 			Statement stmt = _connection.createStatement();
@@ -696,8 +698,37 @@ public class App implements Testable
 	 */
 	@Override
 	public String listClosedAccounts(){
-		//get all accountIDs with true for customer bool and print
-		return "0 it works!";
+		//get all accountIDs which are closed and print
+		//includes pocket accounts
+		//return "0" if where are no closed accounts
+		String result = "0";
+
+		try {
+			Statement stmt = _connection.createStatement();
+			try {
+				String sql = "SELECT accountID " + 
+								"FROM AccountPrimarilyOwns " +
+								"WHERE isClosed = 1";
+				ResultSet rs = stmt.executeQuery(sql);
+				if(rs != null){
+					return result;
+				}
+				while(rs.next()){
+					result += rs.getString("accountID");
+					result += "\n";
+				}
+				// return result;
+			} catch (Exception e) {
+				System.out.println("Failed to select accountID from AccountPrimarilyOwns");
+				System.out.println(e);
+				return "1";
+			}
+		} catch (Exception e) {
+			System.out.println("Failed to create statement");
+			System.out.println(e);
+			return "1";
+		}
+		return result;
 	}
 
 

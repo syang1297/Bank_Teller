@@ -13,6 +13,7 @@ public class Teller {
     Teller(){
         //TODO: creating actual customer from teller interface
         this.customer = new Customer(1234);
+        this.helper = new Helper();
     }
 
     //add check transaction to an account
@@ -85,5 +86,11 @@ public class Teller {
     //change interest for an account
     void changeInterestRate(int accountID, int interestRate){
         return;
+    }
+
+    //add function to check if a customer owns the account
+    boolean customerOwnsAccount(String tin, String id){
+        
+        return false;
     }
 }
