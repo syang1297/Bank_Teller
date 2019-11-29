@@ -758,6 +758,7 @@ public class App implements Testable
 		double newBalance = 0.00;
 		String acctType = "";
 		String result = "1 ";
+		int isClosed = 0;
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
@@ -781,6 +782,11 @@ public class App implements Testable
 					return "1";
 				}
 				else{
+					isClosed = rs.getInt(isClosed);
+					if(isClosed == 1){
+						rs.close();
+						return "1";
+					}
 					oldBalance = rs.getDouble("balance");
 					acctType = rs.getString("accountType");
 					rs.close();
