@@ -653,7 +653,81 @@ public class App implements Testable
 		//check customer exists already, and if they are return
 		//check if theyre associated with the account already, and if they are return
 		//add to owns table
-		return "r";
+		boolean accountExists = false;
+		int accountClosed = 0;
+		int aid = 0;
+		String dbID =  "";
+		int cid = 0;
+		String taxID = "";
+		try{
+			Statement stmt = _connection.createStatement();
+			try {
+				System.out.println("Checking if accountID exists...");
+				String sql = "SELECT accountID " +
+								"FROM AccountPrimarilyOwns";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					aid = rs.getInt("accountID");
+					dbID = Integer.toString(aid);
+					if(accountId.equals(dbID)){
+						accountExists = true;
+						accountClosed = rs.getInt("isClosed");
+						break;
+					}
+				}
+				rs.close();
+				if(accountExists == false || accountClosed == 1){
+					return "1";
+				} else{
+					try {
+						sql = "SELECT taxID " +
+								"FROM Customer";
+						rs = stmt.executeQuery(sql);
+						while(rs.next()){
+							cid = rs.getInt("taxID");
+							taxID = Integer.toString(cid);
+							if(tin.equals(taxID)){
+								System.out.println("Customer already exists");
+								return "1";
+							}
+						}
+						rs.close();
+						try {
+							//TODO: create pin for customer
+							sql = "INSERT INTO Customer " + 
+									"VALUES (" + tin + ", " + address + ", 1234, " + name + ")";
+							stmt.executeQuery(sql);
+							try {
+								sql = "INSERT INTO Owns " + 
+										"VALUES (" + accountId + ", " + tin + ")";
+								stmt.executeQuery(sql);
+							} catch (Exception e) {
+								System.out.println("Failed to add customer to owns table");
+								System.out.println(e);
+								return "1";
+							}
+						} catch (Exception e) {
+							System.out.println("Failed to add new customer to table");
+							System.out.println(e);
+							return "1";
+						}
+					} catch (Exception e) {
+						System.out.println("Failed to check if customer already exists");
+						System.out.println(e);
+						return "1";
+					}
+				}
+			}catch(Exception e){
+				System.out.println("Failed to check if accountID exists.");
+				System.out.println(e);
+				return "1";
+			}
+		}catch(Exception e){
+			System.out.println("Failed to create statement.");
+			System.out.println(e);
+			return "1";
+		}
+		return "0";
 	}
 
 	/**
