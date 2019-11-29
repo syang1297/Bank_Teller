@@ -38,6 +38,7 @@ public class Main
 			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
 			r = app.deposit("1234",1000.00);
 			r = app.showBalance("1234");
+			r = app.topUp("1", 200.00);
 			System.out.println(r);
 		}
 	}

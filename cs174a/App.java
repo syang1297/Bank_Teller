@@ -914,11 +914,11 @@ public class App implements Testable
 			Statement stmt = _connection.createStatement();
 			try {
 				System.out.println("Checking if accountID exists and is pocket account...");
-				String sql = "SELECT accountID " +
+				String sql = "SELECT * " +
 								"FROM PocketAccountLinkedWith";
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
-					aid = rs.getInt("accountID");
+					aid = rs.getInt("aID");
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
 						pocketExists = true;
@@ -926,30 +926,44 @@ public class App implements Testable
 					}
 				}
 				if(pocketExists == false){
+					System.out.println("Pocket account doesn't exist.");
 					rs.close();
 					return "1";
 				}
-				pocketBalance = rs.getDouble("balance");
+				System.out.println("Pocket account exists.");
 				linkedId = rs.getInt("otherAccountID");
-				feePaid = rs.getInt("feedPaid");
+				feePaid = rs.getInt("feePaid");
+				sql = "SELECT * " +
+								"FROM AccountPrimarilyOwns";
+				rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					aid = rs.getInt("accountID");
+					dbID = Integer.toString(aid);
+					if(accountId.equals(dbID)){
+						pocketBalance = rs.getDouble("balance");
+						break;
+					}
+				}
 				rs.close();
 				linkedID = Integer.toString(linkedId);
 				try {
-					sql = "SELECT accountID, balance " +
+					System.out.println("Getting attributes of linked Account...");
+					sql = "SELECT * " +
 							"FROM AccountPrimarilyOwns " +
-							"WHERE accountID = linkedID";
+							"WHERE accountID = " +linkedID;
 					rs = stmt.executeQuery(sql);
 					while(rs.next()){
 						linkedBalance = rs.getDouble("balance");
 						linkedExists = true;
-						feePaid = rs.getInt("feePaid");
 						break;
 					}
 					if(!linkedExists){
+						System.out.println("Linked account does not exist.");
 						rs.close();
 						return "1 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
 					}
 					else{
+						System.out.println("Linked account exists.");
 						if(amount <= 0 || (linkedBalance - amount) <= 0){
 							return "1 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
 						}
@@ -965,7 +979,7 @@ public class App implements Testable
 									try {
 										sql = "UPDATE PocketAccountLinkedWith " +
 												"SET feePaid = " + Integer.toString(1) + 
-												" WHERE accountId = " + dbID;
+												" WHERE aId = " + dbID;
 										stmt.executeUpdate(sql);
 									} catch (Exception e) {
 										System.out.println("Failed to update feePaid for pocket account");
@@ -976,7 +990,7 @@ public class App implements Testable
 								else{
 									pocketBalance = pocketBalance + amount;
 								}								
-								sql = "UPDATE PocketAccountLinkedWith " +
+								sql = "UPDATE AccountPrimarilyOwns " +
 										"SET balance = " + Double.toString(pocketBalance) +
 										" WHERE accountId = " + dbID;
 								stmt.executeUpdate(sql);
