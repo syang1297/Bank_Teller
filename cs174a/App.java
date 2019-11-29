@@ -239,9 +239,8 @@ public class App implements Testable
 				String sql = "CREATE TABLE Owns("  +
 								"aID INTEGER," +
 								"tID INTEGER," +
-								"PRIMARY KEY(aID, tID)," +
-								"FOREIGN KEY(aID, tID) REFERENCES " +
-								"AccountPrimarilyOwns(accountID, taxID))" ;
+								"numKey INTEGER, " +
+								"PRIMARY KEY(numKey))";
 				stmt.executeUpdate(sql);			
 			} catch (Exception e) {
 				System.out.println("Failed to create table Owns.");
@@ -445,7 +444,7 @@ public class App implements Testable
             return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
 
-		//check for initial balance.... if it's null, set to 100
+		//check for initial balance.... if it's null, set to 1000
 		if(initialBalance <= 1000.00 ){
 			initialBalance = 1000.00;
 		}
@@ -491,7 +490,6 @@ public class App implements Testable
 								"VALUES (" + id + ", " + tin + ",'" + "bankBranch1" + "', " + initialBalance +
 								", " + "0, " + interestRate + ", '" + accountType +
 								"', 0)";
-					System.out.println(sql);
 					stmt.executeUpdate(sql);
 				} catch (Exception e) {
 					System.out.println("Unable to write to account table");
@@ -663,13 +661,14 @@ public class App implements Testable
 			Statement stmt = _connection.createStatement();
 			try {
 				System.out.println("Checking if accountID exists...");
-				String sql = "SELECT accountID " +
+				String sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
 					aid = rs.getInt("accountID");
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
+						System.out.println("Account exists.");
 						accountExists = true;
 						// accountClosed = rs.getInt("isClosed");
 						break;
@@ -686,6 +685,7 @@ public class App implements Testable
 						return "1";
 					}
 					try {
+						System.out.println("Checking if customer already exists...");
 						sql = "SELECT taxID " +
 								"FROM Customer";
 						rs = stmt.executeQuery(sql);
@@ -700,15 +700,17 @@ public class App implements Testable
 						rs.close();
 						try {
 							//TODO: create pin for customer
+							System.out.println("Adding new customer to Customer table...");
 							sql = "INSERT INTO Customer " + 
-									"VALUES (" + tin + ", " + address + ", 1234, " + name + ")";
+									"VALUES (" + tin + ",'" + address + "',1234,'" + name+"')";
 							stmt.executeQuery(sql);
 							try {
+								System.out.println("Adding new relation to Owns table...");
 								sql = "INSERT INTO Owns " + 
-										"VALUES (" + accountId + ", " + tin + ")";
+										"VALUES (" + accountId + ", " + tin + ", 0"+")";xs
 								stmt.executeQuery(sql);
 							} catch (Exception e) {
-								System.out.println("Failed to add customer to owns table");
+								System.out.println("Failed to add customer to Owns table");
 								System.out.println(e);
 								return "1";
 							}
@@ -733,6 +735,7 @@ public class App implements Testable
 			System.out.println(e);
 			return "1";
 		}
+		System.out.println("Added new relation and customer");
 		return "0";
 	}
 
