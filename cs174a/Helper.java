@@ -195,7 +195,7 @@ public class Helper{
             System.out.println(e);
             return "0";
         }
-        System.out.println("Added transaction.")
+        System.out.println("Added transaction.");
         return "1";
     }
 

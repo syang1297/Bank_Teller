@@ -446,8 +446,8 @@ public class App implements Testable
 		}
 
 		//check for initial balance.... if it's null, set to 100
-		if(initialBalance <= 1000.00 ){
-			initialBalance = 1000.00;
+		if(initialBalance <= 100.00 ){
+			initialBalance = 100.00;
 		}
 
 		//if taxID doesn't exist in customer table... create new customer
@@ -540,15 +540,17 @@ public class App implements Testable
 		String acctType = "";
 		boolean linkedAccountExists = false;
 		String dbID = "";
+		String linkedTID="";
 		int aid = 0;
 		try {
 			Statement stmt = _connection.createStatement();
 			try {
-				String sql = "SELECT accountID " +
+				System.out.println("Checking if PocketAccount exists...");
+				String sql = "SELECT aID " +
 								"FROM PocketAccountLinkedWith";
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
-					aid = rs.getInt("accountID");
+					aid = rs.getInt("aID");
 					dbID = Integer.toString(aid);
 					if(id.equals(dbID)){
 						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
@@ -556,30 +558,35 @@ public class App implements Testable
 				}
 				rs.close();
 				try {
-					sql = "SELECT accountID " +
+					System.out.println("Checking if linkedWith account exists...");
+					sql = "SELECT * " +
 							"FROM AccountPrimarilyOwns";
 					rs = stmt.executeQuery(sql);
+					System.out.println("Checking linkedWithAccount query results...");
 					while(rs.next()){
 						aid = rs.getInt("accountID");
 						dbID = Integer.toString(aid);
 						if(linkedId.equals(dbID)){
+							System.out.println("Linked account exists.");
 							linkedIsClosed = rs.getInt("isClosed");
 							linkedAccountInitBalance = rs.getDouble("balance");
 							acctType = rs.getString("accountType");
+							linkedTID = rs.getString("taxID");
 							linkedAccountExists = true;
 							break;
 						}
 					}
-					if(linkedAccountExists == false || linkedIsClosed == 1 || linkedAccountInitBalance - initialTopUp <= 0.01 || acctType.equals("POCKET") || acctType.equals("POCKET")){
+					if(linkedAccountExists == false || linkedIsClosed == 1 || linkedAccountInitBalance - initialTopUp <= 0.01 || acctType.equals("POCKET")){
 						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
 					}
 					//TODO: update startDate, endDate
 					try {
+						System.out.println("Updating balance of linkedWith account...");
 						sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(linkedAccountInitBalance - initialTopUp) + 
-							" " + "WHERE accountId = " + dbID + ")";
-					stmt.executeUpdate(sql);
-					rs.close();
+							" " + "WHERE accountId = " + dbID;
+						stmt.executeUpdate(sql);
+						rs.close();
 					//TODO: check customerId is associated w/ this linked account by calling verifyTaxId
 					} catch (Exception e) {
 						System.out.println("Failed to update linkedWith account");
@@ -588,14 +595,17 @@ public class App implements Testable
 					}
 					// rs.close();
 					try {
+						System.out.println("Adding new pocketAccount to AccountPrimarilyOwns...");
 						//TODO: actual value for bankBranch, startDate, endDate
-						sql = "INSERT INTO AccountPrimarilyOwns " +
-								"VALUES (" + id + ", " + tin + ", bankBranch test, " + initialTopUp + ", " +
-								"1234, " + helper.getDate() + ", 0, 0.0, POCKET, 0)";
+						sql = "INSERT INTO AccountPrimarilyOwns " + 
+								"VALUES (" + id + ", " + tin + ",'" + "bankBranchTestPocket" + "', " + initialTopUp +
+								", " + "0, " + 0.0+ ", '" + "POCKET" +
+								"', 0)";
 						stmt.executeQuery(sql);
 						try {
+							System.out.println("Adding new pocketAccount to Pocket table");
 							sql = "INSERT INTO PocketAccountLinkedWith " +
-									"VALUES (" + id + ", " + tin + ", 0)"; 
+									"VALUES (" + id + ", " + tin + ", "+ linkedId+", "+linkedTID+", 0)"; 
 							stmt.executeQuery(sql);
 						} catch (Exception e) {
 							System.out.println("Failed to add new pocketAccount to Pocket table");
@@ -622,6 +632,7 @@ public class App implements Testable
 			System.out.println(e);
 			return "1 " + id + " POCKET " + initialTopUp + " " + tin;
 		}
+		System.out.println("Successfully created new Pocket account.");
 		return "0 " + id + " POCKET " + initialTopUp + " " + tin;
 	}
 
