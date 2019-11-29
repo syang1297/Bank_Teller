@@ -888,11 +888,116 @@ public class App implements Testable
 	@Override
 	public String topUp( String accountId, double amount ){
 		//check if accountID exists and is pocket account
-		//note: Teller function will check if account id belongs to customer
+		//TODO: Teller function will check if account id belongs to customer
 		//amount is not negative
 		//if fee has not been applied apply $5 fee and mark fee as paid for the month
 		//check if amount will not close the parent account
-		return "r";
+		int aid = 0;
+		String dbID = "";
+		boolean pocketExists = false;
+		boolean linkedExists = false;
+		int feePaid = 0;
+		double pocketBalance = 0.00;
+		double linkedBalance = 0.00;
+		int linkedId = 0;
+		String linkedID = "";
+		try{
+			Statement stmt = _connection.createStatement();
+			try {
+				System.out.println("Checking if accountID exists and is pocket account...");
+				String sql = "SELECT accountID " +
+								"FROM PocketAccountLinkedWith";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					aid = rs.getInt("accountID");
+					dbID = Integer.toString(aid);
+					if(accountId.equals(dbID)){
+						pocketExists = true;
+						break;
+					}
+				}
+				if(pocketExists == false){
+					rs.close();
+					return "1";
+				}
+				pocketBalance = rs.getDouble("balance");
+				linkedId = rs.getInt("otherAccountID");
+				feePaid = rs.getInt("feedPaid");
+				rs.close();
+				linkedID = Integer.toString(linkedId);
+				try {
+					sql = "SELECT accountID, balance " +
+							"FROM AccountPrimarilyOwns " +
+							"WHERE accountID = linkedID";
+					rs = stmt.executeQuery(sql);
+					while(rs.next()){
+						linkedBalance = rs.getDouble("balance");
+						linkedExists = true;
+						feePaid = rs.getInt("feePaid");
+						break;
+					}
+					if(!linkedExists){
+						rs.close();
+						return "1 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
+					}
+					else{
+						if(amount <= 0 || (linkedBalance - amount) <= 0){
+							return "1 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
+						}
+						linkedBalance -= amount;
+						try {
+							sql = "UPDATE AccountPrimarilyOwns " +
+							"SET balance = " + Double.toString(linkedBalance) + 
+							" WHERE accountId = " + linkedID;
+							stmt.executeUpdate(sql);
+							try {
+								if(feePaid == 0){
+									pocketBalance = pocketBalance + amount - 5;
+									try {
+										sql = "UPDATE PocketAccountLinkedWith " +
+												"SET feePaid = " + Integer.toString(1) + 
+												" WHERE accountId = " + dbID;
+										stmt.executeUpdate(sql);
+									} catch (Exception e) {
+										System.out.println("Failed to update feePaid for pocket account");
+										System.out.println(e);
+										return "1";
+									}
+								}
+								else{
+									pocketBalance = pocketBalance + amount;
+								}								
+								sql = "UPDATE PocketAccountLinkedWith " +
+										"SET balance = " + Double.toString(pocketBalance) +
+										" WHERE accountId = " + dbID;
+								stmt.executeUpdate(sql);
+								return "0 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
+							} catch (Exception e) {
+								System.out.println("Failed to update pocketAccount with topup");
+								System.out.println(e);
+								return "1";
+							}
+						} catch (Exception e) {
+							System.out.println("Failed to subtract topup from linkedAccount");
+							System.out.println(e);
+							return "1";
+						}
+					}
+				} catch (Exception e) {
+					System.out.println("Failed to update linkedAccount balance");
+					System.out.println(e);
+					return "1";
+				}
+			} catch (Exception e){
+				System.out.println("Failed to check if pocket account exists");
+				System.out.println(e);
+				return "1";
+			}
+		} catch (Exception e){
+			System.out.println("Failed to create statement for topUp()");
+			System.out.println(e);
+			return "1";
+		}
 	}
 
 	/**
