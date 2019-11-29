@@ -199,9 +199,13 @@ public class Helper{
         return "1";
     }
 
-    //TODO: creates new transaction id
+    //TODO: creates new transaction id, using random rn
     String newTransactionID(){
-        return "1234";
+        int max = 10000; 
+        int min = 1; 
+        int range = max - min + 1; 
+        int rand = (int)(Math.random() * range) + min; 
+        return Integer.toString(rand);
     }
 
     boolean accountIdExists(String accountID, String table){
