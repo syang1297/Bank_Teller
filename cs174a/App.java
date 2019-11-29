@@ -1018,7 +1018,116 @@ public class App implements Testable
 		//check if amount is negative
 		//check if amount closes from account
 		//get new balances and write to table for both accounts
-		return "r";
+		//TODO: checks for if it would close pocket acocunt and what to do in that case
+		int fromid = 0;
+		String fromID = "";
+		boolean pocketFromExists = false;
+		boolean pocketToExists = false;
+		int fromFeePaid = 0;
+		int toFeePaid = 0;
+		double fromBalance = 0.00;
+		double toBalance = 0.00;
+		int toid = 0;
+		String toID = "";
+
+		if(amount <= 0){
+			return "1";
+		}
+
+		try{
+			Statement stmt = _connection.createStatement();
+			try {
+				System.out.println("Checking if from accountID exists and is pocket account...");
+				String sql = "SELECT accountID " +
+								"FROM PocketAccountLinkedWith";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					int id = rs.getInt("accountID");
+					String ID = Integer.toString(id);
+					if(ID.equals(fromID)){
+						pocketFromExists = true;
+						fromid = id;
+						fromID = ID;
+						fromFeePaid = rs.getInt("feePaid");
+						fromBalance = rs.getDouble("balance");
+					}
+					if(ID.equals(toID)){
+						pocketToExists = true;
+						toid = id;
+						toID = ID;
+						toFeePaid = rs.getInt("feePaid");
+						toBalance = rs.getDouble("balance");
+					}
+				}
+				if(pocketFromExists == false || pocketToExists == false){
+					rs.close();
+					return "1";
+				}
+				if(toFeePaid == 0){
+					toBalance = amount + toBalance - 5;
+					try {
+						sql = "UPDATE PocketAccountLinkedWith " +
+						"SET feePaid = " + Integer.toString(1) + 
+						"WHERE accountID = " + toID;
+						stmt.executeUpdate(sql);						
+					} catch (Exception e) {
+						System.out.println("Failed to update toFeePaid");
+						System.out.println(e);
+						return "1";					
+					}
+					//TODO: how to revert feePaid if updatebalance sql update fails
+				}
+				else{
+					toBalance = amount + toBalance;
+				}
+				try {
+					sql = "UPDATE PocketAccountLinkedWith " +
+							"SET balance = " + Double.toString(toBalance) +
+							"WHERE accountID = " + toID;
+					stmt.executeUpdate(sql);
+				} catch (Exception e) {
+					System.out.println("Failed to update toBalance");
+					System.out.println(e);
+					return "1";
+				}
+				if(fromFeePaid == 0){
+					fromBalance = fromBalance - amount - 5;
+					try {
+						sql = "UPDATE PocketAccountLinkedWith " +
+						"SET feePaid = " + Integer.toString(1) + 
+						"WHERE accountID = " + fromID;
+						stmt.executeUpdate(sql);						
+					} catch (Exception e) {
+						System.out.println("Failed to update fromFeePaid");
+						System.out.println(e);
+						return "1";					
+					}
+					//TODO: how to revert feePaid if updatebalance sql update fails
+				}
+				else{
+					fromBalance = amount + fromBalance;
+				}
+				try {
+					sql = "UPDATE PocketAccountLinkedWith " +
+							"SET balance = " + Double.toString(fromBalance) +
+							"WHERE accountID = " + fromID;
+					stmt.executeUpdate(sql);
+				} catch (Exception e) {
+					System.out.println("Failed to update fromBalance");
+					System.out.println(e);
+					return "1";
+				}
+			} catch (Exception e){
+				System.out.println("Failed to get pocket accounts from table");
+				System.out.println(e);
+				return "1";
+			}
+		} catch (Exception e){
+			System.out.println("Failed to create statement in payFriend");
+			System.out.println(e);
+			return "1";
+		}
+		return "0 " + Double.toString(fromBalance) + " " + Double.toString(toBalance);
 	}
 
 	/**
