@@ -758,9 +758,44 @@ public class App implements Testable
 	@Override
 	public String showBalance( String accountId ){
 		//check if account exists
-		//note: Teller function will check if account id belongs to customer
+		//TODO: Teller function will check if account id belongs to customer
 		//return balance
-		return "r";
+		int aid = 0;
+		String dbID = "";
+		boolean accountExists = false;
+		double balance = 0.00;
+		try{
+			Statement stmt = _connection.createStatement();
+			try {
+				System.out.println("Checking if accountID exists...");
+				String sql = "SELECT accountID " +
+								"FROM AccountPrimarilyOwns";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					aid = rs.getInt("accountID");
+					dbID = Integer.toString(aid);
+					if(accountId.equals(dbID)){
+						accountExists = true;
+						balance = rs.getDouble("balance");
+						break;
+					}
+				}
+				rs.close();
+				if(accountExists == false){
+					return "1";
+				}
+			}catch (Exception e){
+				System.out.println("Failed to check if account exists");
+				System.out.println(e);
+				return "1";
+			}
+		}catch (Exception e){
+			System.out.println("Failed to create statement in showBalance");
+			System.out.println(e);
+			return "1";
+		}
+		
+		return "0 " + Double.toString(balance);
 	}
 
 	/**
