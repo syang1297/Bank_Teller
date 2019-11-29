@@ -446,8 +446,8 @@ public class App implements Testable
 		}
 
 		//check for initial balance.... if it's null, set to 100
-		if(initialBalance <= 100.00 ){
-			initialBalance = 100.00;
+		if(initialBalance <= 1000.00 ){
+			initialBalance = 1000.00;
 		}
 
 		//if taxID doesn't exist in customer table... create new customer
@@ -671,14 +671,20 @@ public class App implements Testable
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
 						accountExists = true;
-						accountClosed = rs.getInt("isClosed");
+						// accountClosed = rs.getInt("isClosed");
 						break;
 					}
 				}
-				rs.close();
-				if(accountExists == false || accountClosed == 1){
+				// rs.close();
+				if(accountExists == false){
+					rs.close();
 					return "1";
 				} else{
+					accountClosed = rs.getInt("isClosed");
+					rs.close();
+					if(accountClosed == 1){
+						return "1";
+					}
 					try {
 						sql = "SELECT taxID " +
 								"FROM Customer";
@@ -742,10 +748,71 @@ public class App implements Testable
 	@Override
 	public String deposit( String accountId, double amount ){
 		//check accountID exists 
-		//note: Teller function will check if account id belongs to customer
+		//TODO: Teller function will check if account id belongs to customer
 		//check amount is not negative
 		//grab current account balance and add to new balance and add it to accountprimarily owns table
-		return "r";
+		int aid = 0;
+		String dbID = "";
+		boolean accountExists = false;
+		double oldBalance = 0.00;
+		double newBalance = 0.00;
+		String acctType = "";
+		String result = "1 ";
+		try{
+			Statement stmt = _connection.createStatement();
+			try {
+				System.out.println("Checking if accountID exists...");
+				String sql = "SELECT accountID " +
+								"FROM AccountPrimarilyOwns";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					aid = rs.getInt("accountID");
+					dbID = Integer.toString(aid);
+					if(accountId.equals(dbID)){
+						accountExists = true;
+						// oldBalance = rs.getDouble("balance");
+						// String acctType = rs.getString("accountType");
+						break;
+					}
+				}
+				// rs.close();
+				if(accountExists == false){
+					rs.close();
+					return "1";
+				}
+				else{
+					oldBalance = rs.getDouble("balance");
+					acctType = rs.getString("accountType");
+					rs.close();
+					if(amount <= 0.00){
+						System.out.println("Cannot deposit negative amount");
+						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						return result;					}
+					try {
+						newBalance = oldBalance + amount;
+						sql = "UPDATE AccountPrimarilyOwns " +
+							"SET balance = " + Double.toString(newBalance) + 
+							" " + "WHERE accountId = " + dbID;
+						stmt.executeUpdate(sql);
+						result = "0 " + Double.toString(oldBalance) + " " + Double.toString(newBalance);
+					} catch (Exception e) {
+						System.out.println("Failed to deposit and add new balance to table");
+						System.out.println(e);
+						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						return result;
+					}
+				}
+			}catch (Exception e){
+				System.out.println("Failed to check if account exists");
+				System.out.println(e);
+				return result;
+			}
+		}catch (Exception e){
+			System.out.println("Failed to create statement in showBalance");
+			System.out.println(e);
+			return result;
+		}
+		return result;
 	}
 
 	/**
@@ -776,13 +843,18 @@ public class App implements Testable
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
 						accountExists = true;
-						balance = rs.getDouble("balance");
+						// balance = rs.getDouble("balance");
 						break;
 					}
 				}
-				rs.close();
+				// rs.close();
 				if(accountExists == false){
+					rs.close();
 					return "1";
+				}
+				else{
+					balance = rs.getDouble("balance");
+					rs.close();
 				}
 			}catch (Exception e){
 				System.out.println("Failed to check if account exists");
