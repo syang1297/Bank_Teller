@@ -16,7 +16,10 @@ import java.sql.Date;
 import java.util.Properties;
 import oracle.jdbc.pool.OracleDataSource;
 import oracle.jdbc.OracleConnection;
-
+import cs174a.Helper.*;
+import cs174a.Teller.*;
+import cs174a.Customer.*;
+import cs174a.ATM.*;
 /**
  * The most important class for your application.
  * DO NOT CHANGE ITS SIGNATURE.
@@ -24,14 +27,13 @@ import oracle.jdbc.OracleConnection;
 public class App implements Testable
 {
 	private OracleConnection _connection;                   // Example connection object to your DB.
-
+	private Helper helper;
 	/**
 	 * Default constructor.
 	 * DO NOT REMOVE.
 	 */
-	App()
-	{
-		// TODO: Any actions you need.
+	App(){
+		this.helper = new Helper();
 	}
 
 	/**
@@ -183,7 +185,7 @@ public class App implements Testable
 				System.out.println("Creating table GlobalDate");
 				String sql = "CREATE TABLE GlobalDate (" + 
 								"num INTEGER,"+
-								"globalDate char(10),"+ 
+								"globalDate VARCHAR(10),"+ 
 								"PRIMARY KEY (num))";
 				stmt.executeUpdate(sql);
 				
@@ -197,9 +199,9 @@ public class App implements Testable
 				System.out.println("Creating table Customer.");
 				String sql = "CREATE TABLE Customer(" + 
 								"taxID INTEGER," +
-								"addr CHAR (32)," + 
+								"addr VARCHAR (32)," + 
 								"pin INTEGER," + 
-								"name CHAR(32)," + 
+								"name VARCHAR(32)," + 
 								"PRIMARY KEY (taxID))";
 				
 				stmt.executeUpdate(sql);
@@ -214,20 +216,20 @@ public class App implements Testable
 				String sql = "CREATE TABLE AccountPrimarilyOwns(" +
 								"accountID INTEGER,"  +
 								"taxID INTEGER NOT NULL," +
-								"bankBranch CHAR(32)," +
+								"bankBranch VARCHAR(32)," +
 								"balance INTEGER," +
-								"balanceEndDate CHAR(10)," +
-								"balanceStartDate CHAR(10)," +
+								// "balanceEndDate CHAR(10)," +
+								// "balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
 								"interestRate REAL," +
-								"accountType CHAR(32)," +
+								"accountType VARCHAR(32)," +
 								"interestAdded NUMBER(1)," +
 								"PRIMARY KEY(accountID, taxID)," +
 								"FOREIGN KEY (taxID) REFERENCES " +
 								"Customer ON DELETE CASCADE)";
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
-				System.out.println("Failed to table AccountPrimarilyOwns.");
+				System.out.println("Failed to create table AccountPrimarilyOwns.");
 				System.out.println(e);
 				return "1";
 			}
@@ -252,8 +254,8 @@ public class App implements Testable
 				String sql = "CREATE TABLE TransactionBelongs(" +
 								"amount REAL," +
 								"fee INTEGER," +
-								"transType CHAR(32)," +
-								"transDate CHAR(10)," +
+								"transType VARCHAR(32)," +
+								"transDate VARCHAR(10)," +
 								"checkNo INTEGER," +
 								"transactionID INTEGER," +
 								"aID INTEGER NOT NULL," +
@@ -396,6 +398,7 @@ public class App implements Testable
 	 *         balance is the account's initial balance with 2 decimal places (e.g. 1000.34, as with %.2f); and
 	 *         tin is the Tax ID of account's primary owner.
 	 */
+	//add to transaction
 	@Override
 	public String createCheckingSavingsAccount( AccountType accountType, String id, double initialBalance, String tin, String name, String address )
 	{
@@ -413,11 +416,11 @@ public class App implements Testable
 			case POCKET:
 				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
-
 		//check account id doesn't already exist in db
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
+				System.out.println("Checking if accountID exists...");
 				String sql = "SELECT accountID " +
 								"FROM AccountPrimarilyOwns";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -425,21 +428,25 @@ public class App implements Testable
 					int aid = rs.getInt("accountID");
 					String dbID = Integer.toString(aid);
 					if(id.equals(dbID)){
+						System.out.println("AccountID exists already");
 						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 					}
+					System.out.println("AccountID does not exists already");
 				}
 				rs.close();
 			} catch (Exception e) {
+				System.out.println("Failed to select from AccountPrimarilyOwns");
 				System.out.println(e);
 				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 			}
 		} catch(Exception e){
+			System.out.println("Failed to connect to DB");
 			System.out.println(e);
             return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
 
 		//check for initial balance.... if it's null, set to 100
-		if(initialBalance <= 0 ){
+		if(initialBalance <= 100.00 ){
 			initialBalance = 100.00;
 		}
 
@@ -448,26 +455,44 @@ public class App implements Testable
 		try {
 			Statement stmt = _connection.createStatement();
 			try {
+				System.out.println("Checking if customer taxID exists...");
 				String sql = "SELECT taxID " + 
 								"FROM Customer " +
-								"WHERE taxID EQUALS " + tin;
+								"WHERE taxID = " + tin      ;
 				ResultSet rs = stmt.executeQuery(sql);
-				if(rs == null){
+				if (rs.next() == false) {
 					//TODO: HASHING FUNCTION FOR PIN
-					if(address == null || name == null){
-						System.out.println("Address and Name cannot be null because we are inserting a new customer");
+					try {
+						System.out.println("Inserting new customer since taxID doesn't exist");
+						if(address == null || name == null){
+							System.out.println("Address and Name cannot be null because we are inserting a new customer");
+							return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+						}
+						String sqlValues = tin + ",'" + address + "',1234,'" + name+"'";
+						sql = "INSERT INTO Customer " +
+								"VALUES (" + sqlValues + ")";
+
+						stmt.executeUpdate(sql);
+					} catch (Exception e) {
+						System.out.println("Unable to write to customer table");
+						System.out.println(e);
 						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 					}
-					sql = "INSERT INTO Customer " +
-							"VALUES (" + tin + ", " + address + ", 1234, " + name + ")";
+					
 				}
 				//update account table to reflect customer
 				try {
-					//TODO: BANKBRANCH, balanceEendDate, balanceStartDate
+					//TODO: BANKBRANCH, balanceEndDate, balanceStartDate
+					// sql = "INSERT INTO AccountPrimarilyOwns " + 
+					// 			"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
+					// 			", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
+					// 			", 0)";
 					sql = "INSERT INTO AccountPrimarilyOwns " + 
-								"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
-								", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
-								", 0)";
+								"VALUES (" + id + ", " + tin + ",'" + "bankBranch1" + "', " + initialBalance +
+								", " + "0, " + interestRate + ", '" + accountType +
+								"', 0)";
+					System.out.println(sql);
+					stmt.executeUpdate(sql);
 				} catch (Exception e) {
 					System.out.println("Unable to write to account table");
 					System.out.println(e);
@@ -483,6 +508,8 @@ public class App implements Testable
 			System.out.println(e);
 			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 		}
+		//add to transaction table
+		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id);
 		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
 	}
 
@@ -507,7 +534,106 @@ public class App implements Testable
 		//Check that initialTopUp doesnt drain the linkedID account balance
 		//Check that the linkedID is not a pocket
 		//add to linkedWith table
-		return "r";
+		// String initialBalance = "";
+		int linkedIsClosed = 0;
+		double linkedAccountInitBalance = 0.0;
+		String acctType = "";
+		boolean linkedAccountExists = false;
+		String dbID = "";
+		String linkedTID="";
+		int aid = 0;
+		try {
+			Statement stmt = _connection.createStatement();
+			try {
+				System.out.println("Checking if PocketAccount exists...");
+				String sql = "SELECT aID " +
+								"FROM PocketAccountLinkedWith";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					aid = rs.getInt("aID");
+					dbID = Integer.toString(aid);
+					if(id.equals(dbID)){
+						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+					}
+				}
+				rs.close();
+				try {
+					System.out.println("Checking if linkedWith account exists...");
+					sql = "SELECT * " +
+							"FROM AccountPrimarilyOwns";
+					rs = stmt.executeQuery(sql);
+					System.out.println("Checking linkedWithAccount query results...");
+					while(rs.next()){
+						aid = rs.getInt("accountID");
+						dbID = Integer.toString(aid);
+						if(linkedId.equals(dbID)){
+							System.out.println("Linked account exists.");
+							linkedIsClosed = rs.getInt("isClosed");
+							linkedAccountInitBalance = rs.getDouble("balance");
+							acctType = rs.getString("accountType");
+							linkedTID = rs.getString("taxID");
+							linkedAccountExists = true;
+							break;
+						}
+					}
+					if(linkedAccountExists == false || linkedIsClosed == 1 || linkedAccountInitBalance - initialTopUp <= 0.01 || acctType.equals("POCKET")){
+						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+					}
+					//TODO: update startDate, endDate
+					try {
+						System.out.println("Updating balance of linkedWith account...");
+						sql = "UPDATE AccountPrimarilyOwns " +
+							"SET balance = " + Double.toString(linkedAccountInitBalance - initialTopUp) + 
+							" " + "WHERE accountId = " + dbID;
+						stmt.executeUpdate(sql);
+						rs.close();
+					//TODO: check customerId is associated w/ this linked account by calling verifyTaxId
+					} catch (Exception e) {
+						System.out.println("Failed to update linkedWith account");
+						System.out.println(e);
+						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+					}
+					// rs.close();
+					try {
+						System.out.println("Adding new pocketAccount to AccountPrimarilyOwns...");
+						//TODO: actual value for bankBranch, startDate, endDate
+						sql = "INSERT INTO AccountPrimarilyOwns " + 
+								"VALUES (" + id + ", " + tin + ",'" + "bankBranchTestPocket" + "', " + initialTopUp +
+								", " + "0, " + 0.0+ ", '" + "POCKET" +
+								"', 0)";
+						stmt.executeQuery(sql);
+						try {
+							System.out.println("Adding new pocketAccount to Pocket table");
+							sql = "INSERT INTO PocketAccountLinkedWith " +
+									"VALUES (" + id + ", " + tin + ", "+ linkedId+", "+linkedTID+", 0)"; 
+							stmt.executeQuery(sql);
+						} catch (Exception e) {
+							System.out.println("Failed to add new pocketAccount to Pocket table");
+							System.out.println(e);
+							return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;						
+						}
+					} catch (Exception e) {
+						System.out.println("Failed to add pocketAccount to AccountPrimarilyOwns");
+						System.out.println(e);
+						return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;						
+					}				
+				} catch (Exception e) {
+					System.out.println("Failed to check if linkedwith account exists");
+					System.out.println(e);
+					return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;
+				}
+			} catch (Exception e) {
+				System.out.println("Failed to check if PocketAccount already exists");
+				System.out.println(e);
+				return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+			}
+		} catch (Exception e) {
+			System.out.println("getStatement() failed");
+			System.out.println(e);
+			return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+		}
+		System.out.println("Successfully created new Pocket account.");
+		return "0 " + id + " POCKET " + initialTopUp + " " + tin;
 	}
 
 	/**
@@ -606,8 +732,37 @@ public class App implements Testable
 	 */
 	@Override
 	public String listClosedAccounts(){
-		//get all accountIDs with true for customer bool and print
-		return "0 it works!";
+		//get all accountIDs which are closed and print
+		//includes pocket accounts
+		//return "0" if where are no closed accounts
+		String result = "0";
+
+		try {
+			Statement stmt = _connection.createStatement();
+			try {
+				String sql = "SELECT accountID " + 
+								"FROM AccountPrimarilyOwns " +
+								"WHERE isClosed = 1";
+				ResultSet rs = stmt.executeQuery(sql);
+				if(rs != null){
+					return result;
+				}
+				while(rs.next()){
+					result += rs.getString("accountID");
+					result += "\n";
+				}
+				// return result;
+			} catch (Exception e) {
+				System.out.println("Failed to select accountID from AccountPrimarilyOwns");
+				System.out.println(e);
+				return "1";
+			}
+		} catch (Exception e) {
+			System.out.println("Failed to create statement");
+			System.out.println(e);
+			return "1";
+		}
+		return result;
 	}
 
 
