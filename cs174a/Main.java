@@ -33,12 +33,15 @@ public class Main
 			app.dropTables();
 			r = app.createTables();
 			r = app.setDate(4000, 2, 18);
-			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1234", 100.00, "4321", "Bob", "66 DP");
-			r = app.createPocketAccount("1", "1234", 10.0, "4321");
+			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
+			r = app.createPocketAccount("1", "1234", 100.0, "4321");
+			r = app.createPocketAccount("2", "1234", 100.0, "4321");
 			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
 			r = app.deposit("1234",1000.00);
-			r = app.showBalance("1234");
 			r = app.topUp("1", 200.00);
+			r = app.topUp("2", 100.00);
+			r = app.payFriend("1","2",50);
+			r = app.listClosedAccounts();
 			System.out.println(r);
 		}
 	}

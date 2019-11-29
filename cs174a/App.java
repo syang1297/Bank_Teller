@@ -1060,38 +1060,54 @@ public class App implements Testable
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if from accountID exists and is pocket account...");
-				String sql = "SELECT accountID " +
+				System.out.println("Checking if from accountIDs exists and are pocket account...");
+				String sql = "SELECT * " +
 								"FROM PocketAccountLinkedWith";
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
-					int id = rs.getInt("accountID");
+					int id = rs.getInt("aID");
 					String ID = Integer.toString(id);
-					if(ID.equals(fromID)){
+					if(ID.equals(from)){
 						pocketFromExists = true;
 						fromid = id;
 						fromID = ID;
 						fromFeePaid = rs.getInt("feePaid");
-						fromBalance = rs.getDouble("balance");
 					}
-					if(ID.equals(toID)){
+					if(ID.equals(to)){
 						pocketToExists = true;
 						toid = id;
 						toID = ID;
 						toFeePaid = rs.getInt("feePaid");
+					}
+				}
+				System.out.println("Getting pocket account balances...");
+				sql = "SELECT * " +
+								"FROM AccountPrimarilyOwns";
+				rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					int id = rs.getInt("accountID");
+					String ID = Integer.toString(id);
+					if(ID.equals(fromID)){
+						fromBalance = rs.getDouble("balance");
+					}
+					if(ID.equals(toID)){
 						toBalance = rs.getDouble("balance");
 					}
 				}
+				
 				if(pocketFromExists == false || pocketToExists == false){
+					System.out.println("Pocket accounts dont exist.");
 					rs.close();
 					return "1";
 				}
+				System.out.println("Pocket accounts exist.");
 				if(toFeePaid == 0){
+					System.out.println("Paying to account fee...");
 					toBalance = amount + toBalance - 5;
 					try {
 						sql = "UPDATE PocketAccountLinkedWith " +
 						"SET feePaid = " + Integer.toString(1) + 
-						"WHERE accountID = " + toID;
+						"WHERE aID = " + toID;
 						stmt.executeUpdate(sql);						
 					} catch (Exception e) {
 						System.out.println("Failed to update toFeePaid");
@@ -1103,8 +1119,9 @@ public class App implements Testable
 				else{
 					toBalance = amount + toBalance;
 				}
+				System.out.println("Trying to update balance for to...");
 				try {
-					sql = "UPDATE PocketAccountLinkedWith " +
+					sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(toBalance) +
 							"WHERE accountID = " + toID;
 					stmt.executeUpdate(sql);
@@ -1114,11 +1131,12 @@ public class App implements Testable
 					return "1";
 				}
 				if(fromFeePaid == 0){
+					System.out.println("Paying from account fee...");
 					fromBalance = fromBalance - amount - 5;
 					try {
 						sql = "UPDATE PocketAccountLinkedWith " +
 						"SET feePaid = " + Integer.toString(1) + 
-						"WHERE accountID = " + fromID;
+						"WHERE aID = " + fromID;
 						stmt.executeUpdate(sql);						
 					} catch (Exception e) {
 						System.out.println("Failed to update fromFeePaid");
@@ -1128,10 +1146,11 @@ public class App implements Testable
 					//TODO: how to revert feePaid if updatebalance sql update fails
 				}
 				else{
-					fromBalance = amount + fromBalance;
+					fromBalance = fromBalance - amount;
 				}
+				System.out.println("Trying to update balance for from...");
 				try {
-					sql = "UPDATE PocketAccountLinkedWith " +
+					sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(fromBalance) +
 							"WHERE accountID = " + fromID;
 					stmt.executeUpdate(sql);
@@ -1150,6 +1169,7 @@ public class App implements Testable
 			System.out.println(e);
 			return "1";
 		}
+		System.out.println("Paid friend.");
 		return "0 " + Double.toString(fromBalance) + " " + Double.toString(toBalance);
 	}
 
@@ -1166,13 +1186,10 @@ public class App implements Testable
 		try {
 			Statement stmt = _connection.createStatement();
 			try {
-				String sql = "SELECT accountID " + 
+				String sql = "SELECT * " + 
 								"FROM AccountPrimarilyOwns " +
 								"WHERE isClosed = 1";
 				ResultSet rs = stmt.executeQuery(sql);
-				if(rs != null){
-					return result;
-				}
 				while(rs.next()){
 					result += rs.getString("accountID");
 					result += "\n";
