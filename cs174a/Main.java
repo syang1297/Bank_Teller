@@ -30,30 +30,44 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
-			// app.exampleAccessToDB();                // Example on how to connect to the DB.
-
-			// Example tests.  We'll overwrite your Main.main() function with our final tests.
+			//for testing app.java
+			// app.dropTables();
+			// r = app.createTables();
+			// r = app.setDate(4000, 2, 18);
+			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
+			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1233", 1000.00, "4321", "Bob", "66 DP");
+			// r = app.createPocketAccount("1", "1234", 100.0, "4321");
+			// r = app.createPocketAccount("2", "1234", 100.0, "4321");
+			// r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			// r = app.deposit("1234",1000.00);
+			// r = app.topUp("1", 200.00);
+			// r = app.topUp("2", 100.00);
+			// r = app.payFriend("1","2",50);
 			// r = app.listClosedAccounts();
-			// System.out.println( r );
-
-			// Another example test.
-			// r = app.createCheckingSavingsAccount( AccountType.INTEREST_CHECKING, "account1", 1234.56, "theTaxID", "Im YoungMing", "Known" );
-			// System.out.println( r );
-
-			
-			//System.out.println(r);
-			//r = app.dropTables();
-			//r = app.createTables();
-			//
-
-			//System.out.println(r);
-			//Date date = app.getDate();
-			//System.out.println(date);
-			r = app.dropTables();
-			app.createTables();
-			r = app.setDate(4000, 2, 20);
-			Helper helper= new Helper();
-			System.out.println(helper.getDate());
+			//for testing customer.java
+			Customer customer = new Customer(4321);
+			r = customer.setAddress("Bob house");
+			r = customer.getAddress();
+			System.out.println(r);
+			r = customer.setAddress("Shu house");
+			r = customer.getAddress();
+			System.out.println(r);
+			r = Integer.toString(customer.getPin());
+			System.out.println(r);
+			r = customer.setPin(8888);
+			r = Integer.toString(customer.getPin());
+			System.out.println(r);
+			r = customer.setName("Bob");
+			r = customer.getName();
+			System.out.println(r);
+			r = customer.setName("Shu");
+			r = customer.getName();
+			System.out.println(r);
+			List<Integer> res=customer.getAccountIDs(customer.getTaxID(),AccountType.STUDENT_CHECKING);
+			for(int i =0;i<res.size();i++){
+				System.out.println("AccountID "+Integer.toString(i)+": "+res.get(i));
+			}
+			System.out.println(customer.acctBelongsToCustomer(1234,4321,AccountType.STUDENT_CHECKING));
 		}
 	}
 	//!### FINALIZAMOS
