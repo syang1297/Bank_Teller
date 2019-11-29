@@ -707,7 +707,7 @@ public class App implements Testable
 							try {
 								System.out.println("Adding new relation to Owns table...");
 								sql = "INSERT INTO Owns " + 
-										"VALUES (" + accountId + ", " + tin + ", 0"+")";xs
+										"VALUES (" + accountId + ", " + tin + ", 0"+")";
 								stmt.executeQuery(sql);
 							} catch (Exception e) {
 								System.out.println("Failed to add customer to Owns table");
@@ -766,7 +766,7 @@ public class App implements Testable
 			Statement stmt = _connection.createStatement();
 			try {
 				System.out.println("Checking if accountID exists...");
-				String sql = "SELECT accountID " +
+				String sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
@@ -781,11 +781,13 @@ public class App implements Testable
 				}
 				// rs.close();
 				if(accountExists == false){
+					System.out.println("Account doesn't exist");
 					rs.close();
 					return "1";
 				}
 				else{
-					isClosed = rs.getInt(isClosed);
+					System.out.println("Account exists");
+					isClosed = rs.getInt("isClosed");
 					if(isClosed == 1){
 						rs.close();
 						return "1";
@@ -796,8 +798,10 @@ public class App implements Testable
 					if(amount <= 0.00){
 						System.out.println("Cannot deposit negative amount");
 						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
-						return result;					}
+						return result;					
+					}
 					try {
+						System.out.println("Updating balances...");
 						newBalance = oldBalance + amount;
 						sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(newBalance) + 
@@ -821,6 +825,8 @@ public class App implements Testable
 			System.out.println(e);
 			return result;
 		}
+		System.out.println("Added deposit.");
+		helper.addTransaction(amount,TransactionType.DEPOSIT,0,accountId);
 		return result;
 	}
 

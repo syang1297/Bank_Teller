@@ -36,6 +36,7 @@ public class Main
 			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1234", 100.00, "4321", "Bob", "66 DP");
 			r = app.createPocketAccount("1", "1234", 10.0, "4321");
 			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			r = app.deposit("1234",1000.00);
 			System.out.println(r);
 		}
 	}
