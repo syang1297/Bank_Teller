@@ -188,7 +188,7 @@ public class Customer {
              return "1";
          }
     }
-
+    //TODO: checking and savings are not the same
     //get accounts associated with customers taxID and the account type
     List<Integer> getAccountIDs(int taxID, AccountType type){
         List<Integer> accountIDs = new ArrayList<Integer>();
