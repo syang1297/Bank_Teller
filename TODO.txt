@@ -1,0 +1,12 @@
+-fix TODOs in functions
+-link w/ GUI
+-implement testable and class functions
+-test all functions
+-make slides demo
+-make sure all integrity constraints are taken care of
+-check that tables are updating correctly
+-make sure code compiles w. the scripts given by TAs
+-check that return string amounts at %.2f
+-check that error return strings are correct (esp the ones w/ account info)
+-when to close pocket accounts and what to do with them in that case
+-putting money from pocket back to linked account
