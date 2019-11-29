@@ -10,3 +10,4 @@
 -check that error return strings are correct (esp the ones w/ account info)
 -when to close pocket accounts and what to do with them in that case
 -putting money from pocket back to linked account
+-switch primary owner function
