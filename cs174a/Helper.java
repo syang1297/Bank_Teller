@@ -26,13 +26,6 @@ public class Helper{
         ACCRUEINTEREST
     }
     
-    // enum AccountType {
-	// 	STUDENT_CHECKING,
-	// 	INTEREST_CHECKING,
-	// 	SAVINGS,
-	// 	POCKET
-    // }
-    
     private OracleConnection _connection;
     Helper(){
         final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
@@ -62,6 +55,10 @@ public class Helper{
 	}
     
     //add transaction function
+
+    OracleConnection getConnection(){
+        return this._connection;
+    }
 
     String getDate(){
         String res="";
