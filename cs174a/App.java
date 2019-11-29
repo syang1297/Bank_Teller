@@ -633,6 +633,8 @@ public class App implements Testable
 			return "1 " + id + " POCKET " + initialTopUp + " " + tin;
 		}
 		System.out.println("Successfully created new Pocket account.");
+		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, id);
+		helper.addTransaction(initialTopUp, TransactionType.WITHDRAWAL, 0, linkedId);
 		return "0 " + id + " POCKET " + initialTopUp + " " + tin;
 	}
 
