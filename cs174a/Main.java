@@ -37,6 +37,7 @@ public class Main
 			r = app.createPocketAccount("1", "1234", 10.0, "4321");
 			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
 			r = app.deposit("1234",1000.00);
+			r = app.showBalance("1234");
 			System.out.println(r);
 		}
 	}

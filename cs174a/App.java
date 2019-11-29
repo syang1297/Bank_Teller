@@ -850,7 +850,7 @@ public class App implements Testable
 			Statement stmt = _connection.createStatement();
 			try {
 				System.out.println("Checking if accountID exists...");
-				String sql = "SELECT accountID " +
+				String sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
