@@ -233,7 +233,7 @@ public class Customer {
                     try {
                         sql = "SELECT * " +
                                 "FROM PocketAccountLinkedWith " +
-                                "WHERE taxID = " + Integer.toString(taxID);
+                                "WHERE tID = " + Integer.toString(taxID);
                         ResultSet rsss = stmt.executeQuery(sql);
                         while(rsss.next()){
                             accountIDs.add(rsss.getInt("aID"));

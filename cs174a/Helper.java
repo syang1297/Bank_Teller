@@ -98,6 +98,7 @@ public class Helper{
     }
     //checkNo = 0 means there's no check associated
     //return 0 means it failed (possibly due to incorrect accounttype with transaction type);
+    //TODO: transactions that involve two accounts, how to keep track of the other accounts
     String addTransaction(double amount, TransactionType transType, int checkNo,
                             String aID){
         String transactionID = this.newTransactionID();
