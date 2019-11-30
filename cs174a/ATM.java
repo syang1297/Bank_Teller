@@ -183,6 +183,7 @@ public class ATM {
                             "SET balance = " + Double.toString(newBalance) + 
                             "WHERE accountId = " + accountID;
                 stmt.executeUpdate(sql);
+                helper.addTransaction(oldBalance, TransactionType.PURCHASE, 0, accountID);
                 return "0 " + balance + " " + Double.toString(newBalance);
                 //TODO: isClosed helper
                 
@@ -197,14 +198,91 @@ public class ATM {
         }
     }
 
-    //TODO: check both accounts belongs to customer
+    //TODO: check both accounts belongs to customer and add fee
     //check that both accounts are either checkings or savings
     //check amount is able to be moved and mark account as closed if it needs to be
     //also make sure init account is not marked for closed
     //subtract amount from accountID and add to destination account
-    //return is successful or not successful
-    boolean transfer(int accountID, int destinationID, double amount){
-        return false;
+    //return 1 if successful or 0 if not successful
+    String transfer(int accountID, int destinationID, double amount){
+        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
+        boolean student1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
+        boolean checking1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
+        boolean saving1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.SAVINGS);
+        Double fromBalance1, fromBalance2, toBalance1, toBalance2;
+        int isClosed1, isClosed2;
+        if(amount <= 0.0){
+            System.out.println("Cannot transfer negative amount");
+            return "1";
+        }
+        if(student0 || checking0 || saving0){
+            if(student1 || checking1 || saving1){
+                try {
+                    Statement stmt = helper.getConnection().getStatement();
+                    try {
+                        //accountID
+                        String sql = "SELECT * " +
+                                    "FROM AccountPrimarilyOwns " +
+                                    "WHERE accountId = " + Integer.toString(accountID);
+                        ResultSet rs = stmt.executeQuery(sql);
+                        while(rs.next()){
+                            fromBalance1 = rs.getDouble("balance");
+                            isClosed1 = rs.getInt("isClosed");
+                        }
+                        fromBalance2 = fromBalance1 - amount;
+                        if(isClosed1 == 1){
+                            System.out.println("From account already marked for closed... Can't transer");
+                            return "1";
+                        }
+                        //check if destinationID isClosed
+                        sql = "SELECT * " +
+                            "FROM AccountPrimarilyOwns " +
+                            "WHERE accountId = " + Integer.toString(destinationID);
+                        rs = stmt.executeQuery(sql);
+                        while(rs.next()){
+                            toBalance1 = rs.getDouble("balance");
+                            isClosed2 = rs.getInt("isClosed");
+                        }
+                        if(isClosed2 == 1){
+                            System.out.println("Destination account already marked for closed... Can't transer");
+                            return "1";
+                        }
+                        if(fromBalance2 <= 0){
+                            System.out.println("Can't transfer bc from account will have negative/0 balance");
+                            return "1";
+                        }
+                        else if(fromBalance2 <= 0.01){
+                            sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1 " +
+                                    "WHERE accountId = " + Integer.toString(accountID);
+                            stmt.executeUpdate(sql);
+                        }
+                        sql = "UPDATE AccountPrimarilyOwns " +
+                                "SET balance = " + Double.toString(fromBalance2) +
+                                "WHERE accountId = " + Integer.toString(accountID);
+                        stmt.executeUpdate(sql);
+                        //destinationID
+                        toBalance2 = toBalance1 + amount;
+                        sql = "UPDATE AccountPrimarilyOwns " +
+                                "SET balance = " + Double.toString(toBalance2) +
+                                "WHERE accountId = " + Integer.toString(destinationID);
+                        stmt.executeUpdate(sql);
+                        return "0";
+                    } catch (Exception e) {
+                        System.out.println("Failed to add withdraw to tables");
+                        System.out.println(e);
+                        return "1";
+                    }
+                } catch (Exception e) {
+                    System.out.println("Failed to create statement");
+                    System.out.println(e);
+                    return "1";
+                }
+            }
+        }
+        return "1";
     }
 
     //move amount from pocket account into account
