@@ -298,8 +298,80 @@ public class ATM {
     //apply 2% fee
     //subtracts amount from accountID and adds to destinationId
     //close accountID if necessary
-    boolean wire(int accountID, int destinationID, double amount){
-        return false;
+    String wire(int accountID, int destinationID, double amount){
+        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
+        Double fromBalance1, fromBalance2, toBalance1, toBalance2;
+        int isClosed1, isClosed2;
+        if(amount <= 0.0){
+            System.out.println("Cannot wire negative amount");
+            return "1";
+        }
+        if(student0 || checking0 || saving0){
+                try {
+                    Statement stmt = helper.getConnection().getStatement();
+                    try {
+                        //accountID
+                        String sql = "SELECT * " +
+                                    "FROM AccountPrimarilyOwns " +
+                                    "WHERE accountId = " + Integer.toString(accountID);
+                        ResultSet rs = stmt.executeQuery(sql);
+                        while(rs.next()){
+                            fromBalance1 = rs.getDouble("balance");
+                            isClosed1 = rs.getInt("isClosed");
+                        }
+                        fromBalance2 = fromBalance1 - amount;
+                        if(isClosed1 == 1){
+                            System.out.println("From account already marked for closed... Can't transer");
+                            return "1";
+                        }
+                        //check if destinationID isClosed
+                        sql = "SELECT * " +
+                            "FROM AccountPrimarilyOwns " +
+                            "WHERE accountId = " + Integer.toString(destinationID);
+                        rs = stmt.executeQuery(sql);
+                        while(rs.next()){
+                            toBalance1 = rs.getDouble("balance");
+                            isClosed2 = rs.getInt("isClosed");
+                        }
+                        if(isClosed2 == 1){
+                            System.out.println("Destination account already marked for closed... Can't transer");
+                            return "1";
+                        }
+                        if(fromBalance2 <= 0){
+                            System.out.println("Can't transfer bc from account will have negative/0 balance");
+                            return "1";
+                        }
+                        else if(fromBalance2 <= 0.01){
+                            sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1 " +
+                                    "WHERE accountId = " + Integer.toString(accountID);
+                            stmt.executeUpdate(sql);
+                        }
+                        sql = "UPDATE AccountPrimarilyOwns " +
+                                "SET balance = " + Double.toString(fromBalance2) +
+                                "WHERE accountId = " + Integer.toString(accountID);
+                        stmt.executeUpdate(sql);
+                        //destinationID
+                        toBalance2 = (toBalance1 + amount) * .98;
+                        sql = "UPDATE AccountPrimarilyOwns " +
+                                "SET balance = " + Double.toString(toBalance2) +
+                                "WHERE accountId = " + Integer.toString(destinationID);
+                        stmt.executeUpdate(sql);
+                        return "0";
+                    } catch (Exception e) {
+                        System.out.println("Failed to add withdraw to tables");
+                        System.out.println(e);
+                        return "1";
+                    }
+                } catch (Exception e) {
+                    System.out.println("Failed to create statement");
+                    System.out.println(e);
+                    return "1";
+                }
+        }
+        return "1";
     }
 
     //make sure both accounts are pocket accounts or else return false
