@@ -806,6 +806,9 @@ public class App implements Testable
 						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
 						return result;					
 					}
+					if(acctType.equals("POCKET")){
+						System.out.println("Cannot")
+					}
 					try {
 						System.out.println("Updating balances...");
 						newBalance = oldBalance + amount;
