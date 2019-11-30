@@ -460,14 +460,15 @@ public class App implements Testable
 								"WHERE taxID = " + tin      ;
 				ResultSet rs = stmt.executeQuery(sql);
 				if (rs.next() == false) {
-					//TODO: HASHING FUNCTION FOR PIN
+					//give newly made customer a default pin of 1234
 					try {
 						System.out.println("Inserting new customer since taxID doesn't exist");
 						if(address == null || name == null){
 							System.out.println("Address and Name cannot be null because we are inserting a new customer");
 							return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 						}
-						String sqlValues = tin + ",'" + address + "',1234,'" + name+"'";
+						String hashedPin = helper.hashPin(1234);
+						String sqlValues = tin + ",'" + address + "','"+ hashedPin +"','" + name+"'";
 						sql = "INSERT INTO Customer " +
 								"VALUES (" + sqlValues + ")";
 
@@ -699,10 +700,11 @@ public class App implements Testable
 						}
 						rs.close();
 						try {
-							//TODO: create pin for customer
+							//Give newly made customer default pin of 1234
+							String hashedPin = helper.hashPin(1234);
 							System.out.println("Adding new customer to Customer table...");
 							sql = "INSERT INTO Customer " + 
-									"VALUES (" + tin + ",'" + address + "',1234,'" + name+"')";
+									"VALUES (" + tin + ",'" + address + "','" + hashedPin + "','" + name+"')";
 							stmt.executeQuery(sql);
 							try {
 								System.out.println("Adding new relation to Owns table...");

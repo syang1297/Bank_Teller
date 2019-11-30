@@ -97,7 +97,7 @@ public class Customer {
                 ResultSet rs = stmt.executeQuery(sql);
                  while(rs.next()){
                     String hashedPin = rs.getString("pin");
-                    res = unhashPin(hashedPin);
+                    res = helper.unhashPin(hashedPin);
                 }
                 rs.close();
                 System.out.println("Got customer pin.");
@@ -122,7 +122,7 @@ public class Customer {
         if(pin.length() != 4){
             return "1";
         }
-        String hashedPin = hashPin(unhashedPin);
+        String hashedPin = helper.hashPin(unhashedPin);
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -269,24 +269,6 @@ public class Customer {
         return false;
     }
 
-    String hashPin(int pin){
-        String res="";
-        while(pin>0){
-            int temp=pin%10;
-            temp=temp+33;
-            res=Character.toString ((char) temp)+res;
-            pin=pin/10;
-        }
-        return res;
-    }
-
-    int unhashPin(String hashedPin){
-        String res="";
-        for(int i=0;i<4;i++){
-            res=res+Integer.toString((int)hashedPin.charAt(i)-33);
-        }
-
-        return Integer.parseInt(res);
-    }
+    
 
 }

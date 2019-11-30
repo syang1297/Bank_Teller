@@ -208,5 +208,24 @@ public class Helper{
     boolean accountIdExists(String accountID, String table){
         return false;
     }
+    String hashPin(int pin){
+        String res="";
+        while(pin>0){
+            int temp=pin%10;
+            temp=temp+33;
+            res=Character.toString ((char) temp)+res;
+            pin=pin/10;
+        }
+        return res;
+    }
+
+    int unhashPin(String hashedPin){
+        String res="";
+        for(int i=0;i<4;i++){
+            res=res+Integer.toString((int)hashedPin.charAt(i)-33);
+        }
+
+        return Integer.parseInt(res);
+    }
 
 }
