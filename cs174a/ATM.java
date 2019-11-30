@@ -289,7 +289,7 @@ public class ATM {
     //make sure account is the one linked w/ that pocket account
     //check amount is not more than pocket account balance
     //apply 3% fee
-    //TODO: what happens if pocket balance = 0
+    //TODO: what happens if pocket balance = 0, add to transaction table
     String collect(int accountID, int pocketID, double amount){
         boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
         boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
