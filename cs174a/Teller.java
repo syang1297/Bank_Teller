@@ -5,6 +5,11 @@ import cs174a.Testable.*;
 import cs174a.App.*;
 import java.util.*;
 
+import java.sql.ResultSet;
+import java.sql.Statement;
+import oracle.jdbc.OracleConnection;
+
+
 public class Teller {
     private Customer customer;
     private Helper helper;
@@ -69,8 +74,24 @@ public class Teller {
     }
 
     //delete from db accounts that have been closed
-    void deleteClosedAccounts(){
-        return;
+    //should only be called at the end of the month
+    String deleteClosedAccounts(){
+        try {
+            Statement stmt = helper.getConnection().createStatement();
+            try {
+                String sql = "DELETE FROM AccountPrimarilyOwns " +
+                            "WHERE isClosed = 1";
+                stmt.executeUpdate(sql);
+            } catch (Exception e) {
+                System.out.println("Failed to deleteClosedAccounts()");
+                System.out.println(e);
+                return "1";
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+            return "1";
+        }
     }
 
     //delete customers from db with no accounts
@@ -89,6 +110,7 @@ public class Teller {
     }
 
     //add function to check if a customer owns the account
+    //done in customer class
     boolean customerOwnsAccount(String tin, String id){
         
         return false;
