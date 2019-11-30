@@ -291,7 +291,94 @@ public class ATM {
     //apply 3% fee
     //TODO: what happens if pocket balance = 0
     String collect(int accountID, int pocketID, double amount){
-        return false;
+        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
+        boolean pocket = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.POCKET);
+        Double fromBalance1, fromBalance2, pocketBalance1, pocketBalance2;
+        int isClosed1;
+        boolean isLinked;
+        if(pocket){
+            if(student0 || checking0 || saving0){
+                try {
+                    Statement stmt = helper.getConnection().createStatement();
+                    //check accounts are linked
+                    try {
+                        String sql = "SELECT * " +
+                                        "FROM PocketAccountLinkedWith ";
+                        ResultSet rs = stmt.executeQuery(sql);
+                        while(rs.next()){
+                            if(Integer.toString(accountID).equals(rs.getInt("accountID"))){
+                                int linkedId = rs.getInt("otherAccountID");
+                                if(linkedId != pocketID){
+                                    System.out.println("PocketID is not linked with accountID");
+                                    return "1";
+                                }
+                                sql = "SELECT * " +
+                                        "FROM AccountPrimarilyOwns ";
+                                rs = stmt.executeQuery(sql);
+                                while(rs.next()){
+                                    if(Integer.toString(accountID).equals(rs.getInt("accountID"))){
+                                        isClosed1 = rs.getInt("isClosed");
+                                        fromBalance1 = rs.getDouble("balance");
+                                        break;
+                                    }
+                                }
+                                if(isClosed1 == 1){
+                                    System.out.println("Cannot collect because account marked for isClosed");
+                                    return "1";
+                                }
+                                if(amount <= 0.0){
+                                    System.out.println("Cannot collect negative balance");
+                                    return "1";
+                                }
+                            }
+                        }
+                        //check amount is less than pocket account balance
+                        try {
+                            sql = "SELECT * " +
+                                    "FROM AccountPrimarilyOwns ";
+                            rs = stmt.executeQuery(sql);
+                            while(rs.next()){
+                                if(Integer.toString(pocketID).equals(rs.getInt("accountID"))){
+                                    pocketBalance1 = rs.getDouble("balance");
+                                    break;
+                                }
+                            }
+                            if(pocketBalance1 < amount){
+                                System.out.println("Can't collect bc amount is greater than pocket account balance");
+                                return "1";
+                            }
+                            pocketBalance2 = pocketBalance1 - amount;
+                            fromBalance2 = fromBalance1 + (amount * .97);
+                            //update balances for pocket and account
+                            sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET balance = " + Double.toString(pocketBalance2) +
+                                    " WHERE accountId = " + Integer.toString(pocketID);
+                            stmt.executeUpdate(sql);
+                            sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET balance = " + Double.toString(fromBalance2) +
+                                    " WHERE accountId = " + Integer.toString(accountID);
+                            stmt.executeUpdate(sql);
+                            return "0";
+                        } catch (Exception e) {
+                            System.out.println("Failed to update balance for pocket or from account");
+                            System.out.println(e);
+                            return "1";
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Failed to check if accounts are linked");
+                        System.out.println(e);
+                        return "1";
+                    }
+                } catch (Exception e) {
+                    System.out.println("Failed to create statement");
+                    System.out.println(e);
+                    return "1";
+                }
+            }
+        }
+        return "1";
     }
 
     //TODOL make sure current customer owns accountID and both accounts are checkings/savings, add to transaction table
@@ -354,7 +441,7 @@ public class ATM {
                                 "WHERE accountId = " + Integer.toString(accountID);
                         stmt.executeUpdate(sql);
                         //destinationID
-                        toBalance2 = (toBalance1 + amount) * .98;
+                        toBalance2 = toBalance1 + (amount * .98);
                         sql = "UPDATE AccountPrimarilyOwns " +
                                 "SET balance = " + Double.toString(toBalance2) +
                                 "WHERE accountId = " + Integer.toString(destinationID);
