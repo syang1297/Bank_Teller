@@ -27,7 +27,7 @@ public class ATM {
     //update account balance
     //check accountID belongs to customer and that it's checkings or savings account
     void deposit(double balance, int accountID){
-
+        return;
     }
 
     //checks accountID is for a pocket account
@@ -41,12 +41,96 @@ public class ATM {
     }
 
     //subtracts amount from account associated w/ accountID
-    //check that there is enough money in the account
-    //mark account for closing if it's less than $.01
-    //check accountID belongs to customer and account is checkings or savings
-    boolean withdraw(int accountID, double amount){
-        return false;
-    }
+    //TODO: check accountID belongs to customer and account is checkings or savings
+    /* returns 1 if failed... if success, returns 0 oldBalance newBalance */
+    String withdraw(int accountID, double amount){
+        int aid = 0;
+		String dbID = "";
+		boolean accountExists = false;
+		double oldBalance = 0.00;
+		double newBalance = 0.00;
+		String acctType = "";
+		String result = "1 ";
+		int isClosed = 0;
+		try{
+			Statement stmt = helper.getConnection().createStatement();
+			try {
+				System.out.println("Checking if accountID exists...");
+				String sql = "SELECT * " +
+								"FROM AccountPrimarilyOwns";
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					aid = rs.getInt("accountID");
+					dbID = Integer.toString(aid);
+					if(accountID.equals(dbID)){
+						accountExists = true;
+						break;
+					}
+				}
+				if(accountExists == false){
+					System.out.println("Account doesn't exist");
+					rs.close();
+					return "1";
+				}
+				else{
+					System.out.println("Account exists");
+					isClosed = rs.getInt("isClosed");
+					if(isClosed == 1){
+						rs.close();
+						return "1";
+					}
+					oldBalance = rs.getDouble("balance");
+					acctType = rs.getString("accountType");
+					rs.close();
+					if(amount <= 0.00){
+						System.out.println("Cannot withdraw negative amount");
+						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						return result;					
+					}
+					if(acctType.equals("POCKET")){
+						System.out.println("Cannot withdraw from pocket");
+					}
+					try {
+						System.out.println("Updating balances...");
+                        newBalance = oldBalance - amount;
+                        if(newBalance < 0.0){
+                            System.out.println("Cannot withdraw more money than there is.")
+                            return "1";
+                        }
+						sql = "UPDATE AccountPrimarilyOwns " +
+							"SET balance = " + Double.toString(newBalance) + 
+							" " + "WHERE accountId = " + dbID;
+                        stmt.executeUpdate(sql);
+                        if(newBalance <= 0.01){
+                            sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1 " +
+                                    "WHERE accountId = " + dbID;
+                            stmt.executeUpdate(sql); 
+                        }
+						result = "0 " + Double.toString(oldBalance) + " " + Double.toString(newBalance);
+					} catch (Exception e) {
+						System.out.println("Failed to deposit and add new balance to table");
+						System.out.println(e);
+						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						return result;
+					}
+				}
+			}catch (Exception e){
+				System.out.println("Failed to check if account exists");
+				System.out.println(e);
+				return result;
+			}
+		}catch (Exception e){
+			System.out.println("Failed to create statement in showBalance");
+			System.out.println(e);
+			return result;
+		}
+		System.out.println("Withdrew from account");
+		helper.addTransaction(amount,TransactionType.WITHDRAW,0,accountId);
+		return result;
+	}
+
+	
 
     //check accountID belongs to customer and is a pocket account
     //subtract amount from account balance
