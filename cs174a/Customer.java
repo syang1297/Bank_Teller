@@ -96,7 +96,7 @@ public class Customer {
                             "WHERE taxID = " + Integer.toString(this.taxID);
                 ResultSet rs = stmt.executeQuery(sql);
                  while(rs.next()){
-                    int hashedPin = rs.getInt("pin");
+                    String hashedPin = rs.getString("pin");
                     res = unhashPin(hashedPin);
                 }
                 rs.close();
@@ -122,13 +122,13 @@ public class Customer {
         if(pin.length() != 4){
             return "1";
         }
-        int hashedPin = hashPin(unhashedPin);
+        String hashedPin = hashPin(unhashedPin);
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
                 String sql = "UPDATE Customer " +
-                            "SET pin = " + Integer.toString(hashedPin) + 
-                            "WHERE taxID = " + Integer.toString(this.taxID);
+                            "SET pin = '" + hashedPin + 
+                            "' WHERE taxID = " + Integer.toString(this.taxID);
                 stmt.executeUpdate(sql);
                 return "0";
             } catch (Exception e) {
@@ -269,12 +269,24 @@ public class Customer {
         return false;
     }
 
-    int hashPin(int pin){
-        return 1234;
+    String hashPin(int pin){
+        String res="";
+        while(pin>0){
+            int temp=pin%10;
+            temp=temp+33;
+            res=Character.toString ((char) temp)+res;
+            pin=pin/10;
+        }
+        return res;
     }
 
-    int unhashPin(int hashedpin){
-        return 1234;
+    int unhashPin(String hashedPin){
+        String res="";
+        for(int i=0;i<4;i++){
+            res=res+Integer.toString((int)hashedPin.charAt(i)-33);
+        }
+
+        return Integer.parseInt(res);
     }
 
 }

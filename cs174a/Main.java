@@ -68,6 +68,8 @@ public class Main
 				System.out.println("AccountID "+Integer.toString(i)+": "+res.get(i));
 			}
 			System.out.println(customer.acctBelongsToCustomer(1234,4321,AccountType.STUDENT_CHECKING));
+			System.out.println(customer.hashPin(1234));
+			System.out.println(customer.unhashPin("\"#$%"));
 		}
 	}
 	//!### FINALIZAMOS

@@ -200,7 +200,7 @@ public class App implements Testable
 				String sql = "CREATE TABLE Customer(" + 
 								"taxID INTEGER," +
 								"addr VARCHAR (32)," + 
-								"pin INTEGER," + 
+								"pin VARCHAR(4)," + 
 								"name VARCHAR(32)," + 
 								"PRIMARY KEY (taxID))";
 				
