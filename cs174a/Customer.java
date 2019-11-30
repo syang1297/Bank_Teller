@@ -194,7 +194,6 @@ public class Customer {
         List<Integer> accountIDs = new ArrayList<Integer>();
         String pocket = "POCKET";
         String sql = "";
-        // ResultSet rs;
         try {
             Statement stmt = helper.getConnection().createStatement();
             switch(type){
