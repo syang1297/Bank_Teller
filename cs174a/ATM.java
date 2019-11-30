@@ -6,7 +6,6 @@ import cs174a.Testable.*;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
-import oracle.jdbc.OracleConnection;
 
 
 public class ATM {
@@ -14,19 +13,20 @@ public class ATM {
     private Customer customer;
     private Helper helper;
     private App app;
-
-    ATM(){
+    //init atm with taxID argument for testing sake rn
+    ATM(int taxID){
         //TODO: how should we init customer?
-        customer = new Customer(1234);
+        customer = new Customer(taxID);
         helper = new Helper();
         app = new App();
     }
 
     //takes inserted pin and checks it against customer's getpin()
     boolean verifyPin(int pin){
-        if(customer.hashPin(pin) == customer.getPin()){
+        if(pin == customer.getPin()){
             return true;
         }
+        System.out.println(customer.getPin());
         return false;
     }
 
@@ -102,7 +102,7 @@ public class ATM {
 						System.out.println("Updating balances...");
                         newBalance = oldBalance - amount;
                         if(newBalance < 0.0){
-                            System.out.println("Cannot withdraw more money than there is.")
+                            System.out.println("Cannot withdraw more money than there is.");
                             return "1";
                         }
 						sql = "UPDATE AccountPrimarilyOwns " +
@@ -211,8 +211,8 @@ public class ATM {
         boolean checking1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
         boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
         boolean saving1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.SAVINGS);
-        Double fromBalance1, fromBalance2, toBalance1, toBalance2;
-        int isClosed1, isClosed2;
+        Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2 =0.0;
+        int isClosed1=0, isClosed2=0;
         if(amount <= 0.0){
             System.out.println("Cannot transfer negative amount");
             return "1";
@@ -220,7 +220,7 @@ public class ATM {
         if(student0 || checking0 || saving0){
             if(student1 || checking1 || saving1){
                 try {
-                    Statement stmt = helper.getConnection().getStatement();
+                    Statement stmt = helper.getConnection().createStatement();
                     try {
                         //accountID
                         String sql = "SELECT * " +
@@ -295,9 +295,9 @@ public class ATM {
         boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
         boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
         boolean pocket = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.POCKET);
-        Double fromBalance1, fromBalance2, pocketBalance1, pocketBalance2;
-        int isClosed1;
-        boolean isLinked;
+        Double fromBalance1=0.0, fromBalance2=0.0, pocketBalance1=0.0, pocketBalance2=0.0;
+        int isClosed1=0;
+        boolean isLinked=false;
         if(pocket){
             if(student0 || checking0 || saving0){
                 try {
@@ -389,15 +389,15 @@ public class ATM {
         boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
         boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
         boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
-        Double fromBalance1, fromBalance2, toBalance1, toBalance2;
-        int isClosed1, isClosed2;
+        Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2=0.0;
+        int isClosed1=0, isClosed2=0;
         if(amount <= 0.0){
             System.out.println("Cannot wire negative amount");
             return "1";
         }
         if(student0 || checking0 || saving0){
                 try {
-                    Statement stmt = helper.getConnection().getStatement();
+                    Statement stmt = helper.getConnection().createStatement();
                     try {
                         //accountID
                         String sql = "SELECT * " +

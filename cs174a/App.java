@@ -802,12 +802,12 @@ public class App implements Testable
 					acctType = rs.getString("accountType");
 					rs.close();
 					if(amount <= 0.00){
-						System.out.println("Cannot deposit negative amount");
+						System.out.println("Cannot deposit negative amount.");
 						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
 						return result;					
 					}
 					if(acctType.equals("POCKET")){
-						System.out.println("Cannot")
+						System.out.println("Cannot deposit into pocket.");
 					}
 					try {
 						System.out.println("Updating balances...");

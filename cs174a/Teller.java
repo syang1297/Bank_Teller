@@ -92,6 +92,7 @@ public class Teller {
             System.out.println(e);
             return "1";
         }
+        return "0";
     }
 
     //delete customers from db with no accounts

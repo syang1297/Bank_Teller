@@ -54,7 +54,6 @@ public class Helper{
 		}
 	}
     
-    //add transaction function
 
     OracleConnection getConnection(){
         return this._connection;

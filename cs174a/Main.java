@@ -71,6 +71,9 @@ public class Main
 			// System.out.println(customer.acctBelongsToCustomer(1234,4321,AccountType.STUDENT_CHECKING));
 			// System.out.println(helper.hashPin(1234));
 			// System.out.println(helper.unhashPin("\"#$%"));
+			//for testing ATM
+			ATM atm = new ATM(1111);
+			System.out.println(atm.verifyPin(1717));
 		}
 	}
 	//!### FINALIZAMOS
