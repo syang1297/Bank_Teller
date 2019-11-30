@@ -143,7 +143,7 @@ public class ATM {
     //check accountID belongs to customer and is a pocket account
     //subtract amount from account balance
     //check if feepaid, if not, minus $5
-    //TODO: check if account belongs to customer
+    //TODO: check if account belongs to customer, add to Transaction table
     /* return 1 if failed, return 0 oldBalance newBalance if success*/
     String purchase(String accountID, double amount){
         try {
@@ -198,7 +198,7 @@ public class ATM {
         }
     }
 
-    //TODO: check both accounts belongs to customer and add fee
+    //TODO: check both accounts belongs to customer and add fee, add to transactiion table
     //check that both accounts are either checkings or savings
     //check amount is able to be moved and mark account as closed if it needs to be
     //also make sure init account is not marked for closed
@@ -290,11 +290,11 @@ public class ATM {
     //check amount is not more than pocket account balance
     //apply 3% fee
     //TODO: what happens if pocket balance = 0
-    boolean collect(int accountID, int pocketID, double amount){
+    String collect(int accountID, int pocketID, double amount){
         return false;
     }
 
-    //TODOL make sure current customer owns accountID and both accounts are checkings/savings
+    //TODOL make sure current customer owns accountID and both accounts are checkings/savings, add to transaction table
     //apply 2% fee
     //subtracts amount from accountID and adds to destinationId
     //close accountID if necessary
