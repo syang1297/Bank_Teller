@@ -2,16 +2,24 @@ package cs174a;
 
 import cs174a.Helper.*;
 import cs174a.Customer.*;
+import cs174a.Testable.*;
+
+import java.sql.ResultSet;
+import java.sql.Statement;
+import oracle.jdbc.OracleConnection;
+
 
 public class ATM {
 
     private Customer customer;
     private Helper helper;
+    private App app;
 
     ATM(){
         //TODO: how should we init customer?
         customer = new Customer(1234);
         helper = new Helper();
+        app = new App();
     }
 
     //takes inserted pin and checks it against customer's getpin()
@@ -43,7 +51,7 @@ public class ATM {
     //subtracts amount from account associated w/ accountID
     //TODO: check accountID belongs to customer and account is checkings or savings
     /* returns 1 if failed... if success, returns 0 oldBalance newBalance */
-    String withdraw(int accountID, double amount){
+    String withdraw(String accountID, double amount){
         int aid = 0;
 		String dbID = "";
 		boolean accountExists = false;
@@ -126,7 +134,7 @@ public class ATM {
 			return result;
 		}
 		System.out.println("Withdrew from account");
-		helper.addTransaction(amount,TransactionType.WITHDRAW,0,accountId);
+		helper.addTransaction(amount,TransactionType.WITHDRAWAL,0,accountID);
 		return result;
 	}
 
@@ -134,12 +142,62 @@ public class ATM {
 
     //check accountID belongs to customer and is a pocket account
     //subtract amount from account balance
-    //check if feepaid, if not add $5
-    boolean purchase(int accountID, double amount){
-        return false;
+    //check if feepaid, if not, minus $5
+    //TODO: check if account belongs to customer
+    /* return 1 if failed, return 0 oldBalance newBalance if success*/
+    String purchase(String accountID, double amount){
+        try {
+            Statement stmt = helper.getConnection().createStatement();
+            //checks if account belongs to customer and if it's a pocket account
+            int feePaid = 0;
+            if(customer.acctBelongsToCustomer(Integer.parseInt(accountID), customer.getTaxID(), AccountType.POCKET)){
+                if(amount <= 0.0){
+                    System.out.println("Cannot purchase using a negative amount");
+                    return "1";
+                }
+                String balance = app.showBalance(accountID);
+                Double oldBalance = Double.parseDouble(balance);
+                String sql = "SELECT * " + 
+                            "FROM PocketAccountLinkedWith";
+                ResultSet rs = stmt.executeQuery(sql);
+                while(rs.next()){
+                    int aid = rs.getInt("accountId");
+                    String dbID = Integer.toString(aid);
+                    if(accountID.equals(dbID)){
+                        feePaid = rs.getInt("feePaid");
+                    }
+                }
+                Double newBalance = oldBalance - amount;
+                if(feePaid == 0){
+                    newBalance -= 5;
+                    sql = "UPDATE AccountPrimarilyOwns " +
+                            "SET feePaid = " + Integer.toString(1) +
+                            "WHERE accountId = " + accountID;
+                    stmt.executeUpdate(sql);
+                }
+                if(newBalance <= 0 ){
+                    System.out.println("Purchase cannot be made bc not enough funds in pocket");
+                    return "1";
+                }
+                sql = "UPDATE AccountPrimarilyOwns " +
+                            "SET balance = " + Double.toString(newBalance) + 
+                            "WHERE accountId = " + accountID;
+                stmt.executeUpdate(sql);
+                return "0 " + balance + " " + Double.toString(newBalance);
+                //TODO: isClosed helper
+                
+            }
+            else{
+                return "1";
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement.");
+            System.out.println(e);
+            return "1";
+        }
     }
 
-    //check both accounts belongs to customer
+    //TODO: check both accounts belongs to customer
     //check that both accounts are either checkings or savings
     //check amount is able to be moved and mark account as closed if it needs to be
     //also make sure init account is not marked for closed
@@ -153,13 +211,15 @@ public class ATM {
     //make sure account is the one linked w/ that pocket account
     //check amount is not more than pocket account balance
     //apply 3% fee
+    //TODO: what happens if pocket balance = 0
     boolean collect(int accountID, int pocketID, double amount){
         return false;
     }
 
-    //make sure current customer owns accountID and both accounts are checkings/savings
+    //TODOL make sure current customer owns accountID and both accounts are checkings/savings
     //apply 2% fee
     //subtracts amount from accountID and adds to destinationId
+    //close accountID if necessary
     boolean wire(int accountID, int destinationID, double amount){
         return false;
     }
