@@ -1,4 +1,7 @@
-package cs174a;    
+package cs174a; 
+
+import cs174a.Helper.*;
+import cs174a.Customer.*;
 
 public class ATM {
 
@@ -6,11 +9,16 @@ public class ATM {
     private Helper helper;
 
     ATM(){
-
+        //TODO: how should we init customer?
+        customer = new Customer(1234);
+        helper = new Helper();
     }
 
     //takes inserted pin and checks it against customer's getpin()
     boolean verifyPin(int pin){
+        if(customer.hashPin(pin) == customer.getPin()){
+            return true;
+        }
         return false;
     }
 

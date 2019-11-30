@@ -97,7 +97,8 @@ public class Customer {
                 ResultSet rs = stmt.executeQuery(sql);
                  while(rs.next()){
                     int hashedPin = rs.getInt("pin");
-                    res = unhashPin(hashedPin);
+                    // res = unhashPin(hashedPin);
+                    res = hashedPin;
                 }
                 rs.close();
                 System.out.println("Got customer pin.");
