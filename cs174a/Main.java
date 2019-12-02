@@ -72,7 +72,7 @@ public class Main
 			// System.out.println(helper.hashPin(1234));
 			// System.out.println(helper.unhashPin("\"#$%"));
 			//for testing ATM
-			ATM atm = new ATM(4321);
+			ATM atm = new ATM(4321,app);
 			System.out.println(atm.verifyPin(1717));
 			System.out.println(atm.withdraw("1234",300));
 			System.out.println(atm.purchase("1",10));

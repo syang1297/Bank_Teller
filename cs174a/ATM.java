@@ -14,11 +14,11 @@ public class ATM {
     private Helper helper;
     private App app;
     //init atm with taxID argument for testing sake rn
-    ATM(int taxID){
+    ATM(int taxID, App app){
         //TODO: how should we init customer?
         customer = new Customer(taxID);
         helper = new Helper();
-        app = new App();
+        this.app = app;
     }
 
     //takes inserted pin and checks it against customer's getpin()

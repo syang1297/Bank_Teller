@@ -13,12 +13,13 @@ import oracle.jdbc.OracleConnection;
 public class Teller {
     private Customer customer;
     private Helper helper;
-
+    private App app;
     //constructor
-    Teller(){
+    Teller(App app){
         //TODO: creating actual customer from teller interface
         this.customer = new Customer(1234);
         this.helper = new Helper();
+        this.app = app;
     }
 
     //add check transaction to an account
