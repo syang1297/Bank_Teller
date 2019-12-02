@@ -54,7 +54,6 @@ public class Helper{
 		}
 	}
     
-    //add transaction function
 
     OracleConnection getConnection(){
         return this._connection;
@@ -99,6 +98,7 @@ public class Helper{
     }
     //checkNo = 0 means there's no check associated
     //return 0 means it failed (possibly due to incorrect accounttype with transaction type);
+    //TODO: transactions that involve two accounts, how to keep track of the other accounts
     String addTransaction(double amount, TransactionType transType, int checkNo,
                             String aID){
         String transactionID = this.newTransactionID();
@@ -207,6 +207,25 @@ public class Helper{
 
     boolean accountIdExists(String accountID, String table){
         return false;
+    }
+    String hashPin(int pin){
+        String res="";
+        while(pin>0){
+            int temp=pin%10;
+            temp=temp+33;
+            res=Character.toString ((char) temp)+res;
+            pin=pin/10;
+        }
+        return res;
+    }
+
+    int unhashPin(String hashedPin){
+        String res="";
+        for(int i=0;i<4;i++){
+            res=res+Integer.toString((int)hashedPin.charAt(i)-33);
+        }
+
+        return Integer.parseInt(res);
     }
 
 }

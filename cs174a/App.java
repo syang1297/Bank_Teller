@@ -200,7 +200,7 @@ public class App implements Testable
 				String sql = "CREATE TABLE Customer(" + 
 								"taxID INTEGER," +
 								"addr VARCHAR (32)," + 
-								"pin INTEGER," + 
+								"pin VARCHAR(4)," + 
 								"name VARCHAR(32)," + 
 								"PRIMARY KEY (taxID))";
 				
@@ -460,14 +460,15 @@ public class App implements Testable
 								"WHERE taxID = " + tin      ;
 				ResultSet rs = stmt.executeQuery(sql);
 				if (rs.next() == false) {
-					//TODO: HASHING FUNCTION FOR PIN
+					//give newly made customer a default pin of 1717
 					try {
 						System.out.println("Inserting new customer since taxID doesn't exist");
 						if(address == null || name == null){
 							System.out.println("Address and Name cannot be null because we are inserting a new customer");
 							return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 						}
-						String sqlValues = tin + ",'" + address + "',1234,'" + name+"'";
+						String hashedPin = helper.hashPin(1717);
+						String sqlValues = tin + ",'" + address + "','"+ hashedPin +"','" + name+"'";
 						sql = "INSERT INTO Customer " +
 								"VALUES (" + sqlValues + ")";
 
@@ -481,13 +482,14 @@ public class App implements Testable
 				}
 				//update account table to reflect customer
 				try {
-					//TODO: BANKBRANCH, balanceEndDate, balanceStartDate
+					//TODO: balanceEndDate, balanceStartDate if necessary
 					// sql = "INSERT INTO AccountPrimarilyOwns " + 
 					// 			"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
 					// 			", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
 					// 			", 0)";
+					String bankBranch="A&S";
 					sql = "INSERT INTO AccountPrimarilyOwns " + 
-								"VALUES (" + id + ", " + tin + ",'" + "bankBranch1" + "', " + initialBalance +
+								"VALUES (" + id + ", " + tin + ",'" + bankBranch + "', " + initialBalance +
 								", " + "0, " + interestRate + ", '" + accountType +
 								"', 0)";
 					stmt.executeUpdate(sql);
@@ -540,6 +542,7 @@ public class App implements Testable
 		String dbID = "";
 		String linkedTID="";
 		int aid = 0;
+		String bankBranch="";
 		try {
 			Statement stmt = _connection.createStatement();
 			try {
@@ -570,6 +573,7 @@ public class App implements Testable
 							linkedAccountInitBalance = rs.getDouble("balance");
 							acctType = rs.getString("accountType");
 							linkedTID = rs.getString("taxID");
+							bankBranch= rs.getString("bankBranch");
 							linkedAccountExists = true;
 							break;
 						}
@@ -585,7 +589,7 @@ public class App implements Testable
 							" " + "WHERE accountId = " + dbID;
 						stmt.executeUpdate(sql);
 						rs.close();
-					//TODO: check customerId is associated w/ this linked account by calling verifyTaxId
+					//TODO: check customerId is associated w/ this linked account by calling verifyTaxId in teller/atm
 					} catch (Exception e) {
 						System.out.println("Failed to update linkedWith account");
 						System.out.println(e);
@@ -595,8 +599,9 @@ public class App implements Testable
 					try {
 						System.out.println("Adding new pocketAccount to AccountPrimarilyOwns...");
 						//TODO: actual value for bankBranch, startDate, endDate
+						
 						sql = "INSERT INTO AccountPrimarilyOwns " + 
-								"VALUES (" + id + ", " + tin + ",'" + "bankBranchTestPocket" + "', " + initialTopUp +
+								"VALUES (" + id + ", " + tin + ",'" + bankBranch + "', " + initialTopUp +
 								", " + "0, " + 0.0+ ", '" + "POCKET" +
 								"', 0)";
 						stmt.executeQuery(sql);
@@ -699,10 +704,11 @@ public class App implements Testable
 						}
 						rs.close();
 						try {
-							//TODO: create pin for customer
+							//Give newly made customer default pin of 1717
+							String hashedPin = helper.hashPin(1717);
 							System.out.println("Adding new customer to Customer table...");
 							sql = "INSERT INTO Customer " + 
-									"VALUES (" + tin + ",'" + address + "',1234,'" + name+"')";
+									"VALUES (" + tin + ",'" + address + "','" + hashedPin + "','" + name+"')";
 							stmt.executeQuery(sql);
 							try {
 								System.out.println("Adding new relation to Owns table...");
@@ -796,9 +802,12 @@ public class App implements Testable
 					acctType = rs.getString("accountType");
 					rs.close();
 					if(amount <= 0.00){
-						System.out.println("Cannot deposit negative amount");
+						System.out.println("Cannot deposit negative amount.");
 						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
 						return result;					
+					}
+					if(acctType.equals("POCKET")){
+						System.out.println("Cannot deposit into pocket.");
 					}
 					try {
 						System.out.println("Updating balances...");
@@ -994,6 +1003,8 @@ public class App implements Testable
 										"SET balance = " + Double.toString(pocketBalance) +
 										" WHERE accountId = " + dbID;
 								stmt.executeUpdate(sql);
+								helper.addTransaction(amount, TransactionType.TOPUP, 0, accountId);
+								helper.addTransaction(amount, TransactionType.WITHDRAWAL, 0, linkedID);
 								return "0 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
 							} catch (Exception e) {
 								System.out.println("Failed to update pocketAccount with topup");
@@ -1170,6 +1181,8 @@ public class App implements Testable
 			return "1";
 		}
 		System.out.println("Paid friend.");
+		helper.addTransaction(amount,TransactionType.PAYFRIEND,0,to);
+		helper.addTransaction(-1*amount,TransactionType.PAYFRIEND,0,from);
 		return "0 " + Double.toString(fromBalance) + " " + Double.toString(toBalance);
 	}
 

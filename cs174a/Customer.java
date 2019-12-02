@@ -96,8 +96,8 @@ public class Customer {
                             "WHERE taxID = " + Integer.toString(this.taxID);
                 ResultSet rs = stmt.executeQuery(sql);
                  while(rs.next()){
-                    int hashedPin = rs.getInt("pin");
-                    res = unhashPin(hashedPin);
+                    String hashedPin = rs.getString("pin");
+                    res = helper.unhashPin(hashedPin);
                 }
                 rs.close();
                 System.out.println("Got customer pin.");
@@ -122,13 +122,13 @@ public class Customer {
         if(pin.length() != 4){
             return "1";
         }
-        int hashedPin = hashPin(unhashedPin);
+        String hashedPin = helper.hashPin(unhashedPin);
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
                 String sql = "UPDATE Customer " +
-                            "SET pin = " + Integer.toString(hashedPin) + 
-                            "WHERE taxID = " + Integer.toString(this.taxID);
+                            "SET pin = '" + hashedPin + 
+                            "' WHERE taxID = " + Integer.toString(this.taxID);
                 stmt.executeUpdate(sql);
                 return "0";
             } catch (Exception e) {
@@ -188,13 +188,12 @@ public class Customer {
              return "1";
          }
     }
-
+    //TODO: checking and savings are not the same
     //get accounts associated with customers taxID and the account type
     List<Integer> getAccountIDs(int taxID, AccountType type){
         List<Integer> accountIDs = new ArrayList<Integer>();
         String pocket = "POCKET";
         String sql = "";
-        // ResultSet rs;
         try {
             Statement stmt = helper.getConnection().createStatement();
             switch(type){
@@ -234,7 +233,7 @@ public class Customer {
                     try {
                         sql = "SELECT * " +
                                 "FROM PocketAccountLinkedWith " +
-                                "WHERE taxID = " + Integer.toString(taxID);
+                                "WHERE tID = " + Integer.toString(taxID);
                         ResultSet rsss = stmt.executeQuery(sql);
                         while(rsss.next()){
                             accountIDs.add(rsss.getInt("aID"));
@@ -269,12 +268,6 @@ public class Customer {
         return false;
     }
 
-    int hashPin(int pin){
-        return 1234;
-    }
-
-    int unhashPin(int hashedpin){
-        return 1234;
-    }
+    
 
 }
