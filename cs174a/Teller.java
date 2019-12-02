@@ -98,6 +98,62 @@ public class Teller {
 
     //delete customers from db with no accounts
     void deleteCustomers(){
+        String sql="";
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            try {
+                sql = "SELECT * " +
+                 "FROM Customer";
+                ResultSet customers = stmt.executeQuery(sql);
+                while(customers.next()){
+                    boolean noPrimary = true;
+                    boolean noSecondary = true;
+                    String taxID=customers.getString("taxID");
+                    try{
+                        sql = "SELECT * " +
+                                "FROM AccountPrimarilyOwns " +
+                                "WHERE taxID = " + taxID;
+                        ResultSet rs = stmt.executeQuery(sql);
+                        if(rs.next() == false){
+                            noPrimary = true;
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Failed to check AccountPrimarilyOwns");
+                        System.out.println(e);
+                    }
+                    try{
+                        sql = "SELECT * " +
+                                "FROM Owns " +
+                                "WHERE tID = " + taxID;
+                        ResultSet rs = stmt.executeQuery(sql);
+                        if(rs.next() == false){
+                            noSecondary = true;
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Failed to check Owns");
+                        System.out.println(e);
+                    }
+                    if(noSecondary && noPrimary){
+                        try{
+                            sql = "DELETE FROM Customer " +
+                            "WHERE taxID =" +taxID;
+                            stmt.executeUpdate(sql);
+                            System.out.println("Deleted customer: "+taxID);
+                        }catch(Exception e){
+                            System.out.println("Failed to delete Customer");
+                            System.out.println(e);
+                        }
+                    }
+                    
+                }
+            } catch(Exception e){
+                System.out.println("Failed to get customers");
+                System.out.println(e);
+            }
+         }catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
         return;
     }
 

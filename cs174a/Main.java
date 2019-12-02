@@ -83,6 +83,7 @@ public class Main
 			System.out.println(teller.customerOwnsAccount("4321","1234"));
 			teller.changeInterestRate(1234,1.4);
 			teller.deleteTransactionHistory();
+			teller.deleteCustomers();
 		}
 	}
 	//!### FINALIZAMOS
