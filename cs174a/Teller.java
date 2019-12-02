@@ -107,7 +107,45 @@ public class Teller {
     }
 
     //change interest for an account
-    void changeInterestRate(int accountID, int interestRate){
+    void changeInterestRate(int accountID, double interestRate){
+        boolean owns=false;
+        String sql="";
+        try{
+                Statement stmt = helper.getConnection().createStatement();
+            try {
+                sql = "SELECT * " +
+                                "FROM AccountPrimarilyOwns " +
+                                "WHERE taxID = " + Integer.toString(customer.getTaxID()) +
+                                "AND accountType = '" + AccountType.INTEREST_CHECKING + "'";
+                ResultSet rs = stmt.executeQuery(sql);
+                while(rs.next()){
+                    if(Integer.toString(accountID).equals(rs.getString("accountID"))){
+                        owns = true;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to read from AccountPrimarilyOwns");
+                System.out.println(e);
+                return;
+            }
+            if(owns && interestRate>=0){
+                try{
+                    sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET interestRate = " + Double.toString(interestRate) +
+                                    " WHERE accountId = " + Integer.toString(accountID);
+                    stmt.executeUpdate(sql);
+                    System.out.println("Changed interest rate.");
+                    return;
+                } catch(Exception e){
+                    System.out.println("Failed to update interest rate");
+                    System.out.println(e);
+                }
+            } 
+        } catch(Exception e){
+                System.out.println("Failed to create statement");
+                System.out.println(e);
+            }
+        System.out.println("Wrong account type or customer does not own account");
         return;
     }
 

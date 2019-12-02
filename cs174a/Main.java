@@ -34,7 +34,7 @@ public class Main
 			app.dropTables();
 			r = app.createTables();
 			r = app.setDate(4000, 2, 18);
-			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
+			r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
 			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1233", 1000.00, "4321", "Bob", "66 DP");
 			r = app.createPocketAccount("1", "1234", 100.0, "4321");
 			r = app.createPocketAccount("2", "1234", 100.0, "4321");
@@ -81,6 +81,7 @@ public class Main
 			// System.out.println(atm.wire(1234,1233,19));
 			Teller teller = new Teller (4321,app);
 			System.out.println(teller.customerOwnsAccount("4321","1234"));
+			teller.changeInterestRate(1234,1.4);
 		}
 	}
 	//!### FINALIZAMOS
