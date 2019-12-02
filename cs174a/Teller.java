@@ -103,6 +103,21 @@ public class Teller {
 
     //delete transactions from an account in prep for new month
     void deleteTransactionHistory(){
+        String sql="";
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            try{
+                sql = "DELETE FROM TransactionBelongs";
+                stmt.executeUpdate(sql);
+                System.out.println("Transaction history deleted");
+            }catch(Exception e){
+                System.out.println("Failed to delete transactions");
+                System.out.println(e);
+            }
+        }catch(Exception e){
+                System.out.println("Failed to create statement");
+                System.out.println(e);
+        }
         return;
     }
 

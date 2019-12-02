@@ -82,6 +82,7 @@ public class Main
 			Teller teller = new Teller (4321,app);
 			System.out.println(teller.customerOwnsAccount("4321","1234"));
 			teller.changeInterestRate(1234,1.4);
+			teller.deleteTransactionHistory();
 		}
 	}
 	//!### FINALIZAMOS
