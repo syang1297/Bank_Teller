@@ -57,20 +57,20 @@ public class Teller {
 
     //create new account and store on db
     void createAccount(AccountType type, List<Integer> coOwners, double balance, String accountID, String linkedId){
-        // switch(type){
-        //     case STUDENT_CHECKING:
-        //         createCheckingsSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
-        //         break;
-        //     case INTEREST_CHECKING:
-        //         createCheckingsSavingsAccount(AccountType.INTEREST_CHECKING, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
-        //         break;
-        //     case SAVINGS:
-        //         createCheckingsSavingsAccount(AccountType.SAVINGS, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
-        //         break;
-        //     case POCKET:
-        //         createPocketAccount(accountID, linkedId, balance, Integer.toString(customer.getTaxID()));
-        //         break;
-        // }
+        switch(type){
+            case STUDENT_CHECKING:
+                app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+                break;
+            case INTEREST_CHECKING:
+                app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+                break;
+            case SAVINGS:
+                app.createCheckingSavingsAccount(AccountType.SAVINGS, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+                break;
+            case POCKET:
+                app.createPocketAccount(accountID, linkedId, balance, Integer.toString(customer.getTaxID()));
+                break;
+        }
         return;
     }
 
