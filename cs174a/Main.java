@@ -72,13 +72,15 @@ public class Main
 			// System.out.println(helper.hashPin(1234));
 			// System.out.println(helper.unhashPin("\"#$%"));
 			//for testing ATM
-			ATM atm = new ATM(4321,app);
-			System.out.println(atm.verifyPin(1717));
-			System.out.println(atm.withdraw("1234",300));
-			System.out.println(atm.purchase("1",10));
-			System.out.println(atm.transfer(1234,1233,100));
-			System.out.println(atm.collect(1234,1,20));
-			System.out.println(atm.wire(1234,1233,19));
+			// ATM atm = new ATM(4321,app);
+			// System.out.println(atm.verifyPin(1717));
+			// System.out.println(atm.withdraw("1234",300));
+			// System.out.println(atm.purchase("1",10));
+			// System.out.println(atm.transfer(1234,1233,100));
+			// System.out.println(atm.collect(1234,1,20));
+			// System.out.println(atm.wire(1234,1233,19));
+			Teller teller = new Teller (4321,app);
+			System.out.println(teller.customerOwnsAccount("4321","1234"));
 		}
 	}
 	//!### FINALIZAMOS

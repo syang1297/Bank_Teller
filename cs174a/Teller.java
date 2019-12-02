@@ -15,9 +15,9 @@ public class Teller {
     private Helper helper;
     private App app;
     //constructor
-    Teller(App app){
+    Teller(int taxID,App app){
         //TODO: creating actual customer from teller interface
-        this.customer = new Customer(1234);
+        this.customer = new Customer(taxID);
         this.helper = new Helper();
         this.app = app;
     }
@@ -114,7 +114,10 @@ public class Teller {
     //add function to check if a customer owns the account
     //done in customer class
     boolean customerOwnsAccount(String tin, String id){
-        
-        return false;
+        boolean student = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.STUDENT_CHECKING);
+        boolean checking = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.INTEREST_CHECKING);
+        boolean pocket = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.POCKET);
+        boolean saving = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.SAVINGS);
+        return (student||checking||pocket||saving);
     }
 }
