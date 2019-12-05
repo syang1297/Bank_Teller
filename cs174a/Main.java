@@ -105,6 +105,13 @@ public class Main
 				System.out.println(e);
 			}
 			teller.deleteClosedAccounts();
+			ArrayList<Integer> coOwners = new ArrayList();
+			teller.createAccount(AccountType.SAVINGS,coOwners,1000.0,"1235","-1");
+			app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			coOwners.add(1111);
+			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
+			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
+
 		}
 	}
 	//!### FINALIZAMOS

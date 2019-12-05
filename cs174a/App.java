@@ -430,8 +430,8 @@ public class App implements Testable
 						System.out.println("AccountID exists already");
 						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
 					}
-					System.out.println("AccountID does not exists already");
 				}
+				System.out.println("AccountID does not exists already");
 				rs.close();
 			} catch (Exception e) {
 				System.out.println("Failed to select from AccountPrimarilyOwns");
