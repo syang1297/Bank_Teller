@@ -72,7 +72,7 @@ public class Main
 			// System.out.println(customer.acctBelongsToCustomer(1234,4321,AccountType.STUDENT_CHECKING));
 			// System.out.println(helper.hashPin(1234));
 			// System.out.println(helper.unhashPin("\"#$%"));
-			//for testing ATM
+			// for testing ATM
 			// ATM atm = new ATM(4321,app);
 			// System.out.println(atm.verifyPin(1717));
 			// System.out.println(atm.withdraw("1234",300));
@@ -83,7 +83,7 @@ public class Main
 			Teller teller = new Teller (4321,app);
 			System.out.println(teller.customerOwnsAccount("4321","1234"));
 			teller.changeInterestRate(1234,1.4);
-			teller.deleteTransactionHistory();
+			//teller.deleteTransactionHistory();
 			String sql = "DELETE FROM Owns " +
                                 "WHERE tID =" +1111;
 			try{
@@ -112,12 +112,19 @@ public class Main
 			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
 			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
 			teller.addInterest();
-			List<String> res = teller.customerReport(4321);
-			if(res.size()<1){
-				res.add("No accounts");
+			List<String> res2 = teller.customerReport(4321);
+			if(res2.size()<1){
+				res2.add("No accounts");
 			}
-			for(int i=0;i<res.size();i++){
-				System.out.println("Account status: " + res.get(i));
+			for(int i=0;i<res2.size();i++){
+				System.out.println("Account status: " + res2.get(i));
+			}
+			res2 = teller.generateMonthly(4321);
+			if(res2.size()<1){
+				res2.add("No accounts");
+			}
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
 			}
 		}
 	}

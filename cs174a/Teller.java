@@ -32,125 +32,118 @@ public class Teller {
     //create monthly report for a customers accounts showing all transacation data in the last month,
     //names, addresses of accounts, initial and final account balance, message if accounts of customer is primary owner
     //exceeds 100000
-    String generateMonthly(int taxID){
-        String monthly = "";
-        String own = "";
-        Map<Integer, String> owners = new HashMap<Integer, String>();
-        Map<Integer, String> accountTransactions = new HashMap<Integer, String>();
-        List<Integer> res=customer.getAccountIDs(taxID,AccountType.STUDENT_CHECKING);
-        // List<Triplet> allAccountBalances = new ArrayList<Triplet>();
-        for(int i =0;i<res.size();i++){
-            String customerInfo = "";
-            List<Integer> accountCustomers = new ArrayList<Integer>();
-            try {
-                Statement stmt = helper.getConnection().createStatement();
-                //get primary customer in AccountPrimarilyOwns that owns 
-                try {
-                    Double endBalance = 0.0;
-                    Double initBalance = 0.0;
-                    String sql = "SELECT * " +
-                                    "FROM AccountPrimarilyOwns " +
-                                    "WHERE accountID = " + Integer.toString(res.get(i));
-                    ResultSet rs = stmt.executeQuery(sql);
-                    while(rs.next()){
-                        accountCustomers.add(rs.getInt("taxID"));
-                        endBalance = rs.getDouble("balance");
+    List<String> generateMonthly(int taxID){
+       ArrayList<String> res = new ArrayList<String>();
+        String sql = "";
+        double totalBalance = 0;
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            Helper helper2 = new Helper();
+            Statement stmt2 = helper2.getConnection().createStatement();
+            try{ 
+                String stringMonth = "" + helper.getDate().charAt(5) + helper.getDate().charAt(6);
+                String stringYear = "" + helper.getDate().charAt(0) + helper.getDate().charAt(1) + helper.getDate().charAt(2) + helper.getDate().charAt(3);
+                int year = Integer.parseInt(stringYear);
+                int month = Integer.parseInt(stringMonth);
+                try{
+                    System.out.println("Getting primary owner info...");
+                    sql = "SELECT * FROM Customer WHERE taxID = " + taxID;
+                    ResultSet primary = stmt.executeQuery(sql);
+                    while(primary.next()){
+                        String primaryInfo = "\n-------------MONTH " + stringMonth + " REPORT FOR CUSTOMER: " + primary.getString("name") + " (Address: "+primary.getString("addr") +")-------------\n\n";
+                        res.add(primaryInfo);
                     }
-                    rs.close();
-                    //get all customers in Owns that co-owns that account
-                    try {
-                        sql = "SLELCT * " +
-                                "FROM Owns " +
-                                "WHERE aID = " + Integer.toString(res.get(i));
-                        rs = stmt.executeQuery(sql);
-                        while(rs.next()){
-                            accountCustomers.add(rs.getInt("tID"));
-                        }
-                        rs.close();
-                        try {
-                            //get customer info
-                            for(int j = 0; j < accountCustomers.size(); j++){
-                                sql = "SELECT * " +
-                                        "FROM Customer " +
-                                        "WHERE taxID = " + Integer.toString(accountCustomers.get(j));
-                                rs = stmt.executeQuery(sql);
-                                customerInfo += rs.getString("name") + " " + rs.getString("taxID") + "\n";
-                                rs.close();
-                            }
-                            owners.put(res.get(i), customerInfo);
-                            try {
-                                //get transactions for the account
-                                sql = "SELECT * " +
-                                        "FROM TransactionBelongs " +
-                                        "WHERE aID = " + Integer.toString(res.get(i));
-                                rs = stmt.executeQuery(sql);
-
-                                while(rs.next()){
-                                    String trans = "";
-                                    trans += rs.getString("transType") + " " + rs.getString("transDate") + 
-                                            " " + Double.toString(rs.getDouble("amount"));
-                                    trans += "\n" + "Account Initial Balance: " + initBalance + "........" + "Account Final Balance: " + endBalance + "\n";
-                                    double amt = rs.getDouble("amount");
-                                    //TODO: check if adding/subtracting amount is correct after all transactions have been implemented
-                                    switch(rs.getString("transType")){
-                                        case "DEPOSIT":
-                                            initBalance += amt;
-                                            break;
-                                        case "TRANSFER":
-                                            initBalance += amt;
-                                            break;
-                                        case "WITHDRAWAL":
-                                            initBalance -= amt;
-                                            break;
-                                        case "WIRE":
-                                            initBalance += amt;
-                                            break;
-                                        case "WRITECHECK":
-                                            initBalance += amt;
-                                            break;
-                                        case "ACCRUEINTEREST":
-                                            initBalance += amt;
-                                            break;
-                                    }
-                                    accountTransactions.put(res.get(i), trans);
-                                    // Triplet<Integer, Double, Double> accountBalances = new Triplet<Integer, Double, Double>(res.get(i), endBalance, initBalance);
-                                    // allAccountBalances.add(accountBalances);
-                                }
-                                rs.close();
-                            } catch (Exception e) {
-                                System.out.println("Failed to get transactions for accounts");
-                                System.out.println(e);
-                                return "1";
-                            }
-                        } catch (Exception e) {
-                            System.out.println("Failed to get names and addresses of account owners");
-                            System.out.println(e);
-                            return "1";
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Failed to get all owners of an account from Owns");
-                        System.out.println(e);
-                        return "1";
-                    }
-                } catch (Exception e) {
-                    System.out.println("Failed to get all owners of an account from AccountPrimarilyOwns");
+                    
+                } catch (Exception e){
+                    System.out.println("Failed get primary owner");
                     System.out.println(e);
-                    return "1";
                 }
-            } catch (Exception e) {
-                System.out.println("Failed to create statement in generateMonthly");
-                System.out.println(e);
-                return "1";
+
+                System.out.println("Getting account info...");
+                sql = "SELECT * FROM AccountPrimarilyOwns WHERE taxID = "+taxID;
+                ResultSet accounts = stmt.executeQuery(sql);
+                while(accounts.next()){
+                    String status=" (CLOSED)";
+                    if(accounts.getInt("isClosed") == 0){
+                        status = " (OPEN)";
+                    } 
+                    String accountInfo = "\n-------------TRANSACTIONS OF MONTH "+ stringMonth + " FOR ACCOUNT " + accounts.getString("accountId") + status +"-------------\n";
+                    
+                    
+                    try{
+                        sql = "SELECT * " + 
+                        "FROM Customer, Owns " +
+                        "WHERE Owns.aID = " + accounts.getString("accountID") + " AND Customer.taxID = Owns.tid";
+                        ResultSet coOwns = stmt2.executeQuery(sql);
+                        while(coOwns.next()){
+                            accountInfo = accountInfo + "CO-OWNER: " + coOwns.getString("name") + " Address: " + coOwns.getString("addr") + "\n";
+                        }
+                        accountInfo = accountInfo + "\n";
+                    } catch (Exception e){
+                        System.out.println("Failed get coOwners");
+                        System.out.println(e);
+                    }
+
+                    try{
+                        double initBalance = accounts.getDouble("balance");
+                        sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
+                        ResultSet transactions = stmt2.executeQuery(sql);
+                        while(transactions.next()){
+                            String tDate = transactions.getString("transDate");
+                            String tMonth = "" + tDate.charAt(5) + tDate.charAt(6);
+                            String tYear = "" + tDate.charAt(0) + tDate.charAt(1) + tDate.charAt(2) + tDate.charAt(3);
+                            if(Integer.parseInt(stringMonth)!=month || Integer.parseInt(stringYear)!=year) {
+                                continue;
+                            }
+                            double amt = transactions.getDouble("amount");
+                            switch(transactions.getString("transType")){
+                                case "DEPOSIT":
+                                    initBalance += amt;
+                                    accountInfo = accountInfo + "DEPOSIT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "TRANSFER":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "TRANSFER: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "WITHDRAWAL":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "WITHDRAWAL: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "WIRE":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "WIRE: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "WRITECHECK":
+                                    initBalance += amt;
+                                    accountInfo = accountInfo + "WRITECHECK: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "ACCRUEINTEREST":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "ACCRUEINTEREST: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                            }
+                        }
+                        accountInfo = accountInfo + "\nINITIAL BALANCE: " + Double.toString(initBalance) + "\tFINAL BALANCE: " + accounts.getDouble("balance")+ "\n\n";
+                        totalBalance+=accounts.getDouble("balance");
+                        res.add(accountInfo);
+                    } catch (Exception e){
+                        System.out.println("Failed get transactions");
+                        System.out.println(e);
+                    }
+                }
             }
-            // monthly.put(res.get(i), own);
-        }
-        //CHECK IF BALANCES EXCEED 100,000
-        //PRINT STATEMENT
-        //CHECK IF CAN ADD A LIST TO A LIST TO GET ALL ACCOUNTS TYPES
-        // res = customer.getAccountIDs(taxID, AccountType.INTEREST_CHECKING);
-        // res = customer.getAccountIDs(taxID, AccountType.SAVINGS);
-        // res = customer.getAccountIDs(taxID, AccountType.POCKET);
-        return "1";
+             catch(Exception e){
+                System.out.println("Failed to get accounts");
+                System.out.println(e);
+            }
+        } catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        } 
+        if(totalBalance>100000){
+            res.add("WARNING: BALANCE EXCEEDS $100000, INSURANCE LIMIT REACHED");
+        }          
+        return res;
     }
 
     //list accounts closed for a customer in the last month
