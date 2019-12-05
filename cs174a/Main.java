@@ -112,6 +112,13 @@ public class Main
 			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
 			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
 			teller.addInterest();
+			List<String> res = teller.customerReport(4321);
+			if(res.size()<1){
+				res.add("No accounts");
+			}
+			for(int i=0;i<res.size();i++){
+				System.out.println("Account status: " + res.get(i));
+			}
 		}
 	}
 	//!### FINALIZAMOS

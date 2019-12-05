@@ -164,8 +164,50 @@ public class Teller {
 
     //generate list of all accounts assoicated with a customer saying if open or closed
     // call Customer class get accountIDs
-    List<List<String>> customerReport(int taxID){
-        return null;
+    List<String> customerReport(int taxID){
+        ArrayList<String> res = new ArrayList<String>();
+        String sql = "";
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            try{
+                System.out.println("Getting primarily owns...");
+                sql = "SELECT * " + 
+                    "FROM AccountPrimarilyOwns " + 
+                    "WHERE taxID = " + Integer.toString(taxID);
+                ResultSet rs = stmt.executeQuery(sql);
+                while(rs.next()){
+                    String account = rs.getString("accountID") + " : ";
+                    if(rs.getInt("isClosed") == 0){
+                        account = account + "OPEN";
+                    } else {
+                        account = account + "CLOSED";
+                    }
+                    res.add(account);
+                }
+                System.out.println("Getting secondaries...");
+                sql = "SELECT * " + 
+                    "FROM AccountPrimarilyOwns, Owns " + 
+                    "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + Integer.toString(taxID);
+                rs = stmt.executeQuery(sql);
+                while(rs.next()){
+                    String account = rs.getString("accountID") + " : ";
+                    if(rs.getInt("isClosed") == 0){
+                        account = account + "OPEN";
+                    } else {
+                        account = account + "CLOSED";
+                    }
+                    res.add(account);
+                }
+                System.out.println("Got info.");
+            } catch(Exception e){
+                System.out.println("Failed to get info.");
+                System.out.println(e);
+            }
+        } catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
+        return res;
     }
 
     //add monthly interest to all open accounts if it hasnt been added yet
