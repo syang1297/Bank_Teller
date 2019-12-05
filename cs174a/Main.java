@@ -1,5 +1,6 @@
 package cs174a;                         // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
-
+//for debugging
+import java.sql.Statement;
 // DO NOT REMOVE THIS IMPORT.
 import cs174a.Testable.*;
 import cs174a.Helper.*;
@@ -45,7 +46,7 @@ public class Main
 			r = app.payFriend("1","2",50);
 			r = app.listClosedAccounts();
 			//for testing customer.java
-			// Helper helper= new Helper();
+			Helper helper= new Helper();
 			// Customer customer = new Customer(4321);
 			// r = customer.setAddress("Bob house");
 			// r = customer.getAddress();
@@ -80,11 +81,44 @@ public class Main
 			// System.out.println(atm.collect(1234,1,20));
 			// System.out.println(atm.wire(1234,1233,19));
 			Teller teller = new Teller (4321,app);
-			System.out.println(teller.generateMonthly(1234));
-			// System.out.println(teller.customerOwnsAccount("4321","1234"));
-			// teller.changeInterestRate(1234,1.4);
-			// teller.deleteTransactionHistory();
-			// teller.deleteCustomers();
+			System.out.println(teller.customerOwnsAccount("4321","1234"));
+			teller.changeInterestRate(1234,1.4);
+			teller.deleteTransactionHistory();
+			String sql = "DELETE FROM Owns " +
+                                "WHERE tID =" +1111;
+			try{
+				Statement stmt = helper.getConnection().createStatement();
+				stmt.executeUpdate(sql);
+				
+			} catch (Exception e){
+				System.out.println(e);
+			}
+			teller.deleteCustomers();
+			sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1" + 
+                                    " WHERE accountId = 1";
+			try{
+				Statement stmt = helper.getConnection().createStatement();
+				stmt.executeUpdate(sql);
+				
+			} catch (Exception e){
+				System.out.println(e);
+			}
+			teller.deleteClosedAccounts();
+			ArrayList<Integer> coOwners = new ArrayList();
+			teller.createAccount(AccountType.SAVINGS,coOwners,1000.0,"1235","-1");
+			app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			coOwners.add(1111);
+			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
+			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
+			teller.addInterest();
+			List<String> res = teller.customerReport(4321);
+			if(res.size()<1){
+				res.add("No accounts");
+			}
+			for(int i=0;i<res.size();i++){
+				System.out.println("Account status: " + res.get(i));
+			}
 		}
 	}
 	//!### FINALIZAMOS

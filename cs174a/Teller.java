@@ -4,11 +4,13 @@ import cs174a.Customer.*;
 import cs174a.Testable.*;
 import cs174a.App.*;
 import java.util.*;
+import cs174a.Helper.*;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
 import oracle.jdbc.OracleConnection;
-
+import oracle.jdbc.pool.OracleDataSource;
+import java.sql.SQLException;
 
 public class Teller {
     private Customer customer;
@@ -163,8 +165,50 @@ public class Teller {
 
     //generate list of all accounts assoicated with a customer saying if open or closed
     // call Customer class get accountIDs
-    List<List<String>> customerReport(int taxID){
-        return null;
+    List<String> customerReport(int taxID){
+        ArrayList<String> res = new ArrayList<String>();
+        String sql = "";
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            try{
+                System.out.println("Getting primarily owns...");
+                sql = "SELECT * " + 
+                    "FROM AccountPrimarilyOwns " + 
+                    "WHERE taxID = " + Integer.toString(taxID);
+                ResultSet rs = stmt.executeQuery(sql);
+                while(rs.next()){
+                    String account = rs.getString("accountID") + " : ";
+                    if(rs.getInt("isClosed") == 0){
+                        account = account + "OPEN";
+                    } else {
+                        account = account + "CLOSED";
+                    }
+                    res.add(account);
+                }
+                System.out.println("Getting secondaries...");
+                sql = "SELECT * " + 
+                    "FROM AccountPrimarilyOwns, Owns " + 
+                    "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + Integer.toString(taxID);
+                rs = stmt.executeQuery(sql);
+                while(rs.next()){
+                    String account = rs.getString("accountID") + " : ";
+                    if(rs.getInt("isClosed") == 0){
+                        account = account + "OPEN";
+                    } else {
+                        account = account + "CLOSED";
+                    }
+                    res.add(account);
+                }
+                System.out.println("Got info.");
+            } catch(Exception e){
+                System.out.println("Failed to get info.");
+                System.out.println(e);
+            }
+        } catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
+        return res;
     }
 
     //add monthly interest to all open accounts if it hasnt been added yet
@@ -174,8 +218,61 @@ public class Teller {
     //check if interest has been added... if so, generate warning and return
     //weighted avg based on days
     void addInterest(){
-        String month = helper.getDate();
+        String sql = "";
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
+            final String DB_USER = "c##andrewdoan";
+            final String DB_PASSWORD = "3772365";
 
+            // Initialize your system.  Probably setting up the DB connection.
+            Properties info = new Properties();
+            info.put( OracleConnection.CONNECTION_PROPERTY_USER_NAME, DB_USER );
+            info.put( OracleConnection.CONNECTION_PROPERTY_PASSWORD, DB_PASSWORD );
+            info.put( OracleConnection.CONNECTION_PROPERTY_DEFAULT_ROW_PREFETCH, "20" );
+            try {
+                OracleDataSource ods = new OracleDataSource();
+                ods.setURL( DB_URL );
+                ods.setConnectionProperties( info );
+                OracleConnection _connection = (OracleConnection) ods.getConnection();
+                Statement stmt2 = _connection.createStatement();
+                try {
+                    System.out.println("Getting accounts...");
+                    sql = "SELECT * " +
+                        "FROM AccountPrimarilyOwns" + 
+                        " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "'";
+                    ResultSet accounts= stmt.executeQuery(sql);
+                    System.out.println("Adding interest...");
+                    while(accounts.next()){
+                        String currAccount = accounts.getString("accountID");
+                        double oldBalance = accounts.getDouble("balance");
+                        double interest = accounts.getDouble("interestRate")/100 * oldBalance;
+                        try{
+                            sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET balance = " + (oldBalance + interest) + ", interestAdded = 1" + 
+                                    " WHERE accountId = " + currAccount;
+                            stmt2.executeUpdate(sql);
+                            System.out.println("added interest to: " + currAccount);
+                            helper.addTransaction(interest, TransactionType.ACCRUEINTEREST,0,currAccount);
+                        } catch (Exception e){
+                            System.out.println("Failed to add interest.");
+                            System.out.println(e);
+                            return;
+                        }
+                    }
+                    System.out.println("Added interest to eligible accounts.");
+                    } catch(Exception e){
+                    System.out.println("Failed to get accounts");
+                    System.out.println(e);
+                }
+            } catch( SQLException e )
+                {
+                    System.err.println( e.getMessage() );
+                }
+         } catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
         return;
     }
 
@@ -192,9 +289,17 @@ public class Teller {
                 app.createCheckingSavingsAccount(AccountType.SAVINGS, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
                 break;
             case POCKET:
+                if(Integer.parseInt(linkedId) < 1){
+                    System.out.println("Invalid linkedID");
+                    return;
+                }
                 app.createPocketAccount(accountID, linkedId, balance, Integer.toString(customer.getTaxID()));
                 break;
         }
+        if(coOwners.size() == 0){
+            return;
+        }
+        System.out.println("Adding coOwners...");
         return;
     }
 
@@ -207,6 +312,7 @@ public class Teller {
                 String sql = "DELETE FROM AccountPrimarilyOwns " +
                             "WHERE isClosed = 1";
                 stmt.executeUpdate(sql);
+                System.out.println("Deleted closed accounts");
             } catch (Exception e) {
                 System.out.println("Failed to deleteClosedAccounts()");
                 System.out.println(e);
@@ -229,48 +335,65 @@ public class Teller {
                 sql = "SELECT * " +
                         "FROM Customer";
                 ResultSet customers = stmt.executeQuery(sql);
-                while(customers.next()){
-                    boolean noPrimary = true;
-                    boolean noSecondary = true;
-                    String taxID=customers.getString("taxID");
-                    try{
-                        sql = "SELECT * " +
-                                "FROM AccountPrimarilyOwns " +
-                                "WHERE taxID = " + taxID;
-                        ResultSet rs = stmt.executeQuery(sql);
-                        if(rs.next() == false){
-                            noPrimary = true;
-                        }
-                        rs.close();
-                    } catch (Exception e) {
-                        System.out.println("Failed to check AccountPrimarilyOwns");
-                        System.out.println(e);
-                    }
-                    try{
-                        sql = "SELECT * " +
-                                "FROM Owns " +
-                                "WHERE tID = " + taxID;
-                        ResultSet rs = stmt.executeQuery(sql);
-                        if(rs.next() == false){
-                            noSecondary = true;
-                        }
-                        rs.close();
-                    } catch (Exception e) {
-                        System.out.println("Failed to check Owns");
-                        System.out.println(e);
-                    }
-                    if(noSecondary && noPrimary){
+                final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
+                final String DB_USER = "c##andrewdoan";
+                final String DB_PASSWORD = "3772365";
+
+                // Initialize your system.  Probably setting up the DB connection.
+                Properties info = new Properties();
+                info.put( OracleConnection.CONNECTION_PROPERTY_USER_NAME, DB_USER );
+                info.put( OracleConnection.CONNECTION_PROPERTY_PASSWORD, DB_PASSWORD );
+                info.put( OracleConnection.CONNECTION_PROPERTY_DEFAULT_ROW_PREFETCH, "20" );
+                try {
+                    OracleDataSource ods = new OracleDataSource();
+                    ods.setURL( DB_URL );
+                    ods.setConnectionProperties( info );
+                    OracleConnection _connection = (OracleConnection) ods.getConnection();
+                    Statement stmt2 = _connection.createStatement();
+                    while(customers.next()){
+                        boolean noPrimary = false;
+                        boolean noSecondary = false;
+                        String taxID=customers.getString("taxID");
                         try{
-                            sql = "DELETE FROM Customer " +
-                            "WHERE taxID =" +taxID;
-                            stmt.executeUpdate(sql);
-                            System.out.println("Deleted customer: "+taxID);
-                        }catch(Exception e){
-                            System.out.println("Failed to delete Customer");
+                            sql = "SELECT * " +
+                                    "FROM AccountPrimarilyOwns " +
+                                    "WHERE taxID = " + taxID;
+                            ResultSet rs = stmt2.executeQuery(sql);
+                            if(rs.next() == false){
+                                noPrimary = true;
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Failed to check AccountPrimarilyOwns");
                             System.out.println(e);
                         }
+                        try{
+                            sql = "SELECT * " +
+                                    "FROM Owns " +
+                                    "WHERE tID = " + taxID;
+                            ResultSet rs = stmt2.executeQuery(sql);
+                            if(rs.next() == false){
+                                noSecondary = true;
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Failed to check Owns");
+                            System.out.println(e);
+                        }
+                        if(noSecondary && noPrimary){
+                            try{
+                                sql = "DELETE FROM Customer " +
+                                "WHERE taxID =" +taxID;
+                                stmt2.executeUpdate(sql);
+                                System.out.println("Deleted customer: "+taxID);
+                            }catch(Exception e){
+                                System.out.println("Failed to delete Customer");
+                                System.out.println(e);
+                            }
+                        }
+                        
                     }
-                    
+                } catch( SQLException e )
+                {
+                    System.err.println( e.getMessage() );
                 }
                 customers.close();
             } catch(Exception e){
