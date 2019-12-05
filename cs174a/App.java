@@ -64,8 +64,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -365,7 +365,7 @@ public class App implements Testable
 				System.out.println("Connecting to database...............");
 				Statement stmt = _connection.createStatement();
 				System.out.println("Writing to table GlobalDate");
-				String sqlDate = stringYear+stringMonth+stringDay;
+				String sqlDate = stringYear + stringMonth + stringDay;
 				try {
 					String empty = "SELECT * FROM GlobalDate";
 					ResultSet rs = stmt.executeQuery(empty);

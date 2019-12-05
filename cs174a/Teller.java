@@ -104,7 +104,7 @@ public class Teller {
                                         madeDeposit = true;
                                         continue;
                                     }
-                                    initBalance += amt;
+                                    initBalance -= amt;
                                     accountInfo = accountInfo + "DEPOSIT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "TRANSFER":
@@ -112,7 +112,7 @@ public class Teller {
                                     accountInfo = accountInfo + "TRANSFER: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WITHDRAWAL":
-                                    initBalance -= amt;
+                                    initBalance += amt;
                                     accountInfo = accountInfo + "WITHDRAWAL: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WIRE":
@@ -128,7 +128,7 @@ public class Teller {
                                     accountInfo = accountInfo + "ACCRUEINTEREST: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "COLLECT":
-                                    initBalance -= amt;
+                                    initBalance += amt;
                                     accountInfo = accountInfo + "COLLECT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "PAYFRIEND":
@@ -136,10 +136,11 @@ public class Teller {
                                     accountInfo = accountInfo + "PAYFRIEND: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                             }
-                        }
+                        
                         accountInfo = accountInfo + "\nINITIAL BALANCE: " + Double.toString(initBalance) + "\tFINAL BALANCE: " + accounts.getDouble("balance")+ "\n\n";
                         totalBalance+=accounts.getDouble("balance");
                         res.add(accountInfo);
+                        }
                     } catch (Exception e){
                         System.out.println("Failed get transactions");
                         System.out.println(e);
@@ -180,7 +181,7 @@ public class Teller {
                                     madeDeposit = true;
                                     continue;
                                 }
-                                initBalance += amt;
+                                initBalance -= amt;
                                 accountInfo = accountInfo + "DEPOSIT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "TRANSFER":
@@ -188,7 +189,7 @@ public class Teller {
                                 accountInfo = accountInfo + "TRANSFER: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "WITHDRAWAL":
-                                initBalance -= amt;
+                                initBalance += amt;
                                 accountInfo = accountInfo + "WITHDRAWAL: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "WIRE":
@@ -204,7 +205,7 @@ public class Teller {
                                 accountInfo = accountInfo + "ACCRUEINTEREST: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "COLLECT":
-                                initBalance -= amt;
+                                initBalance += amt;
                                 accountInfo = accountInfo + "COLLECT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "PAYFRIEND":
@@ -404,32 +405,18 @@ public class Teller {
     //weighted avg based on days
     String addInterest(){
         String sql = "";
-        String currDate = helper.getDate();
-        //index 0 = year, 1 = month, 2 = date
-        String curSplitDate[] = currDate.split("-");
         //allocates array to strings to store month's trans info up to size of the current date
-        Double[] transAmnts = new Double[Integer.parseInt(curSplitDate[2])];
-        for(int i = 0; i < transAmnts.length; i++){
-            transAmnts[i] = 0.0;
-        }
-
         try{
             Statement stmt = helper.getConnection().createStatement();
-            final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-            final String DB_USER = "c##syang01";
-            final String DB_PASSWORD = "4621538";
-
-            // Initialize your system.  Probably setting up the DB connection.
-            Properties info = new Properties();
-            info.put( OracleConnection.CONNECTION_PROPERTY_USER_NAME, DB_USER );
-            info.put( OracleConnection.CONNECTION_PROPERTY_PASSWORD, DB_PASSWORD );
-            info.put( OracleConnection.CONNECTION_PROPERTY_DEFAULT_ROW_PREFETCH, "20" );
+            String stringMonth = "" + helper.getDate().charAt(5) + helper.getDate().charAt(6);
+            String stringYear = "" + helper.getDate().charAt(0) + helper.getDate().charAt(1) + helper.getDate().charAt(2) + helper.getDate().charAt(3);
+            String stringDay = "" + helper.getDate().charAt(8) + helper.getDate().charAt(9);
+            int year = Integer.parseInt(stringYear);
+            int month = Integer.parseInt(stringMonth);
+            int day = Integer.parseInt(stringDay);
             try {
-                OracleDataSource ods = new OracleDataSource();
-                ods.setURL( DB_URL );
-                ods.setConnectionProperties( info );
-                OracleConnection _connection = (OracleConnection) ods.getConnection();
-                Statement stmt2 = _connection.createStatement();
+                Helper helper2 = new Helper();
+                Statement stmt2 = helper2.getConnection().createStatement();
                 try {
                     System.out.println("Getting accounts...");
                     sql = "SELECT * " +
@@ -437,73 +424,76 @@ public class Teller {
                         " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
                         AccountType.STUDENT_CHECKING + "'";
                     ResultSet accounts= stmt.executeQuery(sql);
-                    //TODO: Figure out what the check to add interest is
+                    //TODO: Figure out what the check to add interest is, should be last day of the month and no interest added
                     // if(accounts.next() == false){
                     //     System.out.println("Interest has already been added for this month. No action");
                     //     return "1";
                     // }
                     System.out.println("Adding interest...");
                     while(accounts.next()){
-                        String currAccount = accounts.getString("accountID");
-                        System.out.println(currAccount);
-                        String acctType = accounts.getString("accountType");
-                        double oldBalance = accounts.getDouble("balance");
-                        double intRate = accounts.getDouble("interestRate");
+                        ArrayList<Double> dayWeights = new ArrayList<Double>();
+                        ArrayList<Double> balances = new ArrayList<Double>();
+                        String currAID = accounts.getString("accountID");
+                        double initBalance = accounts.getDouble("balance");
                         double avgBalance = 0.0;
                         //used to calculate avg daily balance
                         sql = "SELECT * " +
                                 "FROM TransactionBelongs " +
-                                "WHERE aID = " + Integer.parseInt(currAccount);
+                                "WHERE aID = " + currAID +
+                                " ORDER BY transDate DESC";
                         ResultSet transactions = stmt2.executeQuery(sql);
+                        double currDay = day;
                         while(transactions.next()){
-                            String transType = transactions.getString("transType");
-                            String transDate = transactions.getString("transDate");                            
-                            Double amount = transactions.getDouble("amount");
-                            String transSplitDate[] = transDate.split("-");
-                            //trans happened in curr month
-                            if(transSplitDate[0].equals(curSplitDate[0]) && transSplitDate[1].equals(curSplitDate[1])){
-                                //TODO: change tables 
-                                switch(transType){
-                                    case "DEPOSIT":
-                                    case "COLLECT":
-                                    case "PAYFRIEND":
-                                        amount = amount * -1;
-                                        break;
-                                    default:
-                                        break;
-                                    
-                                }
-                                transAmnts[Integer.parseInt(transSplitDate[2])] =  amount;
+                            
+                            String tDate = transactions.getString("transDate");
+                            String tMonth = "" + tDate.charAt(5) + tDate.charAt(6);
+                            String tYear = "" + tDate.charAt(0) + tDate.charAt(1) + tDate.charAt(2) + tDate.charAt(3);
+                            String tDay = "" + tDate.charAt(8) + tDate.charAt(9);
+                            if(Integer.parseInt(stringMonth)!=month || Integer.parseInt(stringYear)!=year) {
+                                continue;
                             }
-                        
-                        //avgBalance = sum(amt_i*days_i)/sum(# days)
-                        Double sumAmtDays = 0.0;
-                        Double sumDays = Double.valueOf(transAmnts.length); 
-                        int prevDay = transAmnts.length;
-                        Double prevAmt = 0.0;
-                        for(int i = transAmnts.length - 1; i >= 0; i--){
-                            if(transAmnts[i] != 0){
-                                sumAmtDays += (prevDay - i + 1) * (transAmnts[i] + prevAmt);
-                                prevDay = i;
+                            double amt = transactions.getDouble("amount");
+                            if(currDay-Double.parseDouble(tDay)!=0){
+                                dayWeights.add(currDay-Double.parseDouble(tDay));
+                                balances.add(initBalance);
+                            } 
+                            switch(transactions.getString("transType")){
+                            case "DEPOSIT":
+                            case "TRANSFER":
+                            case "WIRE":
+                            case "ACCRUEINTEREST":
+                            case "PAYFRIEND":
+                                initBalance -= amt;
+                                break;
+                            case "WRITECHECK":
+                            case "WITHDRAWAL":
+                            case "COLLECT":
+                                initBalance += amt;
+                                break;
                             }
+                            currDay = Double.parseDouble(tDay);
                         }
-                        avgBalance = sumAmtDays/sumDays;
-                        Double newBalance = avgBalance * intRate;
-                        System.out.println("New balance about to be printed.........................................");
-                        System.out.println(Double.toString(newBalance));
-                        // double interest = accounts.getDouble("interestRate")/100 * oldBalance;
+                        double bot = 0;
+                        double top = 0;
+                        for(int i=0;i<balances.size();i++){
+                            System.out.println("dayweight: "+ dayWeights.get(i) + " balance: "+balances.get(i));
+                            bot+=dayWeights.get(i);
+                            top+=balances.get(i)*dayWeights.get(i);
+                        }
+                        double newBalance = top/bot;
+                        double interestAdded = newBalance * accounts.getDouble("interestRate")/100.0;
+                        newBalance = accounts.getDouble("balance") + interestAdded;
                         try{
                             sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET balance = " + newBalance + ", interestAdded = 1" + 
-                                    " WHERE accountId = " + currAccount;
+                                    " WHERE accountId = " + currAID;
                             stmt2.executeUpdate(sql);
-                            System.out.println("added interest to: " + currAccount);
-                            helper.addTransaction(intRate, TransactionType.ACCRUEINTEREST,0,currAccount);
+                            System.out.println("New Balance: "+newBalance+" Added interest: "+ interestAdded +" To: " + currAID);
+                            helper.addTransaction(interestAdded, TransactionType.ACCRUEINTEREST,0,currAID);
                         } catch (Exception e){
                             System.out.println("Failed to add interest.");
                             System.out.println(e);
                             return "1";
-                        }
                         }
                     }
                     System.out.println("Added interest to eligible accounts.");
