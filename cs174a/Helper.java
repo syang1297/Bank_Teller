@@ -77,11 +77,10 @@ public class Helper{
                     res=res+"-";
                 } 
             }
-            return res;
         } catch (Exception e) {
-            System.out.println(e);
-            return res;
+            System.out.println(e); 
         }
+        return res;
     }
     //verifies supplied taxID exists in database
     boolean verifyTaxIDExists(int taxID){
@@ -198,11 +197,44 @@ public class Helper{
 
     //TODO: creates new transaction id, using random rn
     String newTransactionID(){
-        int max = 10000; 
-        int min = 1; 
-        int range = max - min + 1; 
-        int rand = (int)(Math.random() * range) + min; 
-        return Integer.toString(rand);
+        // int max = 10000; 
+        // int min = 1; 
+        // int range = max - min + 1; 
+        // int rand = (int)(Math.random() * range) + min; 
+        // return Integer.toString(rand);
+        int maxTID = 1;
+        try {
+            Statement stmt = _connection.createStatement();
+            try {
+                //checks if trans table empty
+                String sql = "SELECT * FROM TransactionBelongs";
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next()){
+                    try {
+                        sql = "SELECT MAX(transactionID) FROM TransactionBelongs";
+                        rs = stmt.executeQuery(sql);
+                        if(rs.next()){
+                            maxTID = rs.getInt(1);
+                            maxTID+=1;
+                        }
+                        rs.close();
+                    } catch (Exception e) {
+                        System.out.println("Failed to get max transaction ID from TransactionBelongs");
+                        System.out.println(e);
+                        return "-1";
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to check if TransactionBelongs is empty");
+                System.out.println(e);
+                return "-1";
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+            return "-1";
+        }
+        return Integer.toString(maxTID);
     }
 
     boolean accountIdExists(String accountID, String table){

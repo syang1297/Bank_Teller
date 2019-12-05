@@ -20,3 +20,9 @@
 -how to store top-up transactions
 -rewrite customer functions to use its own taxID
 -rewrite teller functions to take taxID as argument and init customer object where needed
+-add otherAccountId into TransactionBelongs table
+-set date doesn't set correctly
+-seperate accrue interest and add interest so that add interest called accrue interest
+-update monthly statement after adding another var to transaction table
+-accrue interest transaction
+-figure out what the check to add interest is
