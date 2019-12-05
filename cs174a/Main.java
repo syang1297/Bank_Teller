@@ -111,7 +111,7 @@ public class Main
 			coOwners.add(1111);
 			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
 			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
-
+			teller.addInterest();
 		}
 	}
 	//!### FINALIZAMOS

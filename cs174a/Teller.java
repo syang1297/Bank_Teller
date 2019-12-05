@@ -4,6 +4,7 @@ import cs174a.Customer.*;
 import cs174a.Testable.*;
 import cs174a.App.*;
 import java.util.*;
+import cs174a.Helper.*;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -171,6 +172,61 @@ public class Teller {
     //when logging interest is added to transaction table please make amount = the amount we are ADDING
     //NOT THE TOTAL AMOUNT
     void addInterest(){
+        String sql = "";
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
+            final String DB_USER = "c##andrewdoan";
+            final String DB_PASSWORD = "3772365";
+
+            // Initialize your system.  Probably setting up the DB connection.
+            Properties info = new Properties();
+            info.put( OracleConnection.CONNECTION_PROPERTY_USER_NAME, DB_USER );
+            info.put( OracleConnection.CONNECTION_PROPERTY_PASSWORD, DB_PASSWORD );
+            info.put( OracleConnection.CONNECTION_PROPERTY_DEFAULT_ROW_PREFETCH, "20" );
+            try {
+                OracleDataSource ods = new OracleDataSource();
+                ods.setURL( DB_URL );
+                ods.setConnectionProperties( info );
+                OracleConnection _connection = (OracleConnection) ods.getConnection();
+                Statement stmt2 = _connection.createStatement();
+                try {
+                    System.out.println("Getting accounts...");
+                    sql = "SELECT * " +
+                        "FROM AccountPrimarilyOwns" + 
+                        " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "'";
+                    ResultSet accounts= stmt.executeQuery(sql);
+                    System.out.println("Adding interest...");
+                    while(accounts.next()){
+                        String currAccount = accounts.getString("accountID");
+                        double oldBalance = accounts.getDouble("balance");
+                        double interest = accounts.getDouble("interestRate")/100 * oldBalance;
+                        try{
+                            sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET balance = " + (oldBalance + interest) + ", interestAdded = 1" + 
+                                    " WHERE accountId = " + currAccount;
+                            stmt2.executeUpdate(sql);
+                            System.out.println("added interest to: " + currAccount);
+                            helper.addTransaction(interest, TransactionType.ACCRUEINTEREST,0,currAccount);
+                        } catch (Exception e){
+                            System.out.println("Failed to add interest.");
+                            System.out.println(e);
+                            return;
+                        }
+                    }
+                    System.out.println("Added interest to eligible accounts.");
+                    } catch(Exception e){
+                    System.out.println("Failed to get accounts");
+                    System.out.println(e);
+                }
+            } catch( SQLException e )
+                {
+                    System.err.println( e.getMessage() );
+                }
+         } catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
         return;
     }
 
