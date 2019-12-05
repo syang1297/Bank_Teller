@@ -80,10 +80,11 @@ public class Main
 			// System.out.println(atm.collect(1234,1,20));
 			// System.out.println(atm.wire(1234,1233,19));
 			Teller teller = new Teller (4321,app);
-			System.out.println(teller.customerOwnsAccount("4321","1234"));
-			teller.changeInterestRate(1234,1.4);
-			teller.deleteTransactionHistory();
-			teller.deleteCustomers();
+			System.out.println(teller.generateMonthly(1234));
+			// System.out.println(teller.customerOwnsAccount("4321","1234"));
+			// teller.changeInterestRate(1234,1.4);
+			// teller.deleteTransactionHistory();
+			// teller.deleteCustomers();
 		}
 	}
 	//!### FINALIZAMOS

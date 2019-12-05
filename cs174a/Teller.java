@@ -42,7 +42,7 @@ public class Teller {
             List<Integer> accountCustomers = new ArrayList<Integer>();
             try {
                 Statement stmt = helper.getConnection().createStatement();
-                //get all customers in AccountPrimarilyOwns that owns that account
+                //get primary customer in AccountPrimarilyOwns that owns 
                 try {
                     Double endBalance = 0.0;
                     Double initBalance = 0.0;
@@ -170,7 +170,12 @@ public class Teller {
     //add monthly interest to all open accounts if it hasnt been added yet
     //when logging interest is added to transaction table please make amount = the amount we are ADDING
     //NOT THE TOTAL AMOUNT
+    //set interestAdded for month data
+    //check if interest has been added... if so, generate warning and return
+    //weighted avg based on days
     void addInterest(){
+        String month = helper.getDate();
+
         return;
     }
 
