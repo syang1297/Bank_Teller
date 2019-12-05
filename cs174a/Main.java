@@ -133,7 +133,7 @@ public class Main
 				System.out.println(res2.get(i));
 			}
 			teller.addInterest();
-			
+			teller.writeCheck(1234,100);
 		}
 	}
 	//!### FINALIZAMOS

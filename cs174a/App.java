@@ -1129,6 +1129,10 @@ public class App implements Testable
 					return "1";
 				}
 				System.out.println("Pocket accounts exist.");
+				if(fromBalance - 5 - amount<=0){
+					System.out.println("Not enough money in account.");
+					return "1";
+				}
 				if(toFeePaid == 0){
 					System.out.println("Paying to account fee...");
 					toBalance = amount + toBalance - 5;

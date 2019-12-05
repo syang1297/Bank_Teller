@@ -49,7 +49,7 @@ public class ATM {
 
     //subtracts amount from account associated w/ accountID
     //TODO: check accountID belongs to customer and account is checkings or savings
-    /* returns 1 if failed... if success, returns 0 oldBalance newBalance */
+    /* returns 1 if failed... if success, returns .1 oldBalance newBalance */
     String withdraw(String accountID, double amount){
         int aid = 0;
 		String dbID = "";
@@ -100,7 +100,7 @@ public class ATM {
 					try {
 						System.out.println("Updating balances...");
                         newBalance = oldBalance - amount;
-                        if(newBalance < 0.0){
+                        if(newBalance < 0.01){
                             System.out.println("Cannot withdraw more money than there is.");
                             return "1";
                         }
@@ -201,6 +201,10 @@ public class ATM {
                     }
                 }
                 Double newBalance = oldBalance - amount;
+                if(newBalance <= 0.01 ){
+                    System.out.println("Purchase cannot be made bc not enough funds in pocket: "+newBalance);
+                    return "1";
+                }
                 if(feePaid == 0){
                     try{
                          newBalance -= 5;
@@ -214,10 +218,7 @@ public class ATM {
                         return "1";
                     }
                 }
-                if(newBalance <= 0 ){
-                    System.out.println("Purchase cannot be made bc not enough funds in pocket: "+newBalance);
-                    return "1";
-                }
+                
                 sql = "UPDATE AccountPrimarilyOwns " +
                             "SET balance = " + Double.toString(newBalance) + 
                             "WHERE accountId = " + accountID;
@@ -289,7 +290,7 @@ public class ATM {
                             System.out.println("Destination account already marked for closed... Can't transer");
                             return "1";
                         }
-                        if(fromBalance2 <= 0){
+                        if(fromBalance2 <= 0.01){
                             System.out.println("Can't transfer bc from account will have negative/0 balance");
                             return "1";
                         }
@@ -484,7 +485,7 @@ public class ATM {
                             return "1";
                         }
                         System.out.println("Update accounts...");
-                        if(fromBalance2 <= 0){
+                        if(fromBalance2 <= 0.01){
                             System.out.println("Can't transfer bc from account will have negative/0 balance");
                             return "1";
                         }

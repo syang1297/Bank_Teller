@@ -26,10 +26,73 @@ public class Teller {
     }
 
     //add check transaction to an account 
-    void depositCheck(int checkNo, int accountID, double amount){
+    void writeCheck(int accountID, double amount){
+        String sql="";
+        try{
+                Statement stmt = helper.getConnection().createStatement();
+                double newBalance = 0;
+            try {
+                sql = "SELECT * FROM AccountPrimarilyOwns WHERE accountID = "+accountID;
+                ResultSet rs =stmt.executeQuery(sql);
+                while(rs.next()){
+                    newBalance = rs.getDouble("balance")-amount;
+                }
+            } catch(Exception e){
+                System.out.println("Failed to get balance");
+                System.out.println(e);
+            }
+            try {
+                sql = "UPDATE AccountPrimarilyOwns SET balance = " + newBalance +
+                " WHERE accountID = "+accountID;
+                stmt.executeUpdate(sql);
+                System.out.println("Wrote check.");
+            } catch(Exception e){
+            System.out.println("Failed to update balance");
+            System.out.println(e);
+            }
+         }catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
+        helper.addTransaction(amount, TransactionType.WRITECHECK, getCheckNumber(),Integer.toString(accountID));
         return;
     }
 
+    int getCheckNumber(){
+        int maxCheckNo = 1;
+        try {
+            Statement stmt = helper.getConnection().createStatement();
+            try {
+                //checks if trans table empty
+                String sql = "SELECT * FROM TransactionBelongs";
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next()){
+                    try {
+                        sql = "SELECT MAX(checkNo) FROM TransactionBelongs";
+                        rs = stmt.executeQuery(sql);
+                        if(rs.next()){
+                            maxCheckNo = rs.getInt(1);
+                            maxCheckNo+=1;
+                        }
+                        rs.close();
+                    } catch (Exception e) {
+                        System.out.println("Failed to get max transaction ID from TransactionBelongs");
+                        System.out.println(e);
+                        return 0;
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to check if TransactionBelongs is empty");
+                System.out.println(e);
+                return 0;
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+            return 0;
+        }
+        return maxCheckNo;
+    }
     //create monthly report for a customers accounts showing all transacation data in the last month,
     //names, addresses of accounts, initial and final account balance, message if accounts of customer is primary owner
     //exceeds 100000
