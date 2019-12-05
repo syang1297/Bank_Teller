@@ -94,7 +94,17 @@ public class Main
 				System.out.println(e);
 			}
 			teller.deleteCustomers();
-			
+			sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1" + 
+                                    " WHERE accountId = 1";
+			try{
+				Statement stmt = helper.getConnection().createStatement();
+				stmt.executeUpdate(sql);
+				
+			} catch (Exception e){
+				System.out.println(e);
+			}
+			teller.deleteClosedAccounts();
 		}
 	}
 	//!### FINALIZAMOS

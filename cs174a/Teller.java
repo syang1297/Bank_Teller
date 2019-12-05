@@ -84,6 +84,7 @@ public class Teller {
                 String sql = "DELETE FROM AccountPrimarilyOwns " +
                             "WHERE isClosed = 1";
                 stmt.executeUpdate(sql);
+                System.out.println("Deleted closed accounts")
             } catch (Exception e) {
                 System.out.println("Failed to deleteClosedAccounts()");
                 System.out.println(e);
