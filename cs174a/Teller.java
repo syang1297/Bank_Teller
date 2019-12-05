@@ -24,7 +24,7 @@ public class Teller {
         this.app = app;
     }
 
-    //add check transaction to an account
+    //add check transaction to an account 
     void depositCheck(int checkNo, int accountID, double amount){
         return;
     }
@@ -154,9 +154,28 @@ public class Teller {
         return res;
     }
 
-    //list accounts closed for a customer in the last month
-    List<List<String>> listClosedAccounts(int taxID){
-        return null;
+    //list accounts closed in the last month
+    List<String> listClosedAccounts(){
+        ArrayList<String> res = new ArrayList<String>();
+        res.add("\n-------------CLOSED ACCOUNTS-------------\n");
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            try{
+                String sql = "SELECT * FROM AccountPrimarilyOwns WHERE isClosed = 1";
+                ResultSet accounts = stmt.executeQuery(sql);
+                while(accounts.next()){
+                    String account = "ACCOUNTID: " + accounts.getString("accountID") + " PRIMARY OWNER: " + accounts.getString("taxID");
+                    res.add(account);
+                }
+                } catch(Exception e){
+                System.out.println("Failed to get accounts.");
+                System.out.println(e);
+            }
+        } catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
+        return res;
     }
 
     //generate list of customers with deposits, transfers, and wires over 10000 in a month over opened and closed accounts

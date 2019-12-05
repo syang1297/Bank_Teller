@@ -104,7 +104,7 @@ public class Main
 			} catch (Exception e){
 				System.out.println(e);
 			}
-			teller.deleteClosedAccounts();
+			//teller.deleteClosedAccounts();
 			ArrayList<Integer> coOwners = new ArrayList();
 			teller.createAccount(AccountType.SAVINGS,coOwners,1000.0,"1235","-1");
 			app.createCustomer("1234", "1111","Andrew","66 Sueno");
@@ -126,6 +126,14 @@ public class Main
 			for(int i=0;i<res2.size();i++){
 				System.out.println(res2.get(i));
 			}
+			res2 = teller.listClosedAccounts();
+			if(res2.size()<1){
+				res2.add("No accounts");
+			}
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
+
 		}
 	}
 	//!### FINALIZAMOS
