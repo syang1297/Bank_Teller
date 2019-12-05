@@ -11,3 +11,9 @@
 -when to close pocket accounts and what to do with them in that case
 -putting money from pocket back to linked account
 -switch primary owner function
+-add write-check function, add write-check to add transaction
+-figure out how we want to store 2 transactions
+-store balances as integers and not doubles
+-test edge cases
+-add fee to transaction table
+-take $5 fee and 3% thingy for addtransaction in collect and purchase
