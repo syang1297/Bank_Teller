@@ -17,3 +17,5 @@
 -test edge cases
 -add fee to transaction table
 -take $5 fee and 3% thingy for addtransaction in collect and purchase
+-add otherAccountId into TransactionBelongs table
+-set date doesn't set correctly

@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.pool.OracleDataSource;
+// import oracle.jdbc.*;
 import java.sql.SQLException;
 
 public class Teller {
@@ -217,13 +218,15 @@ public class Teller {
     //set interestAdded for month data
     //check if interest has been added... if so, generate warning and return
     //weighted avg based on days
-    void addInterest(){
+    String addInterest(){
         String sql = "";
+        String currDate = helper.getDate();
+
         try{
             Statement stmt = helper.getConnection().createStatement();
             final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-            final String DB_USER = "c##andrewdoan";
-            final String DB_PASSWORD = "3772365";
+            final String DB_USER = "c##syang01";
+            final String DB_PASSWORD = "4621538";
 
             // Initialize your system.  Probably setting up the DB connection.
             Properties info = new Properties();
@@ -240,24 +243,43 @@ public class Teller {
                     System.out.println("Getting accounts...");
                     sql = "SELECT * " +
                         "FROM AccountPrimarilyOwns" + 
-                        " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "'";
+                        " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
+                        AccountType.STUDENT_CHECKING + "'";
                     ResultSet accounts= stmt.executeQuery(sql);
+                    if(accounts.next() == false){
+                        System.out.println("Interest has already been added for this month. No action");
+                        return "1";
+                    }
                     System.out.println("Adding interest...");
                     while(accounts.next()){
                         String currAccount = accounts.getString("accountID");
+                        String acctType = accounts.getString("accountType");
                         double oldBalance = accounts.getDouble("balance");
-                        double interest = accounts.getDouble("interestRate")/100 * oldBalance;
+                        double intRate = accounts.getDouble("interestRate");
+                        double avgBalance = 0.0;
+                        //used to calculate avg daily balance
+                        sql = "SELECT * " +
+                                "FROM TransactionBelongs " +
+                                "WHERE aID = " + Integer.parseInt(currAccount);
+                        ResultSet transactions = stmt.executeQuery(sql);
+                        while(transactions.next()){
+                            String transType = transactions.getString("transType");
+                            String transDate = transactions.getString("transDate");
+                            double amount = transactions.getDouble("amount");
+
+                        }
+                        // double interest = accounts.getDouble("interestRate")/100 * oldBalance;
                         try{
                             sql = "UPDATE AccountPrimarilyOwns " +
-                                    "SET balance = " + (oldBalance + interest) + ", interestAdded = 1" + 
+                                    "SET balance = " + (oldBalance + intRate) + ", interestAdded = 1" + 
                                     " WHERE accountId = " + currAccount;
                             stmt2.executeUpdate(sql);
                             System.out.println("added interest to: " + currAccount);
-                            helper.addTransaction(interest, TransactionType.ACCRUEINTEREST,0,currAccount);
+                            helper.addTransaction(intRate, TransactionType.ACCRUEINTEREST,0,currAccount);
                         } catch (Exception e){
                             System.out.println("Failed to add interest.");
                             System.out.println(e);
-                            return;
+                            return "1";
                         }
                     }
                     System.out.println("Added interest to eligible accounts.");
@@ -273,7 +295,7 @@ public class Teller {
             System.out.println("Failed to create statement");
             System.out.println(e);
         }
-        return;
+        return "0";
     }
 
     //create new account and store on db
@@ -336,8 +358,8 @@ public class Teller {
                         "FROM Customer";
                 ResultSet customers = stmt.executeQuery(sql);
                 final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-                final String DB_USER = "c##andrewdoan";
-                final String DB_PASSWORD = "3772365";
+                final String DB_USER = "c##syang01";
+                final String DB_PASSWORD = "4621538";
 
                 // Initialize your system.  Probably setting up the DB connection.
                 Properties info = new Properties();

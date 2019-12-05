@@ -64,8 +64,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##andrewdoan";
-		final String DB_PASSWORD = "3772365";
+		final String DB_USER = "c##syang01";
+		final String DB_PASSWORD = "4621538";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -364,12 +364,32 @@ public class App implements Testable
 				System.out.println("Connecting to database...............");
 				Statement stmt = _connection.createStatement();
 				System.out.println("Writing to table GlobalDate");
-				try{
-					String sqlDate = "1,"+stringYear+stringMonth+stringDay;
-					String sql = "INSERT INTO GlobalDate VALUES ("+sqlDate+")";
-					stmt.executeUpdate(sql);
-				} catch(Exception e) {
-					System.out.println("Failed to write date to DB.");
+				String sqlDate = "1,"+stringYear+stringMonth+stringDay;
+				try {
+					String empty = "SELECT * FROM GlobalDate";
+					ResultSet rs = stmt.executeQuery(empty);
+					if(rs.next() == false){
+						//empty
+						try{
+							String sql = "INSERT INTO GlobalDate VALUES ("+sqlDate+")";
+							stmt.executeUpdate(sql);
+						} catch(Exception e) {
+							System.out.println("Failed to write date to DB.");
+							System.out.println(e);
+						}
+					}else{
+						//not empty so should update value
+						// System.out.println(sqlDate);
+						try {
+							String updatesql = "UPDATE GlobalDate SET globalDate = '" + sqlDate + "'";
+							stmt.executeUpdate(updatesql);
+						} catch (Exception e) {
+							System.out.println("Failed to update date to DB");
+							System.out.println(e);
+						}
+					}
+				} catch (Exception e) {
+					System.out.println("Failed to check if global date needs to be updated or inserted");
 					System.out.println(e);
 				}
 			} catch (Exception e) {
