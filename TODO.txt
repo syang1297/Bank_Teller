@@ -27,3 +27,4 @@
 -accrue interest transaction
 -figure out what the check to add interest is
 -check if a transaction will make a balance go below $0.01, not 0
+-make sure every pocket account is being checked if they paid fee yet

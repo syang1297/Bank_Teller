@@ -34,7 +34,36 @@ public class ATM {
     //update account balance
     //check accountID belongs to customer and that it's checkings or savings account
     void deposit(double balance, int accountID){
-        return;
+        String type = "";
+        try{
+			Statement stmt = helper.getConnection().createStatement();
+            
+			try {
+				System.out.println("Checking if accountID exists...");
+				String sql = "SELECT * FROM AccountPrimarilyOwns WHERE accountID = "+accountID;
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					type = rs.getInt("accountType");
+
+				}
+				if(accountExists == false){
+					System.out.println("Account doesn't exist");
+					rs.close();
+					return "1";
+				}
+                }catch (Exception e){
+				System.out.println("Failed to check if account exists");
+				System.out.println(e);
+				return result;
+			}
+		}catch (Exception e){
+			System.out.println("Failed to create statement in showBalance");
+			System.out.println(e);
+			return result;
+		}
+        if(customer.acctBelongsToCustomer(accountID,customer.getTaxID(),type)){
+            app.deposit(Integer.parseString(accountID),balance);
+        }
     }
 
     //checks accountID is for a pocket account
