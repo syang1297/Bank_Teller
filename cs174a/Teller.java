@@ -221,6 +221,13 @@ public class Teller {
     String addInterest(){
         String sql = "";
         String currDate = helper.getDate();
+        //index 0 = year, 1 = month, 2 = date
+        String curSplitDate[] = currDate.split("-");
+        //allocates array to strings to store month's trans info up to size of the current date
+        Double[] transAmnts = new Double[Integer.parseInt(curSplitDate[2])];
+        for(int i = 0; i < transAmnts.length; i++){
+            transAmnts[i] = 0.0;
+        }
 
         try{
             Statement stmt = helper.getConnection().createStatement();
@@ -246,13 +253,15 @@ public class Teller {
                         " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
                         AccountType.STUDENT_CHECKING + "'";
                     ResultSet accounts= stmt.executeQuery(sql);
-                    if(accounts.next() == false){
-                        System.out.println("Interest has already been added for this month. No action");
-                        return "1";
-                    }
+                    //TODO: Figure out what the check to add interest is
+                    // if(accounts.next() == false){
+                    //     System.out.println("Interest has already been added for this month. No action");
+                    //     return "1";
+                    // }
                     System.out.println("Adding interest...");
                     while(accounts.next()){
                         String currAccount = accounts.getString("accountID");
+                        System.out.println(currAccount);
                         String acctType = accounts.getString("accountType");
                         double oldBalance = accounts.getDouble("balance");
                         double intRate = accounts.getDouble("interestRate");
@@ -261,17 +270,47 @@ public class Teller {
                         sql = "SELECT * " +
                                 "FROM TransactionBelongs " +
                                 "WHERE aID = " + Integer.parseInt(currAccount);
-                        ResultSet transactions = stmt.executeQuery(sql);
+                        ResultSet transactions = stmt2.executeQuery(sql);
                         while(transactions.next()){
                             String transType = transactions.getString("transType");
-                            String transDate = transactions.getString("transDate");
-                            double amount = transactions.getDouble("amount");
-
+                            String transDate = transactions.getString("transDate");                            
+                            Double amount = transactions.getDouble("amount");
+                            String transSplitDate[] = transDate.split("-");
+                            //trans happened in curr month
+                            if(transSplitDate[0].equals(curSplitDate[0]) && transSplitDate[1].equals(curSplitDate[1])){
+                                //TODO: change tables 
+                                switch(transType){
+                                    case "DEPOSIT":
+                                    case "COLLECT":
+                                    case "PAYFRIEND":
+                                        amount = amount * -1;
+                                        break;
+                                    default:
+                                        break;
+                                    
+                                }
+                                transAmnts[Integer.parseInt(transSplitDate[2])] =  amount;
+                            }
+                        
+                        //avgBalance = sum(amt_i*days_i)/sum(# days)
+                        Double sumAmtDays = 0.0;
+                        Double sumDays = Double.valueOf(transAmnts.length); 
+                        int prevDay = transAmnts.length;
+                        Double prevAmt = 0.0;
+                        for(int i = transAmnts.length - 1; i >= 0; i--){
+                            if(transAmnts[i] != 0){
+                                sumAmtDays += (prevDay - i + 1) * (transAmnts[i] + prevAmt);
+                                prevDay = i;
+                            }
                         }
+                        avgBalance = sumAmtDays/sumDays;
+                        Double newBalance = avgBalance * intRate;
+                        System.out.println("New balance about to be printed.........................................");
+                        System.out.println(Double.toString(newBalance));
                         // double interest = accounts.getDouble("interestRate")/100 * oldBalance;
                         try{
                             sql = "UPDATE AccountPrimarilyOwns " +
-                                    "SET balance = " + (oldBalance + intRate) + ", interestAdded = 1" + 
+                                    "SET balance = " + newBalance + ", interestAdded = 1" + 
                                     " WHERE accountId = " + currAccount;
                             stmt2.executeUpdate(sql);
                             System.out.println("added interest to: " + currAccount);
@@ -280,6 +319,7 @@ public class Teller {
                             System.out.println("Failed to add interest.");
                             System.out.println(e);
                             return "1";
+                        }
                         }
                     }
                     System.out.println("Added interest to eligible accounts.");

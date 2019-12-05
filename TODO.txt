@@ -19,3 +19,7 @@
 -take $5 fee and 3% thingy for addtransaction in collect and purchase
 -add otherAccountId into TransactionBelongs table
 -set date doesn't set correctly
+-seperate accrue interest and add interest so that add interest called accrue interest
+-update monthly statement after adding another var to transaction table
+-accrue interest transaction
+-figure out what the check to add interest is

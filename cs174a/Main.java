@@ -32,28 +32,38 @@ public class Main
 		if( r.equals( "0" ) )
 		{
 			app.dropTables();
-
+			Helper helper= new Helper();
 			//for testing app.java
 			r = app.createTables();
-			app.setDate(2018, 3, 7);
+			app.setDate(2018, 2, 7);
 
 	// 		r = app.setDate(4000, 2, 18);
-	// 		r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
-	// 		r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1233", 1000.00, "4321", "Bob", "66 DP");
-	// 		r = app.createPocketAccount("1", "1234", 100.0, "4321");
-	// 		r = app.createPocketAccount("2", "1234", 100.0, "4321");
+			r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
+			app.setDate(2018, 3, 7);
+
+			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1233", 1000.00, "4321", "Bob", "66 DP");
+			app.setDate(2018, 3, 11);
+			r = app.createPocketAccount("1", "1234", 100.0, "4321");
+			r = app.createPocketAccount("2", "1234", 100.0, "4321");
 	// 		r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
-	// 		r = app.deposit("1234",1000.00);
-	// 		r = app.topUp("1", 200.00);
-	// 		r = app.topUp("2", 100.00);
-	// 		r = app.payFriend("1","2",50);
+			app.setDate(2018, 3, 17);
+			r = app.deposit("1234",1000.00);
+			r = app.topUp("1", 200.00);
+			// app.setDate(2018, 4, 1);
+			// r = app.topUp("2", 100.00);
+			// app.setDate(2019, 2, 1);
+			r = app.payFriend("1","2",50);
+			app.setDate(2018, 3, 21);
+			System.out.println(helper.getDate());
+			Teller teller = new Teller(1234, app);
+			System.out.println(teller.addInterest());
 	// 		r = app.listClosedAccounts();
 	// 		//for testing customer.java
-			Helper helper= new Helper();
-			r = helper.getDate();
-			System.out.println(r);
-			app.setDate(2018, 4, 7);
-			r = helper.getDate();
+			// Helper helper= new Helper();
+			// r = helper.getDate();
+			// System.out.println(r);
+			// r = helper.getDate();
+			// System.out.println(r);
 
 			// app.dropTables();
 

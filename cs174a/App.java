@@ -183,7 +183,7 @@ public class App implements Testable
 			Statement stmt = _connection.createStatement();
 			try {
 				System.out.println("Creating table GlobalDate");
-				String sql = "CREATE TABLE GlobalDate (" + 
+				String sql = "CREATE TABLE GlobalDate(" + 
 								"num INTEGER,"+
 								"globalDate VARCHAR(10),"+ 
 								"PRIMARY KEY (num))";
@@ -364,14 +364,14 @@ public class App implements Testable
 				System.out.println("Connecting to database...............");
 				Statement stmt = _connection.createStatement();
 				System.out.println("Writing to table GlobalDate");
-				String sqlDate = "1,"+stringYear+stringMonth+stringDay;
+				String sqlDate = stringYear+stringMonth+stringDay;
 				try {
 					String empty = "SELECT * FROM GlobalDate";
 					ResultSet rs = stmt.executeQuery(empty);
 					if(rs.next() == false){
 						//empty
 						try{
-							String sql = "INSERT INTO GlobalDate VALUES ("+sqlDate+")";
+							String sql = "INSERT INTO GlobalDate VALUES (1, "+sqlDate+")";
 							stmt.executeUpdate(sql);
 						} catch(Exception e) {
 							System.out.println("Failed to write date to DB.");
