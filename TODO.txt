@@ -17,3 +17,6 @@
 -test edge cases
 -add fee to transaction table
 -take $5 fee and 3% thingy for addtransaction in collect and purchase
+-how to store top-up transactions
+-rewrite customer functions to use its own taxID
+-rewrite teller functions to take taxID as argument and init customer object where needed
