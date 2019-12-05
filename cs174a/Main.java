@@ -119,7 +119,7 @@ public class Main
 			for(int i=0;i<res2.size();i++){
 				System.out.println("Account status: " + res2.get(i));
 			}
-			res2 = teller.generateMonthly(4321);
+			res2 = teller.generateMonthly(1111);
 			if(res2.size()<1){
 				res2.add("No accounts");
 			}
@@ -127,6 +127,7 @@ public class Main
 				System.out.println(res2.get(i));
 			}
 			System.out.println(teller.listClosedAccounts());
+			app.deposit("1234",10000.00);
 
 		}
 	}
