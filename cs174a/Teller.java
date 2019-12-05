@@ -155,27 +155,8 @@ public class Teller {
     }
 
     //list accounts closed in the last month
-    List<String> listClosedAccounts(){
-        ArrayList<String> res = new ArrayList<String>();
-        res.add("\n-------------CLOSED ACCOUNTS-------------\n");
-        try{
-            Statement stmt = helper.getConnection().createStatement();
-            try{
-                String sql = "SELECT * FROM AccountPrimarilyOwns WHERE isClosed = 1";
-                ResultSet accounts = stmt.executeQuery(sql);
-                while(accounts.next()){
-                    String account = "ACCOUNTID: " + accounts.getString("accountID") + " PRIMARY OWNER: " + accounts.getString("taxID");
-                    res.add(account);
-                }
-                } catch(Exception e){
-                System.out.println("Failed to get accounts.");
-                System.out.println(e);
-            }
-        } catch(Exception e){
-            System.out.println("Failed to create statement");
-            System.out.println(e);
-        }
-        return res;
+    String listClosedAccounts(){
+        return app.listClosedAccounts();
     }
 
     //generate list of customers with deposits, transfers, and wires over 10000 in a month over opened and closed accounts

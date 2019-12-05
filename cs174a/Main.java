@@ -126,13 +126,7 @@ public class Main
 			for(int i=0;i<res2.size();i++){
 				System.out.println(res2.get(i));
 			}
-			res2 = teller.listClosedAccounts();
-			if(res2.size()<1){
-				res2.add("No accounts");
-			}
-			for(int i=0;i<res2.size();i++){
-				System.out.println(res2.get(i));
-			}
+			System.out.println(teller.listClosedAccounts());
 
 		}
 	}

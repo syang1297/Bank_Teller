@@ -1191,34 +1191,24 @@ public class App implements Testable
 	 */
 	@Override
 	public String listClosedAccounts(){
-		//get all accountIDs which are closed and print
-		//includes pocket accounts
-		//return "0" if where are no closed accounts
-		String result = "0";
-
-		try {
-			Statement stmt = _connection.createStatement();
-			try {
-				String sql = "SELECT * " + 
-								"FROM AccountPrimarilyOwns " +
-								"WHERE isClosed = 1";
-				ResultSet rs = stmt.executeQuery(sql);
-				while(rs.next()){
-					result += rs.getString("accountID");
-					result += "\n";
-				}
-				// return result;
-			} catch (Exception e) {
-				System.out.println("Failed to select accountID from AccountPrimarilyOwns");
-				System.out.println(e);
-				return "1";
-			}
-		} catch (Exception e) {
-			System.out.println("Failed to create statement");
-			System.out.println(e);
-			return "1";
-		}
-		return result;
+		String res = "\n-------------CLOSED ACCOUNTS-------------\n";
+        try{
+            Statement stmt = helper.getConnection().createStatement();
+            try{
+                String sql = "SELECT * FROM AccountPrimarilyOwns WHERE isClosed = 1";
+                ResultSet accounts = stmt.executeQuery(sql);
+                while(accounts.next()){
+                    res = res + "ACCOUNTID: " + accounts.getString("accountID") + " PRIMARY OWNER: " + accounts.getString("taxID") +"\n";
+                }
+                } catch(Exception e){
+                System.out.println("Failed to get accounts.");
+                System.out.println(e);
+            }
+        } catch(Exception e){
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
+		return res;
 	}
 
 
