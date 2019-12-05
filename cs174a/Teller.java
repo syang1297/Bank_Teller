@@ -36,7 +36,7 @@ public class Teller {
         Map<Integer, String> owners = new HashMap<Integer, String>();
         Map<Integer, String> accountTransactions = new HashMap<Integer, String>();
         List<Integer> res=customer.getAccountIDs(taxID,AccountType.STUDENT_CHECKING);
-        List<Triplet> allAccountBalances = new ArrayList<Triplet>();
+        // List<Triplet> allAccountBalances = new ArrayList<Triplet>();
         for(int i =0;i<res.size();i++){
             String customerInfo = "";
             List<Integer> accountCustomers = new ArrayList<Integer>();
@@ -44,14 +44,14 @@ public class Teller {
                 Statement stmt = helper.getConnection().createStatement();
                 //get all customers in AccountPrimarilyOwns that owns that account
                 try {
-                    Double endBalance = "";
-                    Double initBalance = "";
+                    Double endBalance = 0.0;
+                    Double initBalance = 0.0;
                     String sql = "SELECT * " +
                                     "FROM AccountPrimarilyOwns " +
                                     "WHERE accountID = " + Integer.toString(res.get(i));
                     ResultSet rs = stmt.executeQuery(sql);
                     while(rs.next()){
-                        accountCustomers.add(rs.getInteger("taxID"));
+                        accountCustomers.add(rs.getInt("taxID"));
                         endBalance = rs.getDouble("balance");
                     }
                     rs.close();
@@ -62,7 +62,7 @@ public class Teller {
                                 "WHERE aID = " + Integer.toString(res.get(i));
                         rs = stmt.executeQuery(sql);
                         while(rs.next()){
-                            accountCustomers.add(rs.getInteger("tID"));
+                            accountCustomers.add(rs.getInt("tID"));
                         }
                         rs.close();
                         try {
@@ -86,7 +86,7 @@ public class Teller {
                                 while(rs.next()){
                                     String trans = "";
                                     trans += rs.getString("transType") + " " + rs.getString("transDate") + 
-                                            " " + Double.toString(rs.getDouble(amount));
+                                            " " + Double.toString(rs.getDouble("amount"));
                                     trans += "\n" + "Account Initial Balance: " + initBalance + "........" + "Account Final Balance: " + endBalance + "\n";
                                     double amt = rs.getDouble("amount");
                                     //TODO: check if adding/subtracting amount is correct after all transactions have been implemented
@@ -111,8 +111,8 @@ public class Teller {
                                             break;
                                     }
                                     accountTransactions.put(res.get(i), trans);
-                                    Triplet<Integer, Double, Double> accountBalances = new Triplet<Integer, Double, Double>(res.get(i), endBalance, initBalance);
-                                    allAccountBalances.add(accountBalances);
+                                    // Triplet<Integer, Double, Double> accountBalances = new Triplet<Integer, Double, Double>(res.get(i), endBalance, initBalance);
+                                    // allAccountBalances.add(accountBalances);
                                 }
                                 rs.close();
                             } catch (Exception e) {
@@ -140,7 +140,7 @@ public class Teller {
                 System.out.println(e);
                 return "1";
             }
-            monthly.put(res.get(i), own);
+            // monthly.put(res.get(i), own);
         }
         //CHECK IF BALANCES EXCEED 100,000
         //PRINT STATEMENT
@@ -148,6 +148,7 @@ public class Teller {
         // res = customer.getAccountIDs(taxID, AccountType.INTEREST_CHECKING);
         // res = customer.getAccountIDs(taxID, AccountType.SAVINGS);
         // res = customer.getAccountIDs(taxID, AccountType.POCKET);
+        return "1";
     }
 
     //list accounts closed for a customer in the last month
@@ -221,7 +222,7 @@ public class Teller {
             Statement stmt = helper.getConnection().createStatement();
             try {
                 sql = "SELECT * " +
-                 "FROM Customer";
+                        "FROM Customer";
                 ResultSet customers = stmt.executeQuery(sql);
                 while(customers.next()){
                     boolean noPrimary = true;
@@ -235,6 +236,7 @@ public class Teller {
                         if(rs.next() == false){
                             noPrimary = true;
                         }
+                        rs.close();
                     } catch (Exception e) {
                         System.out.println("Failed to check AccountPrimarilyOwns");
                         System.out.println(e);
@@ -247,6 +249,7 @@ public class Teller {
                         if(rs.next() == false){
                             noSecondary = true;
                         }
+                        rs.close();
                     } catch (Exception e) {
                         System.out.println("Failed to check Owns");
                         System.out.println(e);
@@ -264,6 +267,7 @@ public class Teller {
                     }
                     
                 }
+                customers.close();
             } catch(Exception e){
                 System.out.println("Failed to get customers");
                 System.out.println(e);
