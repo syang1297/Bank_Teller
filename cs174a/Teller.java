@@ -8,7 +8,8 @@ import java.util.*;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import oracle.jdbc.OracleConnection;
-
+import oracle.jdbc.pool.OracleDataSource;
+import java.sql.SQLException;
 
 public class Teller {
     private Customer customer;
@@ -105,46 +106,65 @@ public class Teller {
                 sql = "SELECT * " +
                  "FROM Customer";
                 ResultSet customers = stmt.executeQuery(sql);
-                while(customers.next()){
-                    boolean noPrimary = true;
-                    boolean noSecondary = true;
-                    String taxID=customers.getString("taxID");
-                    try{
-                        sql = "SELECT * " +
-                                "FROM AccountPrimarilyOwns " +
-                                "WHERE taxID = " + taxID;
-                        ResultSet rs = stmt.executeQuery(sql);
-                        if(rs.next() == false){
-                            noPrimary = true;
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Failed to check AccountPrimarilyOwns");
-                        System.out.println(e);
-                    }
-                    try{
-                        sql = "SELECT * " +
-                                "FROM Owns " +
-                                "WHERE tID = " + taxID;
-                        ResultSet rs = stmt.executeQuery(sql);
-                        if(rs.next() == false){
-                            noSecondary = true;
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Failed to check Owns");
-                        System.out.println(e);
-                    }
-                    if(noSecondary && noPrimary){
+                final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
+                final String DB_USER = "c##andrewdoan";
+                final String DB_PASSWORD = "3772365";
+
+                // Initialize your system.  Probably setting up the DB connection.
+                Properties info = new Properties();
+                info.put( OracleConnection.CONNECTION_PROPERTY_USER_NAME, DB_USER );
+                info.put( OracleConnection.CONNECTION_PROPERTY_PASSWORD, DB_PASSWORD );
+                info.put( OracleConnection.CONNECTION_PROPERTY_DEFAULT_ROW_PREFETCH, "20" );
+                try {
+                    OracleDataSource ods = new OracleDataSource();
+                    ods.setURL( DB_URL );
+                    ods.setConnectionProperties( info );
+                    OracleConnection _connection = (OracleConnection) ods.getConnection();
+                    Statement stmt2 = _connection.createStatement();
+                    while(customers.next()){
+                        boolean noPrimary = false;
+                        boolean noSecondary = false;
+                        String taxID=customers.getString("taxID");
                         try{
-                            sql = "DELETE FROM Customer " +
-                            "WHERE taxID =" +taxID;
-                            stmt.executeUpdate(sql);
-                            System.out.println("Deleted customer: "+taxID);
-                        }catch(Exception e){
-                            System.out.println("Failed to delete Customer");
+                            sql = "SELECT * " +
+                                    "FROM AccountPrimarilyOwns " +
+                                    "WHERE taxID = " + taxID;
+                            ResultSet rs = stmt2.executeQuery(sql);
+                            if(rs.next() == false){
+                                noPrimary = true;
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Failed to check AccountPrimarilyOwns");
                             System.out.println(e);
                         }
+                        try{
+                            sql = "SELECT * " +
+                                    "FROM Owns " +
+                                    "WHERE tID = " + taxID;
+                            ResultSet rs = stmt2.executeQuery(sql);
+                            if(rs.next() == false){
+                                noSecondary = true;
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Failed to check Owns");
+                            System.out.println(e);
+                        }
+                        if(noSecondary && noPrimary){
+                            try{
+                                sql = "DELETE FROM Customer " +
+                                "WHERE taxID =" +taxID;
+                                stmt2.executeUpdate(sql);
+                                System.out.println("Deleted customer: "+taxID);
+                            }catch(Exception e){
+                                System.out.println("Failed to delete Customer");
+                                System.out.println(e);
+                            }
+                        }
+                        
                     }
-                    
+                } catch( SQLException e )
+                {
+                    System.err.println( e.getMessage() );
                 }
             } catch(Exception e){
                 System.out.println("Failed to get customers");

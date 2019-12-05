@@ -1,5 +1,6 @@
 package cs174a;                         // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
-
+//for debugging
+import java.sql.Statement;
 // DO NOT REMOVE THIS IMPORT.
 import cs174a.Testable.*;
 import cs174a.Helper.*;
@@ -45,7 +46,7 @@ public class Main
 			r = app.payFriend("1","2",50);
 			r = app.listClosedAccounts();
 			//for testing customer.java
-			// Helper helper= new Helper();
+			Helper helper= new Helper();
 			// Customer customer = new Customer(4321);
 			// r = customer.setAddress("Bob house");
 			// r = customer.getAddress();
@@ -83,7 +84,17 @@ public class Main
 			System.out.println(teller.customerOwnsAccount("4321","1234"));
 			teller.changeInterestRate(1234,1.4);
 			teller.deleteTransactionHistory();
+			String sql = "DELETE FROM Owns " +
+                                "WHERE tID =" +1111;
+			try{
+				Statement stmt = helper.getConnection().createStatement();
+				stmt.executeUpdate(sql);
+				
+			} catch (Exception e){
+				System.out.println(e);
+			}
 			teller.deleteCustomers();
+			
 		}
 	}
 	//!### FINALIZAMOS
