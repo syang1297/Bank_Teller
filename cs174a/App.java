@@ -218,6 +218,7 @@ public class App implements Testable
 								"taxID INTEGER NOT NULL," +
 								"bankBranch VARCHAR(32)," +
 								"balance INTEGER," +
+								"madeOn VARCHAR(32)," +
 								// "balanceEndDate CHAR(10)," +
 								// "balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
@@ -490,7 +491,7 @@ public class App implements Testable
 					String bankBranch="A&S";
 					sql = "INSERT INTO AccountPrimarilyOwns " + 
 								"VALUES (" + id + ", " + tin + ",'" + bankBranch + "', " + initialBalance +
-								", " + "0, " + interestRate + ", '" + accountType +
+								", '" + helper.getDate() + "', 0, " + interestRate + ", '"  + accountType +
 								"', 0)";
 					stmt.executeUpdate(sql);
 				} catch (Exception e) {
@@ -601,14 +602,14 @@ public class App implements Testable
 						//TODO: actual value for bankBranch, startDate, endDate
 						
 						sql = "INSERT INTO AccountPrimarilyOwns " + 
-								"VALUES (" + id + ", " + tin + ",'" + bankBranch + "', " + initialTopUp +
-								", " + "0, " + 0.0+ ", '" + "POCKET" +
+								"VALUES (" + id + ", " + tin + ", '" + bankBranch + "', " + initialTopUp +
+								", '" + helper.getDate() + "'," + "0, " + 0.0 + ", '" +  "POCKET" +
 								"', 0)";
 						stmt.executeQuery(sql);
 						try {
 							System.out.println("Adding new pocketAccount to Pocket table");
 							sql = "INSERT INTO PocketAccountLinkedWith " +
-									"VALUES (" + id + ", " + tin + ", "+ linkedId+", "+linkedTID+", 0)"; 
+									"VALUES (" + id + ", " + tin + ", " + linkedId+", "+linkedTID+", 0)"; 
 							stmt.executeQuery(sql);
 						} catch (Exception e) {
 							System.out.println("Failed to add new pocketAccount to Pocket table");
@@ -691,16 +692,12 @@ public class App implements Testable
 					}
 					try {
 						System.out.println("Checking if customer already exists...");
-						sql = "SELECT taxID " +
-								"FROM Customer";
+						sql = "SELECT * " +
+								"FROM Customer WHERE taxID = " + tin ;
 						rs = stmt.executeQuery(sql);
-						while(rs.next()){
-							cid = rs.getInt("taxID");
-							taxID = Integer.toString(cid);
-							if(tin.equals(taxID)){
+						if(rs.next()!=false){
 								System.out.println("Customer already exists");
 								return "1";
-							}
 						}
 						rs.close();
 						try {

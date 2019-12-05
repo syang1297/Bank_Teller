@@ -85,6 +85,7 @@ public class Teller {
                     }
 
                     try{
+                        boolean madeDeposit = false;
                         double initBalance = accounts.getDouble("balance");
                         sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
                         ResultSet transactions = stmt2.executeQuery(sql);
@@ -98,6 +99,10 @@ public class Teller {
                             double amt = transactions.getDouble("amount");
                             switch(transactions.getString("transType")){
                                 case "DEPOSIT":
+                                    if(tDate.equals(accounts.getString("madeOn")) && amt == 1000.00 && !madeDeposit){
+                                        madeDeposit = true;
+                                        continue;
+                                    }
                                     initBalance += amt;
                                     accountInfo = accountInfo + "DEPOSIT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                     break;
@@ -146,7 +151,7 @@ public class Teller {
             }
             try {
             System.out.println("Getting co-owned account info...");
-            sql = "SELECT * FROM AccountPrimarilyOwns,Owns WHERE AccountPrimarilyOwns.taxID = "+taxID + " Owns.tID";
+            sql = "SELECT * FROM AccountPrimarilyOwns,Owns WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = "+taxID ;
             ResultSet accounts = stmt.executeQuery(sql);
             while(accounts.next()){
                 String status=" (CLOSED)";
@@ -157,20 +162,23 @@ public class Teller {
 
                 try{
                     double initBalance = accounts.getDouble("balance");
-                    sql = "SELECT * " + 
-                    "FROM AccountPrimarilyOwns, Owns " + 
-                    "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + Integer.toString(taxID);
+                    sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
                     ResultSet transactions = stmt2.executeQuery(sql);
+                    boolean madeDeposit = false;
                     while(transactions.next()){
                         String tDate = transactions.getString("transDate");
                         String tMonth = "" + tDate.charAt(5) + tDate.charAt(6);
                         String tYear = "" + tDate.charAt(0) + tDate.charAt(1) + tDate.charAt(2) + tDate.charAt(3);
                         if(Integer.parseInt(stringMonth)!=month || Integer.parseInt(stringYear)!=year) {
                             continue;
-                        }
+                        }           
                         double amt = transactions.getDouble("amount");
                         switch(transactions.getString("transType")){
                             case "DEPOSIT":
+                                if(tDate.equals(accounts.getString("madeOn")) && amt == 1000.00 && !madeDeposit){
+                                    madeDeposit = true;
+                                    continue;
+                                }
                                 initBalance += amt;
                                 accountInfo = accountInfo + "DEPOSIT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                 break;
@@ -248,6 +256,7 @@ public class Teller {
                 String stringYear = "" + helper.getDate().charAt(0) + helper.getDate().charAt(1) + helper.getDate().charAt(2) + helper.getDate().charAt(3);
                 int year = Integer.parseInt(stringYear);
                 int month = Integer.parseInt(stringMonth);
+                res.add("\n-------------DTER FOR MONTH " + stringMonth + "-------------\n");
                 sql = "SELECT * FROM Customer";
                 ResultSet customers = stmt.executeQuery(sql);
                 while(customers.next()){
@@ -270,27 +279,8 @@ public class Teller {
                                     double amt = transactions.getDouble("amount");
                                     switch(transactions.getString("transType")){
                                         case "DEPOSIT":
-                                            totalSum += amt;
-                                            break;
                                         case "TRANSFER":
-                                            totalSum -= amt;
-                                            break;
-                                        case "WITHDRAWAL":
-                                            totalSum += amt;
-                                            break;
                                         case "WIRE":
-                                            totalSum += amt;
-                                            break;
-                                        case "WRITECHECK":
-                                            totalSum += amt;
-                                            break;
-                                        case "ACCRUEINTEREST":
-                                            totalSum += amt;
-                                            break;
-                                        case "COLLECT":
-                                            totalSum += amt;
-                                            break;
-                                        case "PAYFRIEND":
                                             totalSum += amt;
                                             break;
                                     }
@@ -300,20 +290,58 @@ public class Teller {
                                 System.out.println(e);
                             }
                         }
-                    } catch(Exception e) {
-                            System.out.println("Failed to get primary accounts");
-                        System.out.println(e);
+                        } catch(Exception e) {
+                                System.out.println("Failed to get primary accounts");
+                            System.out.println(e);
+                        }
+                        try{
+                            System.out.println("Getting co-owned account info...");
+                            sql = "SELECT * " + 
+                                "FROM AccountPrimarilyOwns, Owns " + 
+                                "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + customers.getString("taxID");
+                            ResultSet accounts = stmt2.executeQuery(sql);
+                            while(accounts.next()){
+                                try{
+                                    sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
+                                    ResultSet transactions = stmt3.executeQuery(sql);
+                                    while(transactions.next()){
+                                        String tDate = transactions.getString("transDate");
+                                        String tMonth = "" + tDate.charAt(5) + tDate.charAt(6);
+                                        String tYear = "" + tDate.charAt(0) + tDate.charAt(1) + tDate.charAt(2) + tDate.charAt(3);
+                                        if(Integer.parseInt(stringMonth)!=month || Integer.parseInt(stringYear)!=year) {
+                                            continue;
+                                        }
+                                        double amt = transactions.getDouble("amount");
+                                        switch(transactions.getString("transType")){
+                                            case "DEPOSIT":
+                                            case "TRANSFER":
+                                            case "WIRE":
+                                                totalSum += amt;
+                                                break;
+                                        }
+                                    }
+                                } catch (Exception e){
+                                    System.out.println("Failed get transactions");
+                                    System.out.println(e);
+                                }
+                            }
+                        } catch(Exception e) {
+                                System.out.println("Failed to get co-owned accounts");
+                            System.out.println(e);
+                        }
+                        if(totalSum>10000){
+                            res.add("TAXID: " + customers.getString("taxID") + " | SUM OF DEPOSITS: " + totalSum);
+                        }
                     }
-                }
-            }
-             catch(Exception e){
+                }catch(Exception e){
                 System.out.println("Failed to get customers");
                 System.out.println(e);
-            }
-        } catch(Exception e){
+                }
+            }catch(Exception e){
             System.out.println("Failed to create statement");
-            System.out.println(e);
-        }        
+            System.out.println(e);  
+            }
+        res.add("\n");         
         return res;
     }
 
@@ -322,6 +350,7 @@ public class Teller {
     List<String> customerReport(int taxID){
         ArrayList<String> res = new ArrayList<String>();
         String sql = "";
+        res.add("\n-------------CUSTOMER REPORT FOR CUSTOMER " + Integer.toString(taxID) + "-------------\n");
         try{
             Statement stmt = helper.getConnection().createStatement();
             try{
@@ -331,11 +360,11 @@ public class Teller {
                     "WHERE taxID = " + Integer.toString(taxID);
                 ResultSet rs = stmt.executeQuery(sql);
                 while(rs.next()){
-                    String account = rs.getString("accountID") + " : ";
+                    String account = "ACCOUNTID: " + rs.getString("accountID");
                     if(rs.getInt("isClosed") == 0){
-                        account = account + "OPEN";
+                        account = account + " (OPEN)";
                     } else {
-                        account = account + "CLOSED";
+                        account = account + " (CLOSED)";
                     }
                     res.add(account);
                 }
@@ -345,11 +374,11 @@ public class Teller {
                     "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + Integer.toString(taxID);
                 rs = stmt.executeQuery(sql);
                 while(rs.next()){
-                    String account = rs.getString("accountID") + " : ";
+                    String account = "ACCOUNTID: " + rs.getString("accountID");
                     if(rs.getInt("isClosed") == 0){
-                        account = account + "OPEN";
+                        account = account + " (OPEN)";
                     } else {
-                        account = account + "CLOSED";
+                        account = account + " (CLOSED)";
                     }
                     res.add(account);
                 }
@@ -362,6 +391,7 @@ public class Teller {
             System.out.println("Failed to create statement");
             System.out.println(e);
         }
+        res.add("\n");
         return res;
     }
 
@@ -489,21 +519,10 @@ public class Teller {
                 sql = "SELECT * " +
                         "FROM Customer";
                 ResultSet customers = stmt.executeQuery(sql);
-                final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-                final String DB_USER = "c##andrewdoan";
-                final String DB_PASSWORD = "3772365";
-
-                // Initialize your system.  Probably setting up the DB connection.
-                Properties info = new Properties();
-                info.put( OracleConnection.CONNECTION_PROPERTY_USER_NAME, DB_USER );
-                info.put( OracleConnection.CONNECTION_PROPERTY_PASSWORD, DB_PASSWORD );
-                info.put( OracleConnection.CONNECTION_PROPERTY_DEFAULT_ROW_PREFETCH, "20" );
                 try {
-                    OracleDataSource ods = new OracleDataSource();
-                    ods.setURL( DB_URL );
-                    ods.setConnectionProperties( info );
-                    OracleConnection _connection = (OracleConnection) ods.getConnection();
-                    Statement stmt2 = _connection.createStatement();
+                    Helper helper2 = new Helper();
+                    Statement stmt2 = helper2.getConnection().createStatement();
+                    System.out.println("Looking for customers...");
                     while(customers.next()){
                         boolean noPrimary = false;
                         boolean noSecondary = false;

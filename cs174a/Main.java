@@ -80,12 +80,13 @@ public class Main
 			// System.out.println(atm.transfer(1234,1233,100));
 			// System.out.println(atm.collect(1234,1,20));
 			// System.out.println(atm.wire(1234,1233,19));
+			//for testing Teller
 			Teller teller = new Teller (4321,app);
 			System.out.println(teller.customerOwnsAccount("4321","1234"));
 			teller.changeInterestRate(1234,1.4);
 			//teller.deleteTransactionHistory();
 			String sql = "DELETE FROM Owns " +
-                                "WHERE tID =" +1111;
+                                "WHERE tID = 1111";
 			try{
 				Statement stmt = helper.getConnection().createStatement();
 				stmt.executeUpdate(sql);
@@ -106,29 +107,25 @@ public class Main
 			}
 			//teller.deleteClosedAccounts();
 			ArrayList<Integer> coOwners = new ArrayList();
-			teller.createAccount(AccountType.SAVINGS,coOwners,1000.0,"1235","-1");
-			app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			app.createCustomer("1233", "1111","Andrew","66 Sueno");
 			coOwners.add(1111);
 			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
 			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
-			teller.addInterest();
+			//teller.addInterest();
 			List<String> res2 = teller.customerReport(4321);
-			if(res2.size()<1){
-				res2.add("No accounts");
-			}
 			for(int i=0;i<res2.size();i++){
-				System.out.println("Account status: " + res2.get(i));
+				System.out.println(res2.get(i));
 			}
 			res2 = teller.generateMonthly(1111);
-			if(res2.size()<1){
-				res2.add("No accounts");
-			}
 			for(int i=0;i<res2.size();i++){
 				System.out.println(res2.get(i));
 			}
 			System.out.println(teller.listClosedAccounts());
-			app.deposit("1234",10000.00);
-
+			app.deposit("1233",10000.00);
+			res2 = teller.generateDTER();
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
 		}
 	}
 	//!### FINALIZAMOS
