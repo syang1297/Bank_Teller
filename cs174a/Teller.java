@@ -121,6 +121,14 @@ public class Teller {
                                     initBalance -= amt;
                                     accountInfo = accountInfo + "ACCRUEINTEREST: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
                                     break;
+                                case "COLLECT":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "COLLECT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "PAYFRIEND":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "PAYFRIEND: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    break;
                             }
                         }
                         accountInfo = accountInfo + "\nINITIAL BALANCE: " + Double.toString(initBalance) + "\tFINAL BALANCE: " + accounts.getDouble("balance")+ "\n\n";
