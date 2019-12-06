@@ -31,12 +31,12 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
-			// app.dropTables();
+			app.dropTables();
 			// Helper helper= new Helper();
 			// //for testing app.java
-			// r = app.createTables();
-			// app.setDate(2018, 2, 7);
-			// r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
+			r = app.createTables();
+			app.setDate(2018, 2, 7);
+			r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
 			// // System.out.println(r);
 			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
 			// r = app.createPocketAccount("1", "1234", 500.0, "4321");
@@ -140,8 +140,12 @@ public class Main
 
 			// start of GUI code
 			String input ="";
+			Teller teller = new Teller (app);
+			//drop tables
+			//load in their data/create tables
+
 			while(true){
-				System.out.println("Welcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, or -1 to exit.");
+				System.out.println("Welcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, 2 to set date, or -1 to exit.");
 				input = System.console().readLine();
 				switch(input){
 					case "0"://ATM
@@ -199,7 +203,89 @@ public class Main
 						}
 						break;
 					case "1"://TELLER
+						while(true){
+						System.out.println("Welcome to Teller Interface");
+						System.out.println("Select a transaction:\n(0)Enter Check Transaction\n(1)Generate Monthly Statemet\n(2)List Closed Accounts\n(3)DTER\n(4)Customer Report\n(5)Add Interest\n(6)Create Account\n(7)Delete Closed Acounts\n(8)Delete Customers\n(9)Delete Transactions\n(10)Go Back to Main\n(-1)Exit");
+						String inp = System.console().readLine();
+						switch(Integer.parseInt(inp)){
+							case 0: //enter check
+								// while(true){
+								String check = "";
+								System.out.println("Writing a check......");
+								System.out.println("Enter accountID for check");
+								check = System.console().readLine();
+								String accountId = check;
+								System.out.println("Enter amount for check");
+								check = System.console().readLine();
+								String amount = check;
+								System.out.println("Enter customer taxID");
+								check = System.console().readLine();
+								String taxID = check;
+								teller.writeCheck(Integer.parseInt(accountId), Double.parseDouble(amount), Integer.parseInt(taxID));
+								System.out.println("Check written");
+								break;
+							case 1: //monthly statement
+								System.out.println("Printing monthly statement.....");
+								String tax = "";
+								System.out.println("Enter taxID for customer");
+								tax = System.console().readLine();
+								teller.generateMonthly(Integer.parseInt(tax));
+								break;
+							case 2: //closed accounts
+							break;
+
+							case 3: //DTER
+							break;
+
+							case 4: //customer report
+							break;
+
+							case 5: //add interest
+							break;
+
+							case 6: //create account
+							break;
+
+							case 7: //delete accounts
+							break;
+
+							case 8: //delete customers
+							break;
+
+							case 9: //delete transactions
+							break;
+
+							case 10: //back to main
+							break;
+
+							case -1: //exit
+								break;
+						}
+						if(input.equals("7")){
+							break;
+						}
+					}
+					break;
+
+					case "2":
+					while(true){
+						String in = "";
+						System.out.println("Welcome to set date");
+						System.out.println("Enter year");
+						in = System.console().readLine();
+						String year = in;
+						System.out.println("Enter month");
+						in = System.console().readLine();
+						String month = in;
+						System.out.println("Enter day");
+						in = System.console().readLine();
+						String day = in;
+						app.setDate(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
+						// System.out.println("Welcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, 2 to set date, or -1 to exit.");
+						// input = System.console().readLine();
 						break;
+					}
+					break;
 					case "-1":
 						System.out.println("Thanks for using our bank.");
 						break;

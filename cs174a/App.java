@@ -319,6 +319,7 @@ public class App implements Testable
 		}
 		String res = stringYear+"-"+stringMonth+"-"+stringDay;
 		if(stringYear.length() != 4) {
+			System.out.print(Integer.toString(stringYear.length()));
 			System.out.println("Wrong year digits");
 			return "1 "+ helper.getDate();
 		} else if (!(month > 12) || !(month < 1)) {
