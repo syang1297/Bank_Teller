@@ -353,6 +353,7 @@ public class ATM {
         Double fromBalance1=0.0, fromBalance2=0.0, pocketBalance1=0.0, pocketBalance2=0.0;
         int isClosed1=0;
         boolean isLinked=false;
+        int feePaid = 0;
         if(!pocket){
             if(student0 || checking0 || saving0){
                 try {
@@ -361,15 +362,13 @@ public class ATM {
                     try {
                         System.out.println("Checking if accounts are linked...");
                         String sql = "SELECT * " +
-                                        "FROM PocketAccountLinkedWith ";
+                                        "FROM PocketAccountLinkedWith " +
+                                        "WHERE aID = " + pocketID;
                         ResultSet rs = stmt.executeQuery(sql);
                         while(rs.next()){
-                            if(accountID==rs.getInt("otherAccountID")){
-                                int linkedId = rs.getInt("aID");
-                                if(linkedId != pocketID){
-                                    System.out.println("PocketID is not linked with accountID");
-                                    return "1";
-                                }
+                            if(pocketID==rs.getInt("aID")){
+                                feePaid = rs.getInt("feePaid");
+                                if(accountID == rs.getInt("otherAccountID")){
                                 sql = "SELECT * " +
                                         "FROM AccountPrimarilyOwns ";
                                 ResultSet rss = stmt.executeQuery(sql);
@@ -389,7 +388,11 @@ public class ATM {
                                     return "1";
                                 }
                                 break;
+                            }else{
+                                System.out.println("Accounts are not linked");
+                                return "1";
                             }
+                        }
                         }
                         //check amount is greater than pocket account balance
                         try {
@@ -407,11 +410,25 @@ public class ATM {
                                 System.out.println("Can't collect bc amount is greater than pocket account balance: "+pocketBalance1);
                                 return "1";
                             }
-                            pocketBalance2 = pocketBalance1 - amount;
+                            if(feePaid == 0){
+                                if(pocketBalance1 < amount + 5){
+                                    System.out.println("Can't collect bc amount with fee is greater than pocket account balance: "+pocketBalance1);
+                                    return "1";                                    
+                                }
+                                pocketBalance2 = pocketBalance1 - amount - 5;        
+                            }else{
+                                pocketBalance2 = pocketBalance1 - amount;
+                            }
                             fromBalance2 = fromBalance1 + (amount * .97);
                             System.out.println("update balance: "+fromBalance2+"orig: "+fromBalance1);
                             //update balances for pocket and account
                             System.out.println("Updating balances...");
+                            if(feePaid == 0){
+                                sql = "UPDATE PocketAccountLinkedWith " +
+                                "SET feePaid = 1" +
+                                " WHERE aID = " + Integer.toString(pocketID);
+                                stmt.executeUpdate(sql);                                
+                            }
                             sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET balance = " + Double.toString(pocketBalance2) +
                                     " WHERE accountId = " + Integer.toString(pocketID);

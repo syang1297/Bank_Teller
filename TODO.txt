@@ -11,10 +11,8 @@ Andrew
 -make sure all transactions check if account should be set as isClosed after the changing of balance
 
 Shu
--add toAccountId into TransactionBelongs table (still store twice)
 -update monthly statement after adding another other acct info to transaction table (DTER) --update all that call transanctions
 (all switch statements that have to do w/ transaction)
--change everytime we called addTransactions
 -take $5 fee and 3% thingy for addtransaction in collect and purchase
 -check that error return strings are correct (esp the ones w/ account info)
 -check write check
@@ -25,6 +23,7 @@ Shu
 -check switch case for interest rates (bc interest rate may be updated)
 -check delete cascade stuff
 -make sure only allowed transactions are happening on accounts
+-feePaid updates to 1 once fee is paid
 
 After finished
 -final sweep of piazza
@@ -45,3 +44,7 @@ After finished
 -check that tables are updating correctly
 -set date doesn't set correctly
 -make sure hash and unhash pin called
+-change everytime we called addTransactions
+-add toAccountId into TransactionBelongs table (still store twice)
+
+
