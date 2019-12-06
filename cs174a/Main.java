@@ -34,9 +34,9 @@ public class Main
 			app.dropTables();
 			// Helper helper= new Helper();
 			// //for testing app.java
-			r = app.createTables();
-			app.setDate(2018, 2, 7);
-			r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
+			// r = app.createTables();
+			// app.setDate(2018, 2, 7);
+			// r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
 			// // System.out.println(r);
 			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
 			// r = app.createPocketAccount("1", "1234", 500.0, "4321");
@@ -137,6 +137,8 @@ public class Main
 			// for(int i=0;i<res2.size();i++){
 			// 	System.out.println(res2.get(i));
 			// }
+			// List<List<String>> coOwners = new ArrayList<List<String>>();
+			// teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000,"12345","4321","0");
 
 			// start of GUI code
 			String input ="";
@@ -151,6 +153,7 @@ public class Main
 				switch(input){
 					case "0"://ATM
 						while(true){
+							System.out.println("\n--------------Welcome to the ATM Interface-------------");
 							System.out.println("\nPlease enter your taxID");
 							String taxID = System.console().readLine();
 							ATM atm = new ATM(Integer.parseInt(taxID),app);
@@ -180,15 +183,19 @@ public class Main
 								temp=temp +"\nPocket Accounts: ";
 								temp=temp+accounts.get(1);
 								System.out.println(temp);
-								System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Back to Main\n");
+								System.out.println("\n--------------Welcome to the ATM Interface-------------");
+								System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Set Pin\n(8)Exit\n");
 								input = System.console().readLine();
-								if(input.equals("6") || input.equals("1")){
+								if(input.equals("7")){
+									System.out.println("Enter new pin");
+								}
+								else if(input.equals("6") || input.equals("1")){
 									System.out.println("Enter a pocket account.");
 								} else if(!input.equals("7")){
 									System.out.println("Enter an account.");
 								}
-								if(!input.equals("7")){
-									System.console().readLine();
+								if(!input.equals("8")){
+									acc = System.console().readLine();
 								}
 								switch(input){
 									case "0":
@@ -235,20 +242,23 @@ public class Main
 										atm.payFriend(Integer.parseInt(acc),Integer.parseInt(acc2),Double.parseDouble(amt));
 										break;
 									case "7":
+										atm.setPin(Integer.parseInt(acc));
+										break;
+									case "8":
 										break;
 								}
-								if(input.equals("7")){
+								if(input.equals("8")){
 									break;
 								}
 							}
-							if(input.equals("7")){
+							if(input.equals("8")){
 									break;
 							}
 						}
 						break;
 					case "1"://TELLER
 						while(true){
-						System.out.println("Welcome to Teller Interface");
+						System.out.println("---------------------Welcome to Teller Interface-----------------------");
 						System.out.println("Select a transaction:\n(0)Enter Check Transaction\n(1)Generate Monthly Statemet\n(2)List Closed Accounts\n(3)DTER\n(4)Customer Report\n(5)Add Interest\n(6)Create Account\n(7)Delete Closed Acounts\n(8)Delete Customers\n(9)Delete Transactions\n(10)Change interest rate\n(11)Go Back to Main\n");
 						String inp = System.console().readLine();
 						switch(Integer.parseInt(inp)){
@@ -458,6 +468,24 @@ public class Main
 								System.out.println("Reset monthly data.");
 							}
 							break;
+						}
+						break;
+					case "2"://SETDATE
+						while(true){
+							String year="";
+							String month="";
+							String day="";
+							System.out.println("Enter the year");
+							year = System.console().readLine();
+							System.out.println("Enter the month");
+							month = System.console().readLine();
+							System.out.println("Enter the day");
+							day = System.console().readLine();
+							if(app.setDate(Integer.parseInt(year),Integer.parseInt(month),Integer.parseInt(day)).charAt(0)==('0')){
+								break;
+							} else {
+								System.out.println("Try again.");
+							}
 						}
 						break;
 					case "-1":

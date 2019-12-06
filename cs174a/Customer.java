@@ -32,7 +32,7 @@ public class Customer {
     //get name from db for the customer
     String getName(){
         String res="1";
-        System.out.println("Getting name of customer...");
+
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -45,7 +45,7 @@ public class Customer {
                     
                 }
                 rs.close();
-                System.out.println("Got customer name.");
+
                 return res;
             } catch (Exception e) {
                 System.out.println("Failed to get customer name");
@@ -92,7 +92,7 @@ public class Customer {
     //get pin from db for customer and unhash
     int getPin(){
         int res=1;
-        System.out.println("Getting pin of customer...");
+
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -124,6 +124,7 @@ public class Customer {
     String setPin(int unhashedPin){
         String pin = Integer.toString(unhashedPin);
         if(pin.length() != 4){
+            System.out.println("Pin too short.");
             return "1";
         }
         String hashedPin = helper.hashPin(unhashedPin);
@@ -134,6 +135,7 @@ public class Customer {
                             "SET pin = '" + hashedPin + 
                             "' WHERE taxID = " + Integer.toString(this.taxID);
                 stmt.executeUpdate(sql);
+                System.out.println("Set pin.");
                 return "0";
             } catch (Exception e) {
                 System.out.println("Failed to set customer pin");

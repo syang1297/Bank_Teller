@@ -109,10 +109,10 @@ public class App implements Testable
 	@Override
 	public String dropTables(){
 		try {
-			System.out.println("Connecting to database...............");
+
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Dropping table GlobalDate");
+
 				String sql = "DROP TABLE GlobalDate";
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
@@ -121,7 +121,7 @@ public class App implements Testable
 				return "1";
 			}
 			try {
-				System.out.println("Dropping table Owns");
+
 				String sql = "DROP TABLE Owns";
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
@@ -130,16 +130,16 @@ public class App implements Testable
 				return "1";
 			}
 			try {
-				System.out.println("Dropping table TransactionBelongs");
+			
 				String sql = "DROP TABLE TransactionBelongs";
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
-				System.out.println("Failed to drop table TransactionBelongs");
+	
 				System.out.println(e);
 				return "1";
 			}
 			try {
-				System.out.println("Dropping table PocketAccountLinkedWith");
+
 				String sql = "DROP TABLE PocketAccountLinkedWith";
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
@@ -148,16 +148,16 @@ public class App implements Testable
 				return "1";
 			}
 			try {
-				System.out.println("Dropping table AccountPrimarilyOwns");
+
 				String sql = "DROP TABLE AccountPrimarilyOwns";
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
-				System.out.println("Failed to drop table AccountPrimarilyOwns");
+
 				System.out.println(e);
 				return "1";
 			}
 			try {
-				System.out.println("Dropping table Customer");
+
 				String sql = "DROP TABLE Customer";
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
@@ -182,10 +182,10 @@ public class App implements Testable
 	@Override
 	public String createTables(){
 		try {
-			System.out.println("Connecting to database.................");
+	
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Creating table GlobalDate");
+
 				String sql = "CREATE TABLE GlobalDate(" + 
 								"num INTEGER,"+
 								"globalDate VARCHAR(10),"+ 
@@ -199,7 +199,7 @@ public class App implements Testable
 			}
 	
 			try {
-				System.out.println("Creating table Customer.");
+		
 				String sql = "CREATE TABLE Customer(" + 
 								"taxID INTEGER," +
 								"addr VARCHAR (32)," + 
@@ -209,13 +209,13 @@ public class App implements Testable
 				
 				stmt.executeUpdate(sql);
 			} catch (Exception e) {
-				System.out.println("Failed to create table Customer.");
+		
 				System.out.println(e);
 				return "1";
 			}
 	
 			try {
-				System.out.println("Creating table AccountPrimarilyOwns.");
+
 				String sql = "CREATE TABLE AccountPrimarilyOwns(" +
 								"accountID INTEGER,"  +
 								"taxID INTEGER NOT NULL," +
@@ -237,7 +237,7 @@ public class App implements Testable
 			}
 	
 			try {
-				System.out.println("Creating table Owns.");
+		
 				String sql = "CREATE TABLE Owns("  +
 								"aID INTEGER," +
 								"tID INTEGER," +
@@ -251,7 +251,7 @@ public class App implements Testable
 			}
 	
 			try {
-				System.out.println("Creating table TransactionBelongs");
+		
 				String sql = "CREATE TABLE TransactionBelongs(" +
 								"amount REAL," +
 								"transType VARCHAR(32)," +
@@ -272,7 +272,7 @@ public class App implements Testable
 			}
 	
 			try {
-				System.out.println("Creating table PocketAccountLinkedWith");
+			
 				String sql = "CREATE TABLE PocketAccountLinkedWith("  +
 								"aID INTEGER," +
 								"tID INTEGER," +
@@ -311,10 +311,10 @@ public class App implements Testable
 		String stringYear = Integer.toString(year);
 		String stringMonth = Integer.toString(month);
 		String stringDay = Integer.toString(day);
-		if(stringMonth.length()<2){
+		if(stringMonth.length()==1){
 			stringMonth="0"+stringMonth;
 		}
-		if(stringDay.length()<2){
+		if(stringDay.length()==1){
 			stringDay="0"+stringDay;
 		}
 		String res = stringYear+"-"+stringMonth+"-"+stringDay;
@@ -324,7 +324,7 @@ public class App implements Testable
 			return "1 "+ helper.getDate();
 		} else if (!(month > 12) || !(month < 1)) {
 			if(year%4 != 0 && month == 2){
-				System.out.println("Not leap year in feb");
+
 				if(day > 28 || day < 1){
 					return "1 "+helper.getDate();
 				}
@@ -335,7 +335,7 @@ public class App implements Testable
 					return "1 "+helper.getDate();
 				}
 			} else {
-				System.out.println("Reached cases");
+
 				switch(month){
 					case 1:
 					case 3:
@@ -364,9 +364,9 @@ public class App implements Testable
 			return "1 "+helper.getDate();
 		}
 		try {
-				System.out.println("Connecting to database...............");
+		
 				Statement stmt = _connection.createStatement();
-				System.out.println("Writing to table GlobalDate");
+		
 				String sqlDate = stringYear + stringMonth + stringDay;
 				try {
 					String empty = "SELECT * FROM GlobalDate";
@@ -442,7 +442,7 @@ public class App implements Testable
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if accountID exists...");
+		
 				String sql = "SELECT accountID " +
 								"FROM AccountPrimarilyOwns";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -454,7 +454,7 @@ public class App implements Testable
 						return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 					}
 				}
-				System.out.println("AccountID does not exists already");
+
 				rs.close();
 			} catch (Exception e) {
 				System.out.println("Failed to select from AccountPrimarilyOwns");
@@ -477,7 +477,7 @@ public class App implements Testable
 		try {
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if customer taxID exists...");
+
 				String sql = "SELECT taxID " + 
 								"FROM Customer " +
 								"WHERE taxID = " + tin      ;
@@ -485,7 +485,7 @@ public class App implements Testable
 				if (rs.next() == false) {
 					//give newly made customer a default pin of 1717
 					try {
-						System.out.println("Inserting new customer since taxID doesn't exist");
+				
 						if(address == null || name == null){
 							System.out.println("Address and Name cannot be null because we are inserting a new customer");
 							return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
@@ -568,7 +568,7 @@ public class App implements Testable
 		try {
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if PocketAccount exists...");
+			
 				String sql = "SELECT aID " +
 								"FROM PocketAccountLinkedWith";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -582,16 +582,16 @@ public class App implements Testable
 				}
 				rs.close();
 				try {
-					System.out.println("Checking if linkedWith account exists...");
+		
 					sql = "SELECT * " +
 							"FROM AccountPrimarilyOwns";
 					rs = stmt.executeQuery(sql);
-					System.out.println("Checking linkedWithAccount query results...");
+
 					while(rs.next()){
 						aid = rs.getInt("accountID");
 						dbID = Integer.toString(aid);
 						if(linkedId.equals(dbID)){
-							System.out.println("Linked account exists.");
+
 							linkedIsClosed = rs.getInt("isClosed");
 							linkedAccountInitBalance = rs.getDouble("balance");
 							acctType = rs.getString("accountType");
@@ -606,7 +606,7 @@ public class App implements Testable
 						return "1 " + id + " POCKET " + "0.0" + " " + tin;
 					}
 					try {
-						System.out.println("Updating balance of linkedWith account...");
+	
 						sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(linkedAccountInitBalance - initialTopUp) + 
 							" " + "WHERE accountId = " + dbID;
@@ -620,7 +620,7 @@ public class App implements Testable
 					}
 					// rs.close();
 					try {
-						System.out.println("Adding new pocketAccount to AccountPrimarilyOwns...");
+
 						
 						sql = "INSERT INTO AccountPrimarilyOwns " + 
 								"VALUES (" + id + ", " + tin + ", '" + bankBranch + "', " + initialTopUp +
@@ -628,7 +628,7 @@ public class App implements Testable
 								"', 0)";
 						stmt.executeQuery(sql);
 						try {
-							System.out.println("Adding new pocketAccount to Pocket table");
+	
 							sql = "INSERT INTO PocketAccountLinkedWith " +
 									"VALUES (" + id + ", " + tin + ", " + linkedId+", "+linkedTID+", 0)"; 
 							stmt.executeQuery(sql);
@@ -685,7 +685,7 @@ public class App implements Testable
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if accountID exists...");
+			
 				String sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -693,7 +693,7 @@ public class App implements Testable
 					aid = rs.getInt("accountID");
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
-						System.out.println("Account exists.");
+	
 						accountExists = true;
 						// accountClosed = rs.getInt("isClosed");
 						break;
@@ -710,7 +710,7 @@ public class App implements Testable
 						return "1";
 					}
 					try {
-						System.out.println("Checking if customer already exists...");
+
 						sql = "SELECT * " +
 								"FROM Customer WHERE taxID = " + tin ;
 						rs = stmt.executeQuery(sql);
@@ -722,12 +722,12 @@ public class App implements Testable
 						try {
 							//Give newly made customer default pin of 1717
 							String hashedPin = helper.hashPin(1717);
-							System.out.println("Adding new customer to Customer table...");
+
 							sql = "INSERT INTO Customer " + 
 									"VALUES (" + tin + ",'" + address + "','" + hashedPin + "','" + name+"')";
 							stmt.executeQuery(sql);
 							try {
-								System.out.println("Adding new relation to Owns table...");
+					
 								sql = "INSERT INTO Owns " + 
 										"VALUES (" + accountId + ", " + tin + ", " + helper.newOwnsID() +")";
 								stmt.executeQuery(sql);
@@ -787,7 +787,7 @@ public class App implements Testable
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if accountID exists...");
+		
 				String sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns ";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -808,7 +808,7 @@ public class App implements Testable
 					return "1 0.0 0.0";
 				}
 				else{
-					System.out.println("Account exists");
+			
 					isClosed = rs.getInt("isClosed");
 					if(isClosed == 1){
 						rs.close();
@@ -827,7 +827,7 @@ public class App implements Testable
 						return "1";
 					}
 					try {
-						System.out.println("Updating balances...");
+				
 						newBalance = oldBalance + amount;
 						sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(newBalance) + 
@@ -875,7 +875,7 @@ public class App implements Testable
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if accountID exists...");
+	
 				String sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -936,7 +936,7 @@ public class App implements Testable
 		double linkedBalance = 0.00;
 		int linkedId = 0;
 		String linkedID = "";
-		System.out.println("topping up account");
+
 		if(amount <= 0){
 			System.out.println("Cannot topup negative amount");
 			return "1";
@@ -944,7 +944,7 @@ public class App implements Testable
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if accountID exists and is pocket account...");
+			
 				String sql = "SELECT * " +
 								"FROM PocketAccountLinkedWith";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -961,7 +961,7 @@ public class App implements Testable
 					rs.close();
 					return "1 0.0 0.0";
 				}
-				System.out.println("Pocket account exists.");
+			
 				linkedId = rs.getInt("otherAccountID");
 				feePaid = rs.getInt("feePaid");
 				sql = "SELECT * " +
@@ -981,7 +981,7 @@ public class App implements Testable
 				
 				linkedID = Integer.toString(linkedId);
 				try {
-					System.out.println("Getting attributes of linked Account...");
+			
 					sql = "SELECT * " +
 							"FROM AccountPrimarilyOwns " +
 							"WHERE accountID = " +linkedID;
@@ -1001,7 +1001,7 @@ public class App implements Testable
 						return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 					}
 					else{
-						System.out.println("Linked account exists.");
+			
 						if(amount <= 0 || (linkedBalance - amount) < 0){
 							return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 						}
@@ -1111,7 +1111,7 @@ public class App implements Testable
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
-				System.out.println("Checking if from accountIDs exists and are pocket account...");
+			
 				String sql = "SELECT * " +
 								"FROM PocketAccountLinkedWith";
 				ResultSet rs = stmt.executeQuery(sql);
@@ -1136,7 +1136,7 @@ public class App implements Testable
 					rs.close();
 					return "1";
 				}
-				System.out.println("Getting pocket account balances...");
+		
 				sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				rs = stmt.executeQuery(sql);
@@ -1163,7 +1163,7 @@ public class App implements Testable
 					rs.close();
 					return "1";
 				}
-				System.out.println("Pocket accounts exist.");
+
 				if(fromBalance - amount<0){
 					System.out.println("Not enough money in account.");
 					return "1";
@@ -1178,7 +1178,7 @@ public class App implements Testable
 				}
 				if(toFeePaid == 0){
 					helper.addTransaction(5,TransactionType.FEE,0,toID,"-1");
-					System.out.println("Paying to account fee...");
+			
 					toBalance = amount + toBalance - 5;
 					try {
 						sql = "UPDATE PocketAccountLinkedWith " +
@@ -1194,7 +1194,7 @@ public class App implements Testable
 				else{
 					toBalance = amount + toBalance;
 				}
-				System.out.println("Trying to update balance for to...");
+
 				try {
 					sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(toBalance) +
@@ -1207,7 +1207,7 @@ public class App implements Testable
 				}
 				if(fromFeePaid == 0){
 					helper.addTransaction(5,TransactionType.FEE,0,fromID,"-1");
-					System.out.println("Paying from account fee...");
+		
 					fromBalance = fromBalance - amount - 5;
 					try {
 						sql = "UPDATE PocketAccountLinkedWith " +
@@ -1223,7 +1223,7 @@ public class App implements Testable
 				else{
 					fromBalance = fromBalance - amount;
 				}
-				System.out.println("Trying to update balance for from...");
+			
 				try {
 					sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(fromBalance) +
