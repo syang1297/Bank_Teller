@@ -117,7 +117,6 @@ public class Customer {
     //set pin and hash and store to db for customer
     //check that pin is 4 digits
     String setPin(int unhashedPin){
-        //TODO: add check that pin has indeed been checked
         String pin = Integer.toString(unhashedPin);
         if(pin.length() != 4){
             return "1";
@@ -145,7 +144,6 @@ public class Customer {
 
     //set address and store to db for customer
     String setAddress(String addr){
-        //TODO: add check that pin has indeed been checked
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -168,7 +166,6 @@ public class Customer {
 
     //set name and store to db for customer
     String setName(String name){
-         //TODO: add check that pin has indeed been checked
          try {
              Statement stmt = helper.getConnection().createStatement();
              try {
@@ -188,7 +185,6 @@ public class Customer {
              return "1";
          }
     }
-    //TODO: checking and savings are not the same
     //get accounts associated with customers taxID and the account type
     List<Integer> getAccountIDs(AccountType type){
         List<Integer> accountIDs = new ArrayList<Integer>();
