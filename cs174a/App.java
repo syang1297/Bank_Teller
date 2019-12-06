@@ -614,7 +614,6 @@ public class App implements Testable
 					// rs.close();
 					try {
 						System.out.println("Adding new pocketAccount to AccountPrimarilyOwns...");
-						//TODO: actual value for bankBranch, startDate, endDate
 						
 						sql = "INSERT INTO AccountPrimarilyOwns " + 
 								"VALUES (" + id + ", " + tin + ", '" + bankBranch + "', " + initialTopUp +
@@ -767,7 +766,7 @@ public class App implements Testable
 	@Override
 	public String deposit( String accountId, double amount ){
 		//check accountID exists 
-		//TODO: Teller function will check if account id belongs to customer
+		//TODO: GUI function will check if account id belongs to customer
 		//check amount is not negative
 		//grab current account balance and add to new balance and add it to accountprimarily owns table
 		int aid = 0;
@@ -859,7 +858,7 @@ public class App implements Testable
 	@Override
 	public String showBalance( String accountId ){
 		//check if account exists
-		//TODO: Teller function will check if account id belongs to customer
+		//TODO: GUI function will check if account id belongs to customer
 		//return balance
 		int aid = 0;
 		String dbID = "";
@@ -916,7 +915,7 @@ public class App implements Testable
 	@Override
 	public String topUp( String accountId, double amount ){
 		//check if accountID exists and is pocket account
-		//TODO: Teller function will check if account id belongs to customer
+		//TODO: GUI function will check if account id belongs to customer
 		//amount is not negative
 		//if fee has not been applied apply $5 fee and mark fee as paid for the month
 		//check if amount will not close the parent account
@@ -1082,7 +1081,6 @@ public class App implements Testable
 		//check if amount is negative
 		//check if amount closes from account
 		//get new balances and write to table for both accounts
-		//TODO: checks for if it would close pocket acocunt and what to do in that case
 		int fromid = 0;
 		String fromID = "";
 		boolean pocketFromExists = false;
@@ -1174,7 +1172,6 @@ public class App implements Testable
 						System.out.println(e);
 						return "1";					
 					}
-					//TODO: how to revert feePaid if updatebalance sql update fails
 				}
 				else{
 					toBalance = amount + toBalance;
@@ -1204,7 +1201,6 @@ public class App implements Testable
 						System.out.println(e);
 						return "1";					
 					}
-					//TODO: how to revert feePaid if updatebalance sql update fails
 				}
 				else{
 					fromBalance = fromBalance - amount;

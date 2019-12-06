@@ -245,7 +245,6 @@ public class ATM {
                 //0 for check number and -1 for toAccount
                 helper.addTransaction(amount, TransactionType.PURCHASE, 0, accountID, Integer.toString(-1));
                 return "0 " + String.format("%.2f",oldBalance) + " " +String.format("%.2f", newBalance);
-                //TODO: isClosed helper
                 
             }
             else{
