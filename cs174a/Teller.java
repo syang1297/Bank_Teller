@@ -34,14 +34,29 @@ public class Teller {
             try {
                 sql = "SELECT * FROM AccountPrimarilyOwns WHERE accountID = "+accountID;
                 ResultSet rs =stmt.executeQuery(sql);
+                int closed=0;
                 while(rs.next()){
                     newBalance = rs.getDouble("balance")-amount;
+                    closed = rs.getInt("isClosed");
                 }
             } catch(Exception e){
                 System.out.println("Failed to get balance");
                 System.out.println(e);
             }
             try {
+                if(closed==1){
+                    System.out.println("Account closed, can't write check");
+                    return;
+                }
+                if(newBalance<=0.01){
+                    sql = "UPDATE AccountPrimarilyOwns " +
+                            "SET isClosed = 1 " +
+                            "WHERE accountId = " + Integer.toString(accountID);
+                    stmt.executeUpdate(sql);
+                    sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = ("+
+                    "SELECT aID FROM PocketAccountLinkedWith WHERE otherAccountID = " + Integer.toString(accountID) + ")";
+                    stmt.executeUpdate(sql);
+                }
                 sql = "UPDATE AccountPrimarilyOwns SET balance = " + newBalance +
                 " WHERE accountID = "+accountID;
                 stmt.executeUpdate(sql);
