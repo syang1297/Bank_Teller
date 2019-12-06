@@ -2,13 +2,10 @@ Andrew
 -switch transaction switch cases due to toAccountId
 
 
-
--rewrite teller functions to take taxID as argument and init customer object where needed
+-check not makign transactions on closed accoutns
 -check if a transaction will make a balance go below $0.01, not 0 (to update close account)
 -make sure check for transanction not allowed is 0 rather than 0.01
 -make sure all transactions check if account should be set as isClosed after the changing of balance
--check not makign transactions on closed accoutns
--make helper functions to put in set date to reset fee paid, interest paid, other monthly variables on month switch
 
 Shu
 -add toAccountId into TransactionBelongs table (still store twice)
@@ -50,3 +47,5 @@ After finished
 -fix table default values
 -when to close pocket accounts and what to do with them in that case
 -rewrite customer functions to use its own taxID
+-rewrite teller functions to take taxID as argument and init customer object where needed
+-make helper functions to put in set date to reset fee paid, interest paid on month switch

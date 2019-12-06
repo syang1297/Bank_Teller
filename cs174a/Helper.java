@@ -274,4 +274,22 @@ public class Helper{
         return Integer.parseInt(res);
     }
     
+    void monthlyReset(){
+        String sql="";
+        try {
+            Statement stmt = _connection.createStatement();
+            try {
+                sql = "UPDATE AccountsPrimarilyOwns SET interestAdded = 0";
+                stmt.executeUpdate(sql);
+                sql = "UPDATE PocketAccountLinkedWith SET feePaid = 0";
+                stmt.executeUpdate(sql);
+            } catch (Exception e) {
+                System.out.println("Failed to reset");
+                System.out.println(e);
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
+    }
 }
