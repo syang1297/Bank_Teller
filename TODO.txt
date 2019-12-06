@@ -13,7 +13,6 @@ Andrew
 -make helper functions to put in set date to reset fee paid, interest paid, other monthly variables on month switch
 
 Shu
--check that error return strings are correct (esp the ones w/ account info) in Testable
 -figure out what the check to add interest is
 -test edge cases w/ negative balance
 -move everything out of testable that wasn't given
@@ -52,4 +51,6 @@ After finished
 -add toAccountId into TransactionBelongs table (still store twice)
 -fix table default values
 -check write check
+-check that error return strings are correct (esp the ones w/ account info) in Testable
+
 

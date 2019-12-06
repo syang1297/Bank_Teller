@@ -321,18 +321,18 @@ public class App implements Testable
 		String res = stringYear+"-"+stringMonth+"-"+stringDay;
 		if(stringYear.length() != 4) {
 			System.out.println("Wrong year digits");
-			return "1 "+res;
+			return "1 "+ helper.getDate();
 		} else if (!(month > 12) || !(month < 1)) {
 			if(year%4 != 0 && month == 2){
 				System.out.println("Not leap year in feb");
 				if(day > 28 || day < 1){
-					return "1 "+res;
+					return "1 "+helper.getDate();
 				}
 			} else if (month == 2 ) { // leap year only
 				System.out.println("Leap year");
 				if(day > 29 || day < 1){
 					System.out.println("leap year messed up");
-					return "1 "+res;
+					return "1 "+helper.getDate();
 				}
 			} else {
 				System.out.println("Reached cases");
@@ -345,7 +345,7 @@ public class App implements Testable
 					case 10:
 					case 12:
 						if(day>31 || day<1){
-							return "1 "+res;
+							return "1 "+helper.getDate();
 						}
 						break;
 					case 4:
@@ -353,7 +353,7 @@ public class App implements Testable
 					case 9:
 					case 11:
 						if(day>30 || day<1){
-							return "1 "+res;
+							return "1 "+helper.getDate();
 						}
 						break;
 				}
@@ -361,7 +361,7 @@ public class App implements Testable
 			}
 		} else if(month>12 || month<1){
 			System.out.println("month bad");
-			return "1 "+res;
+			return "1 "+helper.getDate();
 		}
 		try {
 				System.out.println("Connecting to database...............");
@@ -436,7 +436,7 @@ public class App implements Testable
 				interestRate = "4.80";
 				break;
 			case POCKET:
-				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+				return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 		}
 		//check account id doesn't already exist in db
 		try{
@@ -572,7 +572,8 @@ public class App implements Testable
 					aid = rs.getInt("aID");
 					dbID = Integer.toString(aid);
 					if(id.equals(dbID)){
-						return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
+						System.out.println("Pocket account already exists");
+						return "1 " + id + " POCKET " + "0.0" + " " + tin;
 					}
 				}
 				rs.close();
@@ -597,7 +598,8 @@ public class App implements Testable
 						}
 					}
 					if(linkedAccountExists == false || linkedIsClosed == 1 || linkedAccountInitBalance - initialTopUp <= 0.01 || acctType.equals("POCKET")){
-						return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
+						System.out.println("Failed to create pocket");
+						return "1 " + id + " POCKET " + "0.0" + " " + tin;
 					}
 					try {
 						System.out.println("Updating balance of linkedWith account...");
@@ -610,7 +612,7 @@ public class App implements Testable
 					} catch (Exception e) {
 						System.out.println("Failed to update linkedWith account");
 						System.out.println(e);
-						return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
+						return "1 " + id + " POCKET " + "0.0" + " " + tin;
 					}
 					// rs.close();
 					try {
@@ -630,27 +632,27 @@ public class App implements Testable
 						} catch (Exception e) {
 							System.out.println("Failed to add new pocketAccount to Pocket table");
 							System.out.println(e);
-							return "1 " + id + " " + AccountType.POCKET + " " + String.format("%.2f",initialTopUp) + " " + tin;						
+							return "1 " + id + " " + AccountType.POCKET + " " + "0.0" + " " + tin;						
 						}
 					} catch (Exception e) {
 						System.out.println("Failed to add pocketAccount to AccountPrimarilyOwns");
 						System.out.println(e);
-						return "1 " + id + " " + AccountType.POCKET + " " + String.format("%.2f",initialTopUp) + " " + tin;						
+						return "1 " + id + " " + AccountType.POCKET + " " + "0.0" + " " + tin;						
 					}				
 				} catch (Exception e) {
 					System.out.println("Failed to check if linkedwith account exists");
 					System.out.println(e);
-					return "1 " + id + " " + AccountType.POCKET + " " + String.format("%.2f",initialTopUp) + " " + tin;
+					return "1 " + id + " " + AccountType.POCKET + " " + "0.0" + " " + tin;
 				}
 			} catch (Exception e) {
 				System.out.println("Failed to check if PocketAccount already exists");
 				System.out.println(e);
-				return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
+				return "1 " + id + " POCKET " + "0.0" + " " + tin;
 			}
 		} catch (Exception e) {
 			System.out.println("getStatement() failed");
 			System.out.println(e);
-			return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
+			return "1 " + id + " POCKET " + "0.0" + " " + tin;
 		}
 		System.out.println("Successfully created new Pocket account.");
 		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, linkedId, id);
@@ -801,14 +803,14 @@ public class App implements Testable
 				if(accountExists == false){
 					System.out.println("Account doesn't exist");
 					rs.close();
-					return "1";
+					return "1 0.0 0.0";
 				}
 				else{
 					System.out.println("Account exists");
 					isClosed = rs.getInt("isClosed");
 					if(isClosed == 1){
 						rs.close();
-						return "1";
+						return "1 0.0 0.0";
 					}
 					oldBalance = rs.getDouble("balance");
 					acctType = rs.getString("accountType");
@@ -832,23 +834,23 @@ public class App implements Testable
 					} catch (Exception e) {
 						System.out.println("Failed to deposit and add new balance to table");
 						System.out.println(e);
-						result += String.format("%.2f",oldBalance) + " " +String.format("%.2f", newBalance);
+						result += String.format("%.2f",oldBalance) + " " +String.format("%.2f", oldBalance);
 						return result;
 					}
 				}
 			}catch (Exception e){
 				System.out.println("Failed to check if account exists");
 				System.out.println(e);
-				return result;
+				return result + "0.0 0.0";
 			}
 		}catch (Exception e){
 			System.out.println("Failed to create statement in showBalance");
 			System.out.println(e);
-			return result;
+			return result + "0.0 0.0";
 		}
 		System.out.println("Added deposit.");
 		helper.addTransaction(amount,TransactionType.DEPOSIT,0,accountId, Integer.toString(-1));
-		return result;
+		return result + "0.0 0.0";
 	}
 
 	/**
@@ -886,7 +888,7 @@ public class App implements Testable
 				// rs.close();
 				if(accountExists == false){
 					rs.close();
-					return "1";
+					return "1 0.0";
 				}
 				else{
 					balance = rs.getDouble("balance");
@@ -895,12 +897,12 @@ public class App implements Testable
 			}catch (Exception e){
 				System.out.println("Failed to check if account exists");
 				System.out.println(e);
-				return "1";
+				return "1 0.0";
 			}
 		}catch (Exception e){
 			System.out.println("Failed to create statement in showBalance");
 			System.out.println(e);
-			return "1";
+			return "1 0.0";
 		}
 		
 		return "0 " + String.format("%.2f",balance);
@@ -950,7 +952,7 @@ public class App implements Testable
 				if(pocketExists == false){
 					System.out.println("Pocket account doesn't exist.");
 					rs.close();
-					return "1";
+					return "1 0.0 0.0";
 				}
 				System.out.println("Pocket account exists.");
 				linkedId = rs.getInt("otherAccountID");
@@ -1014,7 +1016,7 @@ public class App implements Testable
 									} catch (Exception e) {
 										System.out.println("Failed to update feePaid for pocket account");
 										System.out.println(e);
-										return "1";
+										return "1" + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 									}
 								}
 								else{
@@ -1029,28 +1031,28 @@ public class App implements Testable
 							} catch (Exception e) {
 								System.out.println("Failed to update pocketAccount with topup");
 								System.out.println(e);
-								return "1";
+								return "1" + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 							}
 						} catch (Exception e) {
 							System.out.println("Failed to subtract topup from linkedAccount");
 							System.out.println(e);
-							return "1";
+							return "1" + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 						}
 					}
 				} catch (Exception e) {
 					System.out.println("Failed to update linkedAccount balance");
 					System.out.println(e);
-					return "1";
+					return "1" + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 				}
 			} catch (Exception e){
 				System.out.println("Failed to check if pocket account exists");
 				System.out.println(e);
-				return "1";
+				return "1 0.0 0.0" ;
 			}
 		} catch (Exception e){
 			System.out.println("Failed to create statement for topUp()");
 			System.out.println(e);
-			return "1";
+			return "1 0.0 0.0";
 		}
 	}
 
