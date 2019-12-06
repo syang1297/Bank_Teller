@@ -31,13 +31,13 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
-			app.dropTables();
-			// Helper helper= new Helper();
-			// //for testing app.java
+			// app.dropTables();
+			// // Helper helper= new Helper();
+			// // //for testing app.java
 			// r = app.createTables();
 			// app.setDate(2018, 2, 7);
 			// r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
-			// // System.out.println(r);
+			// // // System.out.println(r);
 			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
 			// r = app.createPocketAccount("1", "1234", 500.0, "4321");
 			// r = app.createPocketAccount("2", "1234", 100.0, "4321");
@@ -142,62 +142,62 @@ public class Main
 			
 			//demo preload code
 
-			App.dropTables();
-			App.createTables();
-			app.setDate(2011, 3, 1);
+			// App.dropTables();
+			// App.createTables();
+			// app.setDate(2011, 3, 1);
 
-			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "17431", 1200.00, "344151573", "Joe Pepsi", "3210 State St");
-			helper.setBranch("17431","San Francisco");
-			ATM atm = ATM(17431);
-			atm.setPin(3692);
+			// app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "17431", 1200.00, "344151573", "Joe Pepsi", "3210 State St");
+			// helper.setBranch("17431","San Francisco");
+			// ATM atm = ATM(17431);
+			// atm.setPin(3692);
 
-			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "54321", 21000.00, "212431965", "Hurryson Ford ", "678 State St");
-			helper.setBranch("54321","Los Angeles");
-			 atm = ATM(54321);
-			atm.setPin(3532);
+			// app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "54321", 21000.00, "212431965", "Hurryson Ford ", "678 State St");
+			// helper.setBranch("54321","Los Angeles");
+			//  atm = ATM(54321);
+			// atm.setPin(3532);
 
-			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "12121", 1200.00, "207843218", "David Copperfill", "1357 State St");
-			helper.setBranch("12121","Goleta");
-			 atm = ATM(12121);
-			atm.setPin(8582);
-			app.createPocketAccount("53027","12121",50,"207843218");
+			// app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "12121", 1200.00, "207843218", "David Copperfill", "1357 State St");
+			// helper.setBranch("12121","Goleta");
+			//  atm = ATM(12121);
+			// atm.setPin(8582);
+			// app.createPocketAccount("53027","12121",50,"207843218");
 
-			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "41725", 14000.00, "201674933", "George Brush", "5346 Foothill Av");
-			helper.setBranch("41725","Los Angeles");
-			 atm = ATM(41725);
-			atm.setPin(9824);
+			// app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "41725", 14000.00, "201674933", "George Brush", "5346 Foothill Av");
+			// helper.setBranch("41725","Los Angeles");
+			//  atm = ATM(41725);
+			// atm.setPin(9824);
 
-			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "76543", 8456, "212116070", "Li Kung", "2 People's Rd Beijing");
-			helper.setBranch("76543","Santa Barbara");
-			atm = ATM(76543);
-			atm.setPin(9173);
+			// app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "76543", 8456, "212116070", "Li Kung", "2 People's Rd Beijing");
+			// helper.setBranch("76543","Santa Barbara");
+			// atm = ATM(76543);
+			// atm.setPin(9173);
 			
-			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "93156", 2000000, "209378521", "Kelvin Costner", "Santa Cruz #3579");
-			helper.setBranch("93156","Goleta");
-			atm = ATM(93156);
-			atm.setPin(4659);
+			// app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "93156", 2000000, "209378521", "Kelvin Costner", "Santa Cruz #3579");
+			// helper.setBranch("93156","Goleta");
+			// atm = ATM(93156);
+			// atm.setPin(4659);
 
-			app.createCheckingSavingsAccount(AccountType.SAVINGS, "43942", 1289, "361721022", "Alfred Hitchcock", "6667 El Colegio #40");
-			helper.setBranch("43942","Santa Barbara");
-			atm = ATM(43942);
-			atm.setPin(1234);
+			// app.createCheckingSavingsAccount(AccountType.SAVINGS, "43942", 1289, "361721022", "Alfred Hitchcock", "6667 El Colegio #40");
+			// helper.setBranch("43942","Santa Barbara");
+			// atm = ATM(43942);
+			// atm.setPin(1234);
 
-			app.createCheckingSavingsAccount(AccountType.SAVINGS, "29107", 34000, "209378521", "Kelvin Costner", "Santa Cruz #3579");
-			helper.setBranch("29107","Los Angeles");
-			atm = ATM(29107);
-			atm.setPin(4659);
-			app.createPocketAccount("43947","29107",30,"400651982");
+			// app.createCheckingSavingsAccount(AccountType.SAVINGS, "29107", 34000, "209378521", "Kelvin Costner", "Santa Cruz #3579");
+			// helper.setBranch("29107","Los Angeles");
+			// atm = ATM(29107);
+			// atm.setPin(4659);
+			// app.createPocketAccount("43947","29107",30,"400651982");
 
-			app.createCheckingSavingsAccount(AccountType.SAVINGS, "19023", 2300, "412231856", "Cindy Laugher", "7000 Hollister");
-			helper.setBranch("19023","San Francisco");
-			atm = ATM(19023);
-			atm.setPin(3764);
-			app.createPocketAccount("67521","19023",30,"401605312");
+			// app.createCheckingSavingsAccount(AccountType.SAVINGS, "19023", 2300, "412231856", "Cindy Laugher", "7000 Hollister");
+			// helper.setBranch("19023","San Francisco");
+			// atm = ATM(19023);
+			// atm.setPin(3764);
+			// app.createPocketAccount("67521","19023",30,"401605312");
 
-			app.createCheckingSavingsAccount(AccountType.SAVINGS, "32156", 1000, "188212217", "Magic Jordon", "3852 Court Rd");
-			helper.setBranch("32156","Goleta");
-			atm = ATM(32156);
-			atm.setPin(7351);
+			// app.createCheckingSavingsAccount(AccountType.SAVINGS, "32156", 1000, "188212217", "Magic Jordon", "3852 Court Rd");
+			// helper.setBranch("32156","Goleta");
+			// atm = ATM(32156);
+			// atm.setPin(7351);
 
 			
 
@@ -529,24 +529,6 @@ public class Main
 								System.out.println("Reset monthly data.");
 							}
 							break;
-						}
-						break;
-					case "2"://SETDATE
-						while(true){
-							String year="";
-							String month="";
-							String day="";
-							System.out.println("Enter the year");
-							year = System.console().readLine();
-							System.out.println("Enter the month");
-							month = System.console().readLine();
-							System.out.println("Enter the day");
-							day = System.console().readLine();
-							if(app.setDate(Integer.parseInt(year),Integer.parseInt(month),Integer.parseInt(day)).charAt(0)==('0')){
-								break;
-							} else {
-								System.out.println("Try again.");
-							}
 						}
 						break;
 					case "-1":

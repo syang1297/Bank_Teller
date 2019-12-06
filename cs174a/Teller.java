@@ -207,8 +207,9 @@ public class Teller {
                                     }else{
                                         initBalance += amt;
                                         amt=-1*amt;
+                                        accountInfo = accountInfo + "TRANSFER: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
+                                    
                                     }
-                                    accountInfo = accountInfo + "TRANSFER: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "WITHDRAWAL":
                                     initBalance += amt;
@@ -576,7 +577,7 @@ public class Teller {
                     }
                     res.add(account);
                 }
-]
+
             } catch(Exception e){
                 System.out.println("Failed to get info.");
                 System.out.println(e);
@@ -610,22 +611,18 @@ public class Teller {
                 Helper helper2 = new Helper();
                 Statement stmt2 = helper2.getConnection().createStatement();
                 try {
-             ]
+             
                     sql = "SELECT * " +
                         "FROM AccountPrimarilyOwns" + 
                         " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
                         AccountType.STUDENT_CHECKING + "'";
                     ResultSet accounts= stmt.executeQuery(sql);
-<<<<<<< HEAD
                     if(accounts.next() == false){
                         System.out.println("WARNING: Interest already added for this month");
                         return "1";
                     }
                     accounts= stmt.executeQuery(sql);
                     System.out.println("Adding interest...");
-=======
-     ]
->>>>>>> andrew
                     while(accounts.next()){
                         ArrayList<Double> dayWeights = new ArrayList<Double>();
                         ArrayList<Double> balances = new ArrayList<Double>();
