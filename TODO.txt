@@ -17,6 +17,7 @@
 -rewrite customer functions to use its own taxID
 -rewrite teller functions to take taxID as argument and init customer object where needed
 -add otherAccountId into TransactionBelongs table
+-fix table default values
 
 
 -update monthly statement after adding another other acct info to transaction table
