@@ -269,6 +269,10 @@ public class ATM {
             System.out.println("Cannot transfer negative amount");
             return "1";
         }
+        if(amount>2000){
+            System.out.println("Cannot transfer more than $2,000");
+            return "1";
+        }
         if(student0 || checking0 || saving0){
             if(student1 || checking1 || saving1){
                 try {
@@ -339,10 +343,10 @@ public class ATM {
                     return "1";
                 }
             }
-            System.out.println("Accounts either do not exist or is not CHECKINGS/SAVINGS type");
+            System.out.println("Accounts either dne, is not CHECKINGS/SAVINGS type, customer is not owner, or accounts don't have common owner");
             return "1";
         }
-        System.out.println("Accounts either do not exist or is not CHECKINGS/SAVINGS type");
+        System.out.println("Accounts either dne, is not CHECKINGS/SAVINGS type, customer is not owner, or accounts don't have common owner");
         return "1";
     }
 
@@ -422,7 +426,11 @@ public class ATM {
                                     System.out.println("Can't collect bc amount with fee is greater than pocket account balance: "+pocketBalance1);
                                     return "1";                                    
                                 }
-                                pocketBalance2 = pocketBalance1 - amount - 5;        
+                                pocketBalance2 = pocketBalance1 - amount - 5; 
+                                sql = "UPDATE PocketAccountLinkedWith " +
+                                "SET feePaid = 1" +
+                                " WHERE aID = " + Integer.toString(pocketID);
+                                stmt.executeUpdate(sql);  
                             }else{
                                 pocketBalance2 = pocketBalance1 - amount;
                             }
@@ -431,12 +439,6 @@ public class ATM {
                             pocketBalance2 = Double.parseDouble(String.format("%.2f",pocketBalance2));
                             //update balances for pocket and account
                             System.out.println("Updating balances...");
-                            if(feePaid == 0){
-                                sql = "UPDATE PocketAccountLinkedWith " +
-                                "SET feePaid = 1" +
-                                " WHERE aID = " + Integer.toString(pocketID);
-                                stmt.executeUpdate(sql);                                
-                            }
                             sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET balance = " + Double.toString(pocketBalance2) +
                                     " WHERE accountId = " + Integer.toString(pocketID);
