@@ -1,40 +1,21 @@
 Andrew
 -switch transaction switch cases due to toAccountId
-
--check not makign 
-transactions on 
-closed accoutns
-
--check if a 
-transaction will 
-make a balance go 
-below $0.01, not 
-0 (to update close account)
-
--make sure all transactions 
-check if account should be 
-set as isClosed after the 
-changing of balance
-
--make sure check for 
-transanction not allowed 
-is 0 rather than 0.01
-
+-add fee to transaction table
+-take $5 fee and 3% thingy for addtransaction in collect and purchase
 
 
 Shu
--add toAccountId into TransactionBelongs table (still store twice)
--update monthly statement after adding another other acct info to transaction table
--change everytime we called addTransactions
--take $5 fee and 3% thingy for addtransaction in collect and purchase
--check that error return strings are correct (esp the ones w/ account info)
--check write check
--add fee to transaction table
+-check that error return strings are correct (esp the ones w/ account info) in Testable
 -figure out what the check to add interest is
 -test edge cases w/ negative balance
 -move everything out of testable that wasn't given
+-check switch case for interest rates (bc interest rate may be updated)
+-check delete cascade stuff
+-make sure only allowed transactions are happening on accounts
+-feePaid updates to 1 once fee is paid
 
 After finished
+-final sweep of piazza
 -detailed readme
 -do we need to load data for presentation?
 -fix TODOs in functions
@@ -59,8 +40,16 @@ After finished
 -make sure every pocket account is being checked if they paid fee yet
 -store balances as doubles in DB
 -make sure hash and unhash pin called
+-change everytime we called addTransactions
+-add toAccountId into TransactionBelongs table (still store twice)
 -fix table default values
+-check write check
 -when to close pocket accounts and what to do with them in that case
+-switch primary owner function
 -rewrite customer functions to use its own taxID
 -rewrite teller functions to take taxID as argument and init customer object where needed
--make helper functions to put in set date to reset fee paid, interest paid on month switch
+-check if a transaction will make a balance go below $0.01, not 0 (to update close account)
+-make sure check for transanction not allowed is 0 rather than 0.01
+-make sure all transactions check if account should be set as isClosed after the changing of balance
+-check not makign transactions on closed accoutns
+-make helper functions to put in set date to reset fee paid, interest paid, other monthly variables on month switch

@@ -5,6 +5,9 @@
 //compile: javac -d out/ -cp /path/to/ojdbc8.jar cs174a/*.java		# out/ is where .class files are saved to.
 //run: java -cp /path/to/ojdbc8.jar:out:. cs174a.Main
 
+//compile:  javac -d out/ -cp /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar cs174a/*.java
+//run: java -cp /usr/lib/oracle/19.3/client64/lib/ojdbc8.jar:out:. cs174a.Main
+
 package cs174a;                                             // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
 
 // You may have as many imports as you need.
@@ -64,8 +67,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##andrewdoan";
-		final String DB_PASSWORD = "3772365";
+		final String DB_USER = "c##syang01";
+		final String DB_PASSWORD = "4621538";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -257,6 +260,7 @@ public class App implements Testable
 								"checkNo INTEGER," +
 								"transactionID INTEGER," +
 								"aID INTEGER NOT NULL," +
+								"toAID INTEGER NOT NULL," +
 								"tID INTEGER NOT NULL," +
 								"PRIMARY KEY(transactionID, aID, tID)," +
 								"FOREIGN KEY(aID, tID) REFERENCES " +
@@ -523,7 +527,7 @@ public class App implements Testable
 			return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 		}
 		//add to transaction table
-		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id);
+		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id, Integer.toString(-1));
 		return "0 " + id + " " + accountType + " " + String.format("%.2f", initialBalance) + " " + tin;
 	}
 
@@ -649,8 +653,7 @@ public class App implements Testable
 			return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 		}
 		System.out.println("Successfully created new Pocket account.");
-		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, id);
-		helper.addTransaction(initialTopUp, TransactionType.WITHDRAWAL, 0, linkedId);
+		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, linkedId, id);
 		return "0 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 	}
 
@@ -844,7 +847,7 @@ public class App implements Testable
 			return result;
 		}
 		System.out.println("Added deposit.");
-		helper.addTransaction(amount,TransactionType.DEPOSIT,0,accountId);
+		helper.addTransaction(amount,TransactionType.DEPOSIT,0,accountId, Integer.toString(-1));
 		return result;
 	}
 
@@ -928,6 +931,7 @@ public class App implements Testable
 		double linkedBalance = 0.00;
 		int linkedId = 0;
 		String linkedID = "";
+		System.out.println("topping up account");
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
@@ -1027,12 +1031,11 @@ public class App implements Testable
 									pocketBalance = pocketBalance + amount;
 								}								
 								sql = "UPDATE AccountPrimarilyOwns " +
-										"SET balance = " + Double.toString(pocketBalance) +
+										"SET balance = " + (pocketBalance) +
 										" WHERE accountId = " + dbID;
 								stmt.executeUpdate(sql);
-								helper.addTransaction(amount, TransactionType.TOPUP, 0, accountId);
-								helper.addTransaction(amount, TransactionType.WITHDRAWAL, 0, linkedID);
-								return "0 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
+								helper.addTransaction(amount, TransactionType.TOPUP, 0, linkedID, accountId);
+								return "0 " + String.format("%.2f",(linkedBalance)) + " " + String.format("%.2f",(pocketBalance));
 							} catch (Exception e) {
 								System.out.println("Failed to update pocketAccount with topup");
 								System.out.println(e);
@@ -1227,9 +1230,8 @@ public class App implements Testable
 			return "1";
 		}
 		System.out.println("Paid friend.");
-		helper.addTransaction(amount,TransactionType.PAYFRIEND,0,to);
-		helper.addTransaction(-1*amount,TransactionType.PAYFRIEND,0,from);
-		return "0 " + String.format("%.2f",fromBalance) + " " + String.format("%.2f",toBalance);
+		helper.addTransaction(amount,TransactionType.PAYFRIEND,0, from, to);
+		return "0 " + String.format("%.2f",(fromBalance)) + " " + String.format("%.2f",(toBalance));
 	}
 
 	/**
