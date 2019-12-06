@@ -243,7 +243,7 @@ public class Teller {
                                     }else{
                                         initBalance += amt;
                                     }
-                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "PURCHASE":
                                     toAccount = transactions.getInt("toAID");
@@ -252,7 +252,7 @@ public class Teller {
                                     }else{
                                         initBalance += amt;
                                     }
-                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                             }
                         
@@ -363,7 +363,7 @@ public class Teller {
                                     }else{
                                         initBalance += amt;
                                     }
-                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "PURCHASE":
                                     toAccount = transactions.getInt("toAID");
@@ -372,7 +372,7 @@ public class Teller {
                                     }else{
                                         initBalance += amt;
                                     }
-                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                             }
                         }

@@ -68,10 +68,10 @@ public class Main
 			// r = customer.setName("Shu");
 			// r = customer.getName();
 			// System.out.println(r);
-			List<Integer> res=customer.getAccountIDs(customer.getTaxID(),AccountType.STUDENT_CHECKING);
-			for(int i =0;i<res.size();i++){
-				System.out.println("AccountID "+Integer.toString(i)+": "+res.get(i));
-			}
+			// List<Integer> res=customer.getAccountIDs(customer.getTaxID(),AccountType.STUDENT_CHECKING);
+			// for(int i =0;i<res.size();i++){
+			// 	System.out.println("AccountID "+Integer.toString(i)+": "+res.get(i));
+			// }
 			// System.out.println(customer.acctBelongsToCustomer(1234,4321,AccountType.STUDENT_CHECKING));
 			// System.out.println(helper.hashPin(1234));
 			// System.out.println(helper.unhashPin("\"#$%"));
@@ -123,7 +123,7 @@ public class Main
 			// 	System.out.println(res2.get(i));
 			// }
 			// // res2 = teller.generateMonthly(4321);
-			res2 = teller.generateMonthly(4321);
+			List<String> res2 = teller.generateMonthly(4321);
 			// System.out.println(res2);
 			for(int i=0;i<res2.size();i++){
 				System.out.println(res2.get(i));

@@ -1,5 +1,7 @@
 Andrew
 -switch transaction switch cases due to toAccountId
+-add fee to transaction table
+-take $5 fee and 3% thingy for addtransaction in collect and purchase
 -when to close pocket accounts and what to do with them in that case
 -switch primary owner function
 -rewrite customer functions to use its own taxID
@@ -11,11 +13,7 @@ Andrew
 -make helper functions to put in set date to reset fee paid, interest paid, other monthly variables on month switch
 
 Shu
--update monthly statement after adding another other acct info to transaction table (DTER) --update all that call transanctions
-(all switch statements that have to do w/ transaction)
--take $5 fee and 3% thingy for addtransaction in collect and purchase
 -check that error return strings are correct (esp the ones w/ account info) in Testable
--add fee to transaction table
 -figure out what the check to add interest is
 -test edge cases w/ negative balance
 -move everything out of testable that wasn't given
