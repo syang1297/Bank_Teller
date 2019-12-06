@@ -26,6 +26,9 @@ public class ATM {
         }
         return false;
     }
+    void setPin(int pin){
+        customer.setPin(pin);
+    }
     List<List<Integer>> getCustomerAccounts(){
         List<List<Integer>> res = new ArrayList<List<Integer>>();
         res.add(customer.getAccountIDs(AccountType.STUDENT_CHECKING));

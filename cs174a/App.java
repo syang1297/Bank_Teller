@@ -311,10 +311,10 @@ public class App implements Testable
 		String stringYear = Integer.toString(year);
 		String stringMonth = Integer.toString(month);
 		String stringDay = Integer.toString(day);
-		if(stringMonth.length()<2){
+		if(stringMonth.length()==1){
 			stringMonth="0"+stringMonth;
 		}
-		if(stringDay.length()<2){
+		if(stringDay.length()==1){
 			stringDay="0"+stringDay;
 		}
 		String res = stringYear+"-"+stringMonth+"-"+stringDay;

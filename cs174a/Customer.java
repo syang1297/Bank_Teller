@@ -119,6 +119,7 @@ public class Customer {
     String setPin(int unhashedPin){
         String pin = Integer.toString(unhashedPin);
         if(pin.length() != 4){
+            System.out.println("Pin too short.");
             return "1";
         }
         String hashedPin = helper.hashPin(unhashedPin);
@@ -129,6 +130,7 @@ public class Customer {
                             "SET pin = '" + hashedPin + 
                             "' WHERE taxID = " + Integer.toString(this.taxID);
                 stmt.executeUpdate(sql);
+                System.out.println("Set pin.");
                 return "0";
             } catch (Exception e) {
                 System.out.println("Failed to set customer pin");

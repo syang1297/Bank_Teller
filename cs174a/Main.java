@@ -141,11 +141,12 @@ public class Main
 			// start of GUI code
 			String input ="";
 			while(true){
-				System.out.println("\nWelcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, or -1 to exit.");
+				System.out.println("\nWelcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, 2 for setDate, or -1 to exit.");
 				input = System.console().readLine();
 				switch(input){
 					case "0"://ATM
 						while(true){
+							System.out.println("\n--------------Welcome to the ATM Interface-------------");
 							System.out.println("\nPlease enter your taxID");
 							String taxID = System.console().readLine();
 							ATM atm = new ATM(Integer.parseInt(taxID),app);
@@ -175,15 +176,19 @@ public class Main
 								temp=temp +"\nPocket Accounts: ";
 								temp=temp+accounts.get(1);
 								System.out.println(temp);
-								System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Exit\n");
+								System.out.println("\n--------------Welcome to the ATM Interface-------------");
+								System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Set Pin\n(8)Exit\n");
 								input = System.console().readLine();
-								if(input.equals("6") || input.equals("1")){
+								if(input.equals("7")){
+									System.out.println("Enter new pin");
+								}
+								else if(input.equals("6") || input.equals("1")){
 									System.out.println("Enter a pocket account.");
 								} else if(!input.equals("7")){
 									System.out.println("Enter an account.");
 								}
-								if(!input.equals("7")){
-									System.console().readLine();
+								if(!input.equals("8")){
+									acc = System.console().readLine();
 								}
 								switch(input){
 									case "0":
@@ -230,18 +235,39 @@ public class Main
 										atm.payFriend(Integer.parseInt(acc),Integer.parseInt(acc2),Double.parseDouble(amt));
 										break;
 									case "7":
+										atm.setPin(Integer.parseInt(acc));
+										break;
+									case "8":
 										break;
 								}
-								if(input.equals("7")){
+								if(input.equals("8")){
 									break;
 								}
 							}
-							if(input.equals("7")){
+							if(input.equals("8")){
 									break;
 							}
 						}
 						break;
 					case "1"://TELLER
+						break;
+					case "2"://SETDATE
+						while(true){
+							String year="";
+							String month="";
+							String day="";
+							System.out.println("Enter the year");
+							year = System.console().readLine();
+							System.out.println("Enter the month");
+							month = System.console().readLine();
+							System.out.println("Enter the day");
+							day = System.console().readLine();
+							if(app.setDate(Integer.parseInt(year),Integer.parseInt(month),Integer.parseInt(day)).charAt(0)==('0')){
+								break;
+							} else {
+								System.out.println("Try again.");
+							}
+						}
 						break;
 					case "-1":
 						System.out.println("Thanks for using our bank.");
