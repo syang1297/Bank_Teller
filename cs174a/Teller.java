@@ -168,39 +168,39 @@ public class Teller {
                                         continue;
                                     }
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "DEPOSIT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "DEPOSIT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "TRANSFER":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "TRANSFER: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TRANSFER: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WITHDRAWAL":
                                     initBalance += amt;
-                                    accountInfo = accountInfo + "WITHDRAWAL: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WITHDRAWAL: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WIRE":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "WIRE: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WIRE: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WRITECHECK":
                                     initBalance += amt;
-                                    accountInfo = accountInfo + "WRITECHECK: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WRITECHECK: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "ACCRUEINTEREST":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "ACCRUEINTEREST: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "ACCRUEINTEREST: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "COLLECT":
                                     initBalance += amt;
-                                    accountInfo = accountInfo + "COLLECT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "COLLECT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "PAYFRIEND":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "PAYFRIEND: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                             }
                         
-                        accountInfo = accountInfo + "\nINITIAL BALANCE: " + Double.toString(initBalance) + "\tFINAL BALANCE: " + accounts.getDouble("balance")+ "\n\n";
+                        accountInfo = accountInfo + "\nINITIAL BALANCE: " + String.format("%.2f",Double.toString(initBalance)) + "\tFINAL BALANCE: " + String.format("%.2f",accounts.getDouble("balance"))+ "\n\n";
                         totalBalance+=accounts.getDouble("balance");
                         res.add(accountInfo);
                         }
@@ -245,39 +245,39 @@ public class Teller {
                                     continue;
                                 }
                                 initBalance -= amt;
-                                accountInfo = accountInfo + "DEPOSIT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                accountInfo = accountInfo + "DEPOSIT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "TRANSFER":
                                 initBalance -= amt;
-                                accountInfo = accountInfo + "TRANSFER: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                accountInfo = accountInfo + "TRANSFER: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "WITHDRAWAL":
                                 initBalance += amt;
-                                accountInfo = accountInfo + "WITHDRAWAL: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                accountInfo = accountInfo + "WITHDRAWAL: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "WIRE":
                                 initBalance -= amt;
-                                accountInfo = accountInfo + "WIRE: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                accountInfo = accountInfo + "WIRE: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "WRITECHECK":
                                 initBalance += amt;
-                                accountInfo = accountInfo + "WRITECHECK: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                accountInfo = accountInfo + "WRITECHECK: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "ACCRUEINTEREST":
                                 initBalance -= amt;
-                                accountInfo = accountInfo + "ACCRUEINTEREST: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                accountInfo = accountInfo + "ACCRUEINTEREST: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "COLLECT":
                                 initBalance += amt;
-                                accountInfo = accountInfo + "COLLECT: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                accountInfo = accountInfo + "COLLECT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                 break;
                             case "PAYFRIEND":
                                 initBalance -= amt;
-                                accountInfo = accountInfo + "PAYFRIEND: " + Double.toString(amt) + " | DATE: " + tDate + "\n"; 
+                                accountInfo = accountInfo + "PAYFRIEND: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                 break;
                         }
                     }
-                    accountInfo = accountInfo + "\nINITIAL BALANCE: " + Double.toString(initBalance) + "\tFINAL BALANCE: " + accounts.getDouble("balance")+ "\n\n";
+                    accountInfo = accountInfo + "\nINITIAL BALANCE: " + String.format("%.2f",Double.toString(initBalance)) + "\tFINAL BALANCE: " + String.format("%.2f",accounts.getDouble("balance"))+ "\n\n";
                     totalBalance+=accounts.getDouble("balance");
                     res.add(accountInfo);
                     } catch (Exception e){

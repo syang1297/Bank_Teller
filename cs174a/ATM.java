@@ -22,6 +22,7 @@ public class ATM {
     }
 
     //takes inserted pin and checks it against customer's getpin()
+    //TODO: make sure it's hashed
     boolean verifyPin(int pin){
         if(pin == customer.getPin()){
             return true;
@@ -97,7 +98,7 @@ public class ATM {
 					rs.close();
 					if(amount <= 0.00){
 						System.out.println("Cannot withdraw negative amount");
-						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						result += String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",Double.toString(newBalance));
 						return result;					
 					}
 					if(acctType.equals("POCKET")){
@@ -124,7 +125,7 @@ public class ATM {
 					} catch (Exception e) {
 						System.out.println("Failed to deposit and add new balance to table");
 						System.out.println(e);
-						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						result += String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",Double.toString(newBalance));
 						return result;
 					}
 				}
@@ -230,7 +231,7 @@ public class ATM {
                             "WHERE accountId = " + accountID;
                 stmt.executeUpdate(sql);
                 helper.addTransaction(oldBalance, TransactionType.PURCHASE, 0, accountID);
-                return "0 " + balance + " " + Double.toString(newBalance);
+                return "0 " + String.format("%.2f",balance) + " " + Double.toString(newBalance);
                 //TODO: isClosed helper
                 
             }

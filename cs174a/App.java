@@ -219,8 +219,6 @@ public class App implements Testable
 								"bankBranch VARCHAR(32)," +
 								"balance INTEGER," +
 								"madeOn VARCHAR(32)," +
-								// "balanceEndDate CHAR(10)," +
-								// "balanceStartDate CHAR(10)," +
 								"isClosed NUMBER(1)," +
 								"interestRate REAL," +
 								"accountType VARCHAR(32)," +
@@ -449,7 +447,7 @@ public class App implements Testable
 					String dbID = Integer.toString(aid);
 					if(id.equals(dbID)){
 						System.out.println("AccountID exists already");
-						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+						return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 					}
 				}
 				System.out.println("AccountID does not exists already");
@@ -457,12 +455,12 @@ public class App implements Testable
 			} catch (Exception e) {
 				System.out.println("Failed to select from AccountPrimarilyOwns");
 				System.out.println(e);
-				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+				return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 			}
 		} catch(Exception e){
 			System.out.println("Failed to connect to DB");
 			System.out.println(e);
-            return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+            return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 		}
 
 		//check for initial balance.... if it's null, set to 1000
@@ -486,7 +484,7 @@ public class App implements Testable
 						System.out.println("Inserting new customer since taxID doesn't exist");
 						if(address == null || name == null){
 							System.out.println("Address and Name cannot be null because we are inserting a new customer");
-							return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+							return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 						}
 						String hashedPin = helper.hashPin(1717);
 						String sqlValues = tin + ",'" + address + "','"+ hashedPin +"','" + name+"'";
@@ -497,7 +495,7 @@ public class App implements Testable
 					} catch (Exception e) {
 						System.out.println("Unable to write to customer table");
 						System.out.println(e);
-						return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+						return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 					}
 					
 				}
@@ -522,16 +520,16 @@ public class App implements Testable
 			} catch (Exception e) {
 				System.out.println("Failed to select taxID from Customer table");
 				System.out.println(e);
-				return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+				return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 			}
 		} catch (Exception e) {
 			System.out.println("getStatement() failed");
 			System.out.println(e);
-			return "1 " + id + " " + accountType + " " + initialBalance + " " + tin;
+			return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 		}
 		//add to transaction table
 		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id);
-		return "0 " + id + " " + accountType + " " + initialBalance + " " + tin;
+		return "0 " + id + " " + accountType + " " + String.format("%.2f", initialBalance) + " " + tin;
 	}
 
 	/**
@@ -575,7 +573,7 @@ public class App implements Testable
 					aid = rs.getInt("aID");
 					dbID = Integer.toString(aid);
 					if(id.equals(dbID)){
-						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+						return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 					}
 				}
 				rs.close();
@@ -600,7 +598,7 @@ public class App implements Testable
 						}
 					}
 					if(linkedAccountExists == false || linkedIsClosed == 1 || linkedAccountInitBalance - initialTopUp <= 0.01 || acctType.equals("POCKET")){
-						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+						return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 					}
 					//TODO: update startDate, endDate
 					try {
@@ -614,7 +612,7 @@ public class App implements Testable
 					} catch (Exception e) {
 						System.out.println("Failed to update linkedWith account");
 						System.out.println(e);
-						return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+						return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 					}
 					// rs.close();
 					try {
@@ -634,32 +632,32 @@ public class App implements Testable
 						} catch (Exception e) {
 							System.out.println("Failed to add new pocketAccount to Pocket table");
 							System.out.println(e);
-							return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;						
+							return "1 " + id + " " + AccountType.POCKET + " " + String.format("%.2f",initialTopUp) + " " + tin;						
 						}
 					} catch (Exception e) {
 						System.out.println("Failed to add pocketAccount to AccountPrimarilyOwns");
 						System.out.println(e);
-						return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;						
+						return "1 " + id + " " + AccountType.POCKET + " " + String.format("%.2f",initialTopUp) + " " + tin;						
 					}				
 				} catch (Exception e) {
 					System.out.println("Failed to check if linkedwith account exists");
 					System.out.println(e);
-					return "1 " + id + " " + AccountType.POCKET + " " + initialTopUp + " " + tin;
+					return "1 " + id + " " + AccountType.POCKET + " " + String.format("%.2f",initialTopUp) + " " + tin;
 				}
 			} catch (Exception e) {
 				System.out.println("Failed to check if PocketAccount already exists");
 				System.out.println(e);
-				return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+				return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 			}
 		} catch (Exception e) {
 			System.out.println("getStatement() failed");
 			System.out.println(e);
-			return "1 " + id + " POCKET " + initialTopUp + " " + tin;
+			return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 		}
 		System.out.println("Successfully created new Pocket account.");
 		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, id);
 		helper.addTransaction(initialTopUp, TransactionType.WITHDRAWAL, 0, linkedId);
-		return "0 " + id + " POCKET " + initialTopUp + " " + tin;
+		return "0 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 	}
 
 	/**
@@ -833,11 +831,11 @@ public class App implements Testable
 							"SET balance = " + Double.toString(newBalance) + 
 							" " + "WHERE accountId = " + dbID;
 						stmt.executeUpdate(sql);
-						result = "0 " + Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						result = "0 " + String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",Double.toString(newBalance));
 					} catch (Exception e) {
 						System.out.println("Failed to deposit and add new balance to table");
 						System.out.println(e);
-						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						result += String.format("%.2f",Double.toString(oldBalance)) + " " +String.format("%.2f", Double.toString(newBalance));
 						return result;
 					}
 				}
@@ -908,7 +906,7 @@ public class App implements Testable
 			return "1";
 		}
 		
-		return "0 " + Double.toString(balance);
+		return "0 " + String.format("%.2f",Double.toString(balance));
 	}
 
 	/**
@@ -986,12 +984,12 @@ public class App implements Testable
 					if(!linkedExists){
 						System.out.println("Linked account does not exist.");
 						rs.close();
-						return "1 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
+						return "1 " + String.format("%.2f",Double.toString(linkedBalance)) + " " + String.format("%.2f",Double.toString(pocketBalance));
 					}
 					else{
 						System.out.println("Linked account exists.");
 						if(amount <= 0 || (linkedBalance - amount) <= 0){
-							return "1 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
+							return "1 " + String.format("%.2f",Double.toString(linkedBalance)) + " " + String.format("%.2f",Double.toString(pocketBalance));
 						}
 						linkedBalance -= amount;
 						try {
@@ -1022,7 +1020,7 @@ public class App implements Testable
 								stmt.executeUpdate(sql);
 								helper.addTransaction(amount, TransactionType.TOPUP, 0, accountId);
 								helper.addTransaction(amount, TransactionType.WITHDRAWAL, 0, linkedID);
-								return "0 " + Double.toString(linkedBalance) + " " + Double.toString(pocketBalance);
+								return "0 " + String.format("%.2f",Double.toString(linkedBalance)) + " " + String.format("%.2f",Double.toString(pocketBalance));
 							} catch (Exception e) {
 								System.out.println("Failed to update pocketAccount with topup");
 								System.out.println(e);
@@ -1204,7 +1202,7 @@ public class App implements Testable
 		System.out.println("Paid friend.");
 		helper.addTransaction(amount,TransactionType.PAYFRIEND,0,to);
 		helper.addTransaction(-1*amount,TransactionType.PAYFRIEND,0,from);
-		return "0 " + Double.toString(fromBalance) + " " + Double.toString(toBalance);
+		return "0 " + String.format("%.2f",Double.toString(fromBalance)) + " " + String.format("%.2f",Double.toString(toBalance));
 	}
 
 	/**
