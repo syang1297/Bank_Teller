@@ -954,15 +954,18 @@ public class App implements Testable
 				sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				rs = stmt.executeQuery(sql);
+				int isClosed = 0;
 				while(rs.next()){
 					aid = rs.getInt("accountID");
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
 						pocketBalance = rs.getDouble("balance");
+						isClosed = rs.getInt("isClosed");
 						break;
 					}
 				}
 				rs.close();
+				
 				linkedID = Integer.toString(linkedId);
 				try {
 					System.out.println("Getting attributes of linked Account...");
@@ -980,12 +983,19 @@ public class App implements Testable
 						rs.close();
 						return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 					}
+					if(isClosed==1){
+						System.out.println("Pocket account is closed");
+						return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
+					}
 					else{
 						System.out.println("Linked account exists.");
 						if(amount <= 0 || (linkedBalance - amount) < 0){
 							return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 						}
 						linkedBalance -= amount;
+						if(linkedBalance<0){
+							return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
+						}
 						if(linkedBalance<=0.01){
 							sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET isClosed = 1 " +
@@ -1112,17 +1122,24 @@ public class App implements Testable
 				sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				rs = stmt.executeQuery(sql);
+				int toClosed = 0;
+				int fromClosed = 0;
 				while(rs.next()){
 					int id = rs.getInt("accountID");
 					String ID = Integer.toString(id);
 					if(ID.equals(fromID)){
 						fromBalance = rs.getDouble("balance");
+						fromClosed = rs.getInt("isClosed");
 					}
 					if(ID.equals(toID)){
 						toBalance = rs.getDouble("balance");
+						toClosed = rs.getInt("isClosed");
 					}
 				}
-				
+				if(toClosed == 1 || fromClosed == 1){
+					System.out.println("An account is closed");
+					return "1";
+				}
 				if(pocketFromExists == false || pocketToExists == false){
 					System.out.println("Pocket accounts dont exist.");
 					rs.close();

@@ -47,6 +47,10 @@ public class Teller {
                     System.out.println("Account closed, can't write check");
                     return;
                 }
+                if(newBalance<0){
+                    System.out.println("Not enough balance to write check");
+                    return;
+                }
                 if(newBalance<=0.01){
                     sql = "UPDATE AccountPrimarilyOwns " +
                             "SET isClosed = 1 " +

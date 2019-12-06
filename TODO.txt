@@ -1,11 +1,26 @@
 Andrew
 -switch transaction switch cases due to toAccountId
 
+-check not makign 
+transactions on 
+closed accoutns
 
--check not makign transactions on closed accoutns
--check if a transaction will make a balance go below $0.01, not 0 (to update close account)
--make sure check for transanction not allowed is 0 rather than 0.01
--make sure all transactions check if account should be set as isClosed after the changing of balance
+-check if a 
+transaction will 
+make a balance go 
+below $0.01, not 
+0 (to update close account)
+
+-make sure all transactions 
+check if account should be 
+set as isClosed after the 
+changing of balance
+
+-make sure check for 
+transanction not allowed 
+is 0 rather than 0.01
+
+
 
 Shu
 -add toAccountId into TransactionBelongs table (still store twice)
