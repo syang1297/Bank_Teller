@@ -561,6 +561,10 @@ public class App implements Testable
 		String linkedTID="";
 		int aid = 0;
 		String bankBranch="";
+		if(initialTopUp < 0){
+			System.out.println("Initial top up cannot be negative");
+			return "1";
+		}
 		try {
 			Statement stmt = _connection.createStatement();
 			try {
@@ -598,7 +602,7 @@ public class App implements Testable
 						}
 					}
 					if(linkedAccountExists == false || linkedIsClosed == 1 || linkedAccountInitBalance - initialTopUp <= 0.01 || acctType.equals("POCKET")){
-						System.out.println("Failed to create pocket");
+						System.out.println("Failed to create pocket either bc linkedAccount dne/closed, amount would close account, or account to be linked is pocket");
 						return "1 " + id + " POCKET " + "0.0" + " " + tin;
 					}
 					try {
@@ -787,7 +791,7 @@ public class App implements Testable
 			try {
 				System.out.println("Checking if accountID exists...");
 				String sql = "SELECT * " +
-								"FROM AccountPrimarilyOwns";
+								"FROM AccountPrimarilyOwns ";
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
 					aid = rs.getInt("accountID");
@@ -822,6 +826,7 @@ public class App implements Testable
 					}
 					if(acctType.equals("POCKET")){
 						System.out.println("Cannot deposit into pocket.");
+						return "1";
 					}
 					try {
 						System.out.println("Updating balances...");
@@ -887,7 +892,7 @@ public class App implements Testable
 				}
 				// rs.close();
 				if(accountExists == false){
-					rs.close();
+					System.out.println("Account doesn't exist");
 					return "1 0.0";
 				}
 				else{
@@ -934,6 +939,10 @@ public class App implements Testable
 		int linkedId = 0;
 		String linkedID = "";
 		System.out.println("topping up account");
+		if(amount <= 0){
+			System.out.println("Cannot topup negative amount");
+			return "1";
+		}
 		try{
 			Statement stmt = _connection.createStatement();
 			try {
@@ -1087,6 +1096,7 @@ public class App implements Testable
 		String toID = "";
 
 		if(amount <= 0){
+			System.out.println("Cannot pay friend negative amount");
 			return "1";
 		}
 
@@ -1113,6 +1123,11 @@ public class App implements Testable
 						toFeePaid = rs.getInt("feePaid");
 					}
 				}
+				if(pocketFromExists == false || pocketToExists == false){
+					System.out.println("Pocket accounts dont exist or are not pocketaccounts");
+					rs.close();
+					return "1";
+				}
 				System.out.println("Getting pocket account balances...");
 				sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
@@ -1128,11 +1143,6 @@ public class App implements Testable
 					}
 				}
 				
-				if(pocketFromExists == false || pocketToExists == false){
-					System.out.println("Pocket accounts dont exist.");
-					rs.close();
-					return "1";
-				}
 				System.out.println("Pocket accounts exist.");
 				if(fromBalance - amount<0){
 					System.out.println("Not enough money in account.");
@@ -1219,19 +1229,18 @@ public class App implements Testable
 		return "0 " + String.format("%.2f",(fromBalance)) + " " + String.format("%.2f",(toBalance));
 	}
 
-	/**
-	 * Example of one of the testable functions.
-	 */
+
 	@Override
 	public String listClosedAccounts(){
-		String res = "\n-------------CLOSED ACCOUNTS-------------\n";
+		// String res = "\n-------------CLOSED ACCOUNTS-------------\n";
+		String res = "";
         try{
             Statement stmt = helper.getConnection().createStatement();
             try{
                 String sql = "SELECT * FROM AccountPrimarilyOwns WHERE isClosed = 1";
                 ResultSet accounts = stmt.executeQuery(sql);
                 while(accounts.next()){
-                    res = res + "ACCOUNTID: " + accounts.getString("accountID") + " PRIMARY OWNER: " + accounts.getString("taxID") +"\n";
+                    res = "ACCOUNTID: " + accounts.getString("accountID") + " PRIMARY OWNER: " + accounts.getString("taxID") +"\n";
                 }
                 } catch(Exception e){
                 System.out.println("Failed to get accounts.");

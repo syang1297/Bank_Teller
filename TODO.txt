@@ -13,12 +13,7 @@ Andrew
 -make helper functions to put in set date to reset fee paid, interest paid, other monthly variables on month switch
 
 Shu
--figure out what the check to add interest is
--test edge cases w/ negative balance
--move everything out of testable that wasn't given
--check switch case for interest rates (bc interest rate may be updated)
 -check delete cascade stuff
--make sure only allowed transactions are happening on accounts
 -feePaid updates to 1 once fee is paid
 
 After finished
@@ -52,5 +47,15 @@ After finished
 -fix table default values
 -check write check
 -check that error return strings are correct (esp the ones w/ account info) in Testable
+-move everything out of testable that wasn't given
+-check switch case for interest rates (bc interest rate may be updated)
+-make sure only allowed transactions are happening on accounts
+-figure out what the check to add interest is
+-test edge cases w/ negative balance
+
+
+
+
+
 
 

@@ -36,21 +36,23 @@ public class Main
 			//for testing app.java
 			r = app.createTables();
 			app.setDate(2018, 2, 7);
-			r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
+			r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1234", 20000.43, "4321", "Bob", "66 DP");
 			// System.out.println(r);
-			r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
-			r = app.createPocketAccount("1", "1234", 500.0, "4321");
-			// r = app.createPocketAccount("2", "1234", 100.0, "4321");
-			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
-			// r = app.deposit("1234",1000.00);
+			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
+			r = app.createPocketAccount("1", "1234", 50, "4321");
+			r = app.createPocketAccount("2", "1234", 100.0, "4321");
+			// r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			// r = app.deposit("1",1000.00);
+			System.out.println(app.showBalance("1234"));
 			// atm.deposit(1234, 1000.00);
 			// atm.topUp(1, 200.0);
 			//DOESN'T PUT IN TRANSACTION TABLE
-			// atm.payFriend(1, 2, 50.0);
-			// r = app.topUp("1", 10.00);
+			// Atm atm = new ATM();
+			// atm.payFriend(1234, 2, 50.0);
+			// r = app.topUp("1", -10.00);
 			// app.topUp("1", 4.0);
 			// r = app.topUp("2", 200.00);
-			// r = app.payFriend("1","2",50);
+			r = app.payFriend("1","2",-50);
 			// r = app.listClosedAccounts();
 			//for testing customer.java
 			// r = helper.getDate();
@@ -78,11 +80,11 @@ public class Main
 			// for testing ATM
 			ATM atm = new ATM(4321,app);
 			// System.out.println(atm.verifyPin(1717));
-			// System.out.println(atm.withdraw("1234",300));
-			// System.out.println(atm.purchase("1",10));
-			// System.out.println(atm.transfer(1234,1233,100));
-			System.out.println(atm.collect(1234,1,200));
-			// System.out.println(atm.wire(1234,1233,19));
+			// System.out.println(atm.withdraw("1",300));
+			// System.out.println(atm.purchase("1234",10));
+			// System.out.println(atm.transfer(1234,1,100));
+			// System.out.println(atm.collect(2,1,200));
+			// System.out.println(atm.wire(1234,1,19));
 			
 			//for testing Teller
 			Teller teller = new Teller (4321,app);
@@ -123,11 +125,11 @@ public class Main
 			// 	System.out.println(res2.get(i));
 			// }
 			// // res2 = teller.generateMonthly(4321);
-			List<String> res2 = teller.generateMonthly(4321);
-			// System.out.println(res2);
-			for(int i=0;i<res2.size();i++){
-				System.out.println(res2.get(i));
-			}
+			// List<String> res2 = teller.generateMonthly(4321);
+			// // System.out.println(res2);
+			// for(int i=0;i<res2.size();i++){
+			// 	System.out.println(res2.get(i));
+			// }
 			// // System.out.println(teller.listClosedAccounts());
 			// // app.setDate(2018, 2, 8);
 			// app.deposit("1233",10000.00);
