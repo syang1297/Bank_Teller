@@ -33,8 +33,11 @@ public class ATM {
     //if account is already marked as closed for the month, reject deposit
     //update account balance
     //check accountID belongs to customer and that it's checkings or savings account
-    void deposit(double balance, int accountID){
-        return;
+    boolean deposit(int accountID, double balance){
+        if(app.deposit(Integer.toString(accountID), balance) == "0"){
+            return true;
+        }
+        return false;
     }
 
     //checks accountID is for a pocket account
@@ -44,6 +47,9 @@ public class ATM {
     //check accountID belongs to customer
     //check if feePaid, if not, add $5
     boolean topUp(int accountID, double amount){
+        if(app.topUp(Integer.toString(accountID), amount) == "0"){
+            return true;
+        }
         return false;
     }
 
@@ -525,7 +531,10 @@ public class ATM {
 
     //make sure both accounts are pocket accounts or else return false
     //take amount out of pocketID and add to friend TaxID
-    boolean payFriend(int pocketID, int friendTaxID, int friendID, double amount){
+    boolean payFriend(int pocketID, int friendaccountID, double amount){
+        if(app.payFriend(Integer.toString(pocketID), Integer.toString(friendaccountID), amount) == "0"){
+            return true;
+        }
         return false;
     }
 

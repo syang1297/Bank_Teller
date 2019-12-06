@@ -33,6 +33,7 @@ public class Main
 		{
 			app.dropTables();
 			Helper helper= new Helper();
+			ATM atm = new ATM(1234, app);
 			//for testing app.java
 			r = app.createTables();
 			app.setDate(2018, 2, 7);
@@ -41,11 +42,14 @@ public class Main
 			r = app.createPocketAccount("1", "1234", 100.0, "4321");
 			r = app.createPocketAccount("2", "1234", 100.0, "4321");
 			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
-			r = app.deposit("1234",1000.00);
-			r = app.topUp("1", 200.00);
-			r = app.topUp("2", 100.00);
-			r = app.payFriend("1","2",50);
-			r = app.listClosedAccounts();
+			// r = app.deposit("1234",1000.00);
+			atm.deposit(1234, 1000.00);
+			atm.topUp(1, 200.0);
+			atm.payFriend(1, 2, 50);
+			// r = app.topUp("1", 200.00);
+			// r = app.topUp("2", 100.00);
+			// r = app.payFriend("1","2",50);
+			// r = app.listClosedAccounts();
 			//for testing customer.java
 			// Helper helper= new Helper();
 			// r = helper.getDate();
