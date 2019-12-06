@@ -35,7 +35,7 @@ public class Main
 			// Helper helper= new Helper();
 			// //for testing app.java
 			// r = app.createTables();
-			app.setDate(2018, 2, 7);
+			// app.setDate(2018, 2, 7);
 			// r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
 			// // System.out.println(r);
 			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
@@ -137,6 +137,8 @@ public class Main
 			// for(int i=0;i<res2.size();i++){
 			// 	System.out.println(res2.get(i));
 			// }
+			// List<List<String>> coOwners = new ArrayList<List<String>>();
+			// teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000,"12345","4321","0");
 
 			// start of GUI code
 			String input ="";

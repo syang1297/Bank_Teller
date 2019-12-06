@@ -141,7 +141,7 @@ public class Teller {
             Statement stmt2 = helper2.getConnection().createStatement();
             try{ 
                 try{
-                    System.out.println("Getting primary owner info...");
+                  
                     sql = "SELECT * FROM Customer WHERE taxID = " + taxID;
                     ResultSet primary = stmt.executeQuery(sql);
                     while(primary.next()){
@@ -154,7 +154,7 @@ public class Teller {
                     System.out.println(e);
                 }
 
-                System.out.println("Getting account info...");
+            
                 sql = "SELECT * FROM AccountPrimarilyOwns WHERE taxID = "+taxID;
                 ResultSet accounts = stmt.executeQuery(sql);
                 while(accounts.next()){
@@ -291,11 +291,11 @@ public class Teller {
             }
             //getting account info for customers' co-owned accounts
             try {
-            System.out.println("Getting co-owned account info...");
+         
             sql = "SELECT * FROM AccountPrimarilyOwns,Owns WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = "+taxID ;
             ResultSet accounts = stmt.executeQuery(sql);
             if(accounts.next() != false){
-                System.out.println("Owner is a co-owner");
+      
                 sql = "SELECT * FROM AccountPrimarilyOwns,Owns WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = "+taxID ;
                 accounts = stmt.executeQuery(sql);
                 while(accounts.next()){
@@ -443,7 +443,7 @@ public class Teller {
             Helper helper3 = new Helper();
             Statement stmt3 = helper3.getConnection().createStatement();
             try{ 
-                System.out.println("Getting customers...");
+      
                 String stringMonth = "" + helper.getDate().charAt(5) + helper.getDate().charAt(6);
                 String stringYear = "" + helper.getDate().charAt(0) + helper.getDate().charAt(1) + helper.getDate().charAt(2) + helper.getDate().charAt(3);
                 int year = Integer.parseInt(stringYear);
@@ -454,7 +454,7 @@ public class Teller {
                 while(customers.next()){
                     double totalSum = 0;
                     try{
-                        System.out.println("Getting primary account info...");
+
                         sql = "SELECT * FROM AccountPrimarilyOwns WHERE taxID = "+customers.getString("taxID");
                         ResultSet accounts = stmt2.executeQuery(sql);
                         while(accounts.next()){
@@ -488,7 +488,7 @@ public class Teller {
                             System.out.println(e);
                         }
                         try{
-                            System.out.println("...");
+                  ;
                             sql = "SELECT * " + 
                                 "FROM AccountPrimarilyOwns, Owns " + 
                                 "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + customers.getString("taxID");
@@ -548,7 +548,7 @@ public class Teller {
         try{
             Statement stmt = helper.getConnection().createStatement();
             try{
-                System.out.println("Getting primarily owns...");
+               
                 sql = "SELECT * " + 
                     "FROM AccountPrimarilyOwns " + 
                     "WHERE taxID = " + Integer.toString(taxID);
@@ -562,7 +562,7 @@ public class Teller {
                     }
                     res.add(account);
                 }
-                System.out.println("Getting secondaries...");
+     
                 sql = "SELECT * " + 
                     "FROM AccountPrimarilyOwns, Owns " + 
                     "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + Integer.toString(taxID);
@@ -576,7 +576,7 @@ public class Teller {
                     }
                     res.add(account);
                 }
-                System.out.println("Got info.");
+]
             } catch(Exception e){
                 System.out.println("Failed to get info.");
                 System.out.println(e);
@@ -610,13 +610,13 @@ public class Teller {
                 Helper helper2 = new Helper();
                 Statement stmt2 = helper2.getConnection().createStatement();
                 try {
-                    System.out.println("Getting accounts...");
+             ]
                     sql = "SELECT * " +
                         "FROM AccountPrimarilyOwns" + 
                         " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
                         AccountType.STUDENT_CHECKING + "'";
                     ResultSet accounts= stmt.executeQuery(sql);
-                    System.out.println("Adding interest...");
+     ]
                     while(accounts.next()){
                         ArrayList<Double> dayWeights = new ArrayList<Double>();
                         ArrayList<Double> balances = new ArrayList<Double>();
@@ -663,7 +663,7 @@ public class Teller {
                             double bot = 0;
                             double top = 0;
                             for(int i=0;i<balances.size();i++){
-                                System.out.println("dayweight: "+ dayWeights.get(i) + " balance: "+balances.get(i));
+                                
                                 bot+=dayWeights.get(i);
                                 top+=balances.get(i)*dayWeights.get(i);
                             }
@@ -677,7 +677,7 @@ public class Teller {
                                     "SET balance = " + Double.toString(newBalance) + ", interestAdded = 1" + 
                                     " WHERE accountId = " + currAID;
                             stmt2.executeUpdate(sql);
-                            System.out.println("New Balance: "+newBalance+" Added interest: "+ interestAdded +" To: " + currAID);
+      
                             //0 for check and -1 for to account
                             helper.addTransaction(interestAdded, TransactionType.ACCRUEINTEREST,0,currAID, Integer.toString(-1));
                         } catch (Exception e){
@@ -726,7 +726,7 @@ public class Teller {
         if(type != AccountType.POCKET){
             try {
                 Statement stmt = helper.getConnection().createStatement();
-            System.out.println("Adding coOwners...");
+         
             if(coOwners.size() != 0){
                 for(int i = 0; i < coOwners.size(); i++){
                     String taxId = coOwners.get(i).get(0);
@@ -741,10 +741,10 @@ public class Teller {
                                             "WHERE taxID = " + tID;
                         ResultSet customers = stmt.executeQuery(ownerExists);
                         if(customers.next() == false){
-                            System.out.println("Customer doesn't already exist");
+                     
                             app.createCustomer(accountID, taxId, name, addr);
                         }else{
-                            System.out.println("Coowner already exists");
+              
                             try {
                                 String sql = "INSERT INTO Owns " +
                                             "VALUES (" + accountID + ", " + tID + ", " + helper.newOwnsID() + ")";
@@ -834,7 +834,7 @@ public class Teller {
                 try {
                     Helper helper2 = new Helper();
                     Statement stmt2 = helper2.getConnection().createStatement();
-                    System.out.println("Looking for customers...");
+
                     while(customers.next()){
                         boolean noPrimary = false;
                         boolean noSecondary = false;

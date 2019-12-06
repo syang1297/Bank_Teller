@@ -64,7 +64,7 @@ public class Helper{
         String res="";
         try {
             Statement stmt = _connection.createStatement();
-            System.out.println("Getting date from DB");
+
 			String sql ="SELECT * FROM GlobalDate";
 			ResultSet query = stmt.executeQuery(sql);
             while (query.next()){
@@ -132,7 +132,7 @@ public class Helper{
                         }                         
                         break;
                     case "POCKET":
-                        System.out.println("Adding pocket transaction");
+           
                         if(transType != TransactionType.TOPUP && transType != TransactionType.PURCHASE && transType != TransactionType.PAYFRIEND
                         && transType != TransactionType.COLLECT && transType != TransactionType.FEE){
                             System.out.println("Invalid transaction/account type combo");
@@ -141,7 +141,7 @@ public class Helper{
                         break;
                 }
                     try {
-                        System.out.println("Getting taxID...");
+                     
                         String sqlTaxID = "SELECT taxID " +
                                         "FROM AccountPrimarilyOwns " +
                                         "WHERE accountID = "+aID;
@@ -151,7 +151,7 @@ public class Helper{
                             taxID = rss.getInt("taxID");
                         }
                         try {
-                            System.out.println("Trying to add to transactions...");
+                    
                             sql = "INSERT INTO TransactionBelongs " +
                                     "VALUES (" + amount  + ", '" + transType + "', '" + 
                                     this.getDate() + "', " + checkNumber + ", " + transactionID + 
@@ -177,7 +177,7 @@ public class Helper{
             System.out.println(e);
             return "0";
         }
-        System.out.println("Added transaction.");
+     
         return "1";
     }
 

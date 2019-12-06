@@ -28,7 +28,7 @@ public class Customer {
     //get name from db for the customer
     String getName(){
         String res="1";
-        System.out.println("Getting name of customer...");
+
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -41,7 +41,7 @@ public class Customer {
                     
                 }
                 rs.close();
-                System.out.println("Got customer name.");
+
                 return res;
             } catch (Exception e) {
                 System.out.println("Failed to get customer name");
@@ -58,7 +58,7 @@ public class Customer {
     //get address from db for customer
     String getAddress(){
         String res="1";
-        System.out.println("Getting address of customer...");
+  
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -87,7 +87,7 @@ public class Customer {
     //get pin from db for customer and unhash
     int getPin(){
         int res=1;
-        System.out.println("Getting pin of customer...");
+
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
