@@ -30,7 +30,7 @@ public class Teller {
         String acctType = "";
         boolean student = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
         boolean interest = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
-        if(!student || !interest){
+        if(!student && !interest){
             System.out.println("Can only write check from checkings account");
             return;
         }

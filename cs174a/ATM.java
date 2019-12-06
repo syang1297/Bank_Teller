@@ -40,6 +40,13 @@ public class ATM {
     //update account balance
     //check accountID belongs to customer and that it's checkings or savings account
     boolean deposit(int accountID, double balance){
+        boolean stud = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean check = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
+        boolean sav = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
+        if(!stud && !check && !sav){
+            System.out.println("Customer does not own account-deposit");
+            return false;
+        }
         if(app.deposit(Integer.toString(accountID), balance) == "0"){
             return true;
         }
@@ -53,6 +60,11 @@ public class ATM {
     //check accountID belongs to customer
     //check if feePaid, if not, add $5
     boolean topUp(int accountID, double amount){
+        boolean pock = customer.acctBelongsToCustomer(accountID, AccountType.POCKET);
+        if(!pock){
+            System.out.println("Pocket account doesn't belong to customer");
+            return false;
+        }
         if(app.topUp(Integer.toString(accountID), amount) == "0"){
             return true;
         }
@@ -62,6 +74,13 @@ public class ATM {
     //subtracts amount from account associated w/ accountID
     /* returns 1 if failed... if success, returns .1 oldBalance newBalance */
     String withdraw(String accountID, double amount){
+        boolean stud = customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.STUDENT_CHECKING);
+        boolean check = customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.INTEREST_CHECKING);
+        boolean sav = customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.SAVINGS);
+        if(!stud && !check && !sav){
+            System.out.println("Customer does not own account");
+            return "1";
+        }
         int aid = 0;
 		String dbID = "";
 		boolean accountExists = false;
@@ -166,11 +185,15 @@ public class ATM {
     //check if feepaid, if not, minus $5
     /* return 1 if failed, return 0 oldBalance newBalance if success*/
     String purchase(String accountID, double amount){
+        boolean pock = customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.POCKET);
+        if(!pock){
+            System.out.println("Customer doesn't own pocket");
+            return "1";
+        }
         try {
             Statement stmt = helper.getConnection().createStatement();
             //checks if account belongs to customer and if it's a pocket account
             int feePaid = 0;
-     ;
             if(customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.POCKET)){
                 if(amount <= 0.0){
                     System.out.println("Cannot purchase using a negative amount");
@@ -374,7 +397,6 @@ public class ATM {
     //apply 3% fee
     //return 0 if successful or 1 if not successful
     String collect(int accountID, int pocketID, double amount){
-
         boolean student0 = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
         boolean checking0 = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
         boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
@@ -609,6 +631,11 @@ public class ATM {
     //make sure both accounts are pocket accounts or else return false
     //take amount out of pocketID and add to friend TaxID
     boolean payFriend(int pocketID, int friendaccountID, double amount){
+        boolean pock = customer.acctBelongsToCustomer(pocketID, AccountType.POCKET);
+        if(!pock){
+            System.out.println("Pocket account doesn't belong to customer");
+            return false;
+        }
         if(app.payFriend(Integer.toString(pocketID), Integer.toString(friendaccountID), amount) == "0"){
             return true;
         }

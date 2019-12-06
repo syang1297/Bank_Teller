@@ -147,20 +147,19 @@ public class Main
 			app.setDate(2011, 3, 1);
 			Teller teller = new Teller(app);
 			Helper helper = new Helper();
+			ATM atm = new ATM(1111, app);
 
 			List<String> cindy = new ArrayList();
 			cindy.add("412231856");
 			cindy.add("Cindy Laugher");
 			cindy.add("7000 Hollister");
-			ATM atm = new ATM(412231856, app);
-			atm.setPin(3764);
+
 
 			List<String> ivan = new ArrayList();
 			ivan.add("322175130");
 			ivan.add("Ivan Lendme");
 			ivan.add("1235 Johnson Dr");
-			atm = new ATM(322175130, app);
-			atm.setPin(3764);
+
 
 			List<List<String>> co = new ArrayList();
 			co.add(cindy);
@@ -169,20 +168,22 @@ public class Main
 			helper.setBranch("17431","San Francisco");
 			atm = new ATM(344151573, app);
 			atm.setPin(3692);
+			atm = new ATM(412231856, app);
+			atm.setPin(3764);
+			atm = new ATM(322175130, app);
+			atm.setPin(3764);
 
 			List<String> eliz = new ArrayList();
 			eliz.add("122219876");
 			eliz.add("Elizabeth Sailor");
 			eliz.add("4321 State St");
-			atm = new ATM(122219876, app);
-			atm.setPin(3856);
+
 
 			List<String> nam = new ArrayList();
 			nam.add("203491209");
 			nam.add("Nam-Hoi Chung");
 			nam.add("1997 Peoples St HK");
-			atm = new ATM(203491209, app);
-			atm.setPin(5340);
+
 
 			co.removeAll(co);
 			co.add(cindy);
@@ -192,6 +193,10 @@ public class Main
 			helper.setBranch("54321","Los Angeles");
 			atm = new ATM(212431965, app);
 			atm.setPin(3532);
+			atm = new ATM(122219876, app);
+			atm.setPin(3856);
+			atm = new ATM(203491209, app);
+			atm.setPin(5340);
 
 			co.removeAll(co);
 			teller.createAccount(AccountType.STUDENT_CHECKING, co, 1200.00, "12121", "207843218", "-1", "David Copperfill", "1357 State St");
@@ -243,8 +248,6 @@ public class Main
 			helper.setBranch("76543","Santa Barbara");
 			atm = new ATM(212116070, app);
 			atm.setPin(9173);
-			atm = new ATM(210389768, app);
-			atm.setPin(8452);
 			atm = new ATM(188212217, app);
 			atm.setPin(7351);
 			
@@ -295,6 +298,8 @@ public class Main
 
 			teller.createAccount(AccountType.SAVINGS, co, 34000.00, "29107", "209378521", "-1", "Kelvin Costner", "Santa Cruz #3579");
 			helper.setBranch("29107","Los Angeles");
+			atm = new ATM(210389768, app);
+			atm.setPin(8452);
 
 			List<String> george = new ArrayList();
 			george.add("201674933");
@@ -329,26 +334,72 @@ public class Main
 
 			teller.createAccount(AccountType.SAVINGS, co, 1000.00, "32156", "188212217", "-1", "Magic Jordon", "3852 Court Rd");
 			helper.setBranch("32156","Goleta");
-			// atm = ATM(32156);
-			// atm.setPin(7351);
 			atm = new ATM(207843218, app);
 			atm.setPin(8582);
 
 			co.removeAll(co);
-			System.out.println("fatal");
 			teller.createAccount(AccountType.POCKET, co, 100.00, "67521", "401605312", "19023", "Fatal Castro", "default");
-			System.out.println("David");
-
+			helper.setBranch("67521", "Goleta");
 			teller.createAccount(AccountType.POCKET, co, 50.00, "53027", "207843218", "12121", "David", "default");
-			System.out.println("pit");
-
+			helper.setBranch("53027", "Isla Vista");
 			teller.createAccount(AccountType.POCKET, co, 20.00, "60413", "400651982", "43942", "Pit Wilson", "default");
-			System.out.println("li");
-
+			helper.setBranch("60413", "Santa Cruz");
 			teller.createAccount(AccountType.POCKET, co, 30.00, "43947", "212116070", "29107", "Li Kung", "default");
-			// teller.createAccount(AccountType.POCKET, co, 100.00, "67521", "401605312", "19023", "Fatal Castro", "default", "default");
-
+			helper.setBranch("43947", "Santa Barbara");
 			
+			//addint transactions
+			app.setDate(2011, 3, 2);
+			atm = new ATM(344151573, app);
+			atm.deposit(17431, 8800.00);
+			app.setDate(2011, 3, 3);
+			atm = new ATM(122219876, app);
+			atm.withdraw("54321", 3000.00);
+			app.setDate(2011, 3, 5);
+			atm = new ATM(212116070, app);
+			atm.withdraw("76543", 2000.00);
+			atm = new ATM(207843218, app);
+			atm.purchase("53027", 5.0);
+			app.setDate(2011, 3, 6);
+			atm = new ATM(188212217, app);
+			atm.withdraw("93156", 1000000);
+			teller.writeCheck(93156, 950000, 209378521);
+			atm = new ATM(212116070, app);
+			atm.withdraw("29107", 4000);
+			atm.collect(29107, 43947, 10);
+			atm.topUp(43947, 30);
+			app.setDate(2011, 3, 7);
+			atm = new ATM(322175130, app);
+			atm.transfer(43942, 17431, 289);
+			atm = new ATM(400651982, app);
+			atm.withdraw("43942", 289);
+			app.setDate(2011, 3, 8);
+			atm.payFriend(60413, 67521, 10);
+			atm = new ATM(210389768, app);
+			atm.deposit(93156, 50000);
+			teller.writeCheck(12121, 200, 207843218);
+			atm = new ATM(201674933, app);
+			atm.transfer(41725, 19023, 1000);
+			app.setDate(2011, 3, 9);
+			atm = new ATM(401605312, app);
+			atm.wire(41725, 32156, 4000);
+			atm = new ATM(207843218, app);
+			atm.payFriend(53027, 60413, 10);
+			app.setDate(2011, 3, 10);
+			atm = new ATM(400651982, app);
+			atm.purchase("60413", 15);
+			app.setDate(2011, 3, 12);
+			atm = new ATM(203491209, app);
+			atm.withdraw("93156", 20000);
+			teller.writeCheck(76543, 456, 188212217);
+			atm = new ATM(401605312, app);
+			atm.topUp(67521, 50);
+			app.setDate(2011, 3, 14);
+			atm.payFriend(67521, 53027, 20);
+			atm = new ATM(212116070, app);
+			atm.collect(29107, 43947, 15);
+
+
+
 
 			// // start of GUI code
 			// String input ="";
