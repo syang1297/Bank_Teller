@@ -18,18 +18,18 @@ public class Teller {
     private App app;
     //constructor
     Teller(App app){
-        //TODO: creating actual customer from teller interface
         this.helper = new Helper();
         this.app = app;
     }
 
     //add check transaction to an account 
-    void writeCheck(int accountID, double amount){
+    void writeCheck(int accountID, double amount, int taxID){
+        Customer customer = new Customer(taxID);
         int closed=0;
         String sql="";
         String acctType = "";
-        boolean student = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean interest = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
+        boolean student = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean interest = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
         if(!student || !interest){
             System.out.println("Can only write check from checkings account");
             return;
@@ -703,7 +703,7 @@ public class Teller {
     }
 
     //create new account and store on db
-    void createAccount(AccountType type, List<Integer> coOwners, double balance, String accountID, String taxID, String linkedId){
+    void createAccount(AccountType type, List<List<String>> coOwners, double balance, String accountID, String taxID, String linkedId){
         Customer customer = new Customer(Integer.parseInt(taxID));
         switch(type){
             case STUDENT_CHECKING:
@@ -723,11 +723,54 @@ public class Teller {
                 app.createPocketAccount(accountID, linkedId, balance, taxID);
                 break;
         }
-        if(coOwners.size() == 0){
+        if(type != AccountType.POCKET){
+            try {
+                Statement stmt = helper.getConnection().createStatement();
+            System.out.println("Adding coOwners...");
+            if(coOwners.size() != 0){
+                for(int i = 0; i < coOwners.size(); i++){
+                    String taxId = coOwners.get(i).get(0);
+                    int tID = Integer.parseInt(taxId);
+                    String addr = coOwners.get(i).get(1);
+                    String name = coOwners.get(i).get(2);
+                    //check if coOwner exists
+                    try {
+                        //check if owner exists
+                        String ownerExists = "SELECT * " +
+                                            "FROM CUSTOMER " +
+                                            "WHERE taxID = " + tID;
+                        ResultSet customers = stmt.executeQuery(ownerExists);
+                        if(customers.next() == false){
+                            System.out.println("Customer doesn't already exist");
+                            app.createCustomer(accountID, taxId, name, addr);
+                        }else{
+                            System.out.println("Coowner already exists");
+                            try {
+                                String sql = "INSERT INTO Owns " +
+                                            "VALUES (" + accountID + ", " + tID + ", " + helper.newOwnsID() + ")";
+                                stmt.executeUpdate(sql);
+                            } catch (Exception e) {
+                                System.out.println("Unable to add co-owners");
+                                System.out.println(e);
+                                return;
+                            }
+                        }    
+                    } catch (Exception e) {
+                        System.out.println("Failed to add coOwner to Customers");
+                        System.out.println(e);
+                        return;
+                    }                    
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement in create account");
+            System.out.println(e);
             return;
         }
-        //TODO: add co-owners and check if account already exists
-        System.out.println("Adding coOwners...");
+        }
+        if(type == AccountType.POCKET && coOwners.size()==0){
+            System.out.println("Cannot add co-owners to pocket account");
+        }
         return;
     }
 
