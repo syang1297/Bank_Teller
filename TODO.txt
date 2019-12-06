@@ -2,7 +2,7 @@ Andrew
 -switch transaction switch cases due to toAccountId
 
 
--rewrite customer functions to use its own taxID
+
 -rewrite teller functions to take taxID as argument and init customer object where needed
 -check if a transaction will make a balance go below $0.01, not 0 (to update close account)
 -make sure check for transanction not allowed is 0 rather than 0.01
@@ -49,3 +49,4 @@ After finished
 -make sure hash and unhash pin called
 -fix table default values
 -when to close pocket accounts and what to do with them in that case
+-rewrite customer functions to use its own taxID

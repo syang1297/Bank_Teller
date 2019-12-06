@@ -80,9 +80,9 @@ public class Main
 			// System.out.println(atm.wire(1234,1233,19));
 			
 			//for testing Teller
-			Teller teller = new Teller (4321,app);
+			Teller teller = new Teller (app);
 			System.out.println(teller.customerOwnsAccount("4321","1234"));
-			teller.changeInterestRate(1234,1.4);
+			teller.changeInterestRate(1234,4321,1.4);
 			//teller.deleteTransactionHistory();
 			String sql = "DELETE FROM Owns " +
                                 "WHERE tID = 1111";
@@ -108,10 +108,10 @@ public class Main
 			ArrayList<Integer> coOwners = new ArrayList();
 			app.createCustomer("1233", "1111","Andrew","66 Sueno");
 			coOwners.add(1111);
-			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
+			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","1111","-1");
 			app.createCustomer("1234", "8989", "Shu", "addr");
 			teller.deleteClosedAccounts();
-			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
+			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","1111","-1");
 			List<String> res2 = teller.customerReport(1111);
 			for(int i=0;i<res2.size();i++){
 				System.out.println(res2.get(i));
