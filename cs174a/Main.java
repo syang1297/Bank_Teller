@@ -1,5 +1,6 @@
 package cs174a;                         // THE BASE PACKAGE FOR YOUR APP MUST BE THIS ONE.  But you may add subpackages.
-
+//for debugging
+import java.sql.Statement;
 // DO NOT REMOVE THIS IMPORT.
 import cs174a.Testable.*;
 import cs174a.Helper.*;
@@ -30,12 +31,13 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
-			//for testing app.java
 			app.dropTables();
+			Helper helper= new Helper();
+			//for testing app.java
 			r = app.createTables();
-			r = app.setDate(4000, 2, 18);
+			app.setDate(2018, 2, 7);
 			r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
-			r = app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "1233", 1000.00, "4321", "Bob", "66 DP");
+			r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 1000.00, "4321", "Bob", "66 DP");
 			r = app.createPocketAccount("1", "1234", 100.0, "4321");
 			r = app.createPocketAccount("2", "1234", 100.0, "4321");
 			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
@@ -46,12 +48,9 @@ public class Main
 			r = app.listClosedAccounts();
 			//for testing customer.java
 			// Helper helper= new Helper();
-			// Customer customer = new Customer(4321);
-			// r = customer.setAddress("Bob house");
-			// r = customer.getAddress();
+			// r = helper.getDate();
 			// System.out.println(r);
-			// r = customer.setAddress("Shu house");
-			// r = customer.getAddress();
+			// r = helper.getDate();
 			// System.out.println(r);
 			// r = Integer.toString(customer.getPin());
 			// System.out.println(r);
@@ -71,7 +70,7 @@ public class Main
 			// System.out.println(customer.acctBelongsToCustomer(1234,4321,AccountType.STUDENT_CHECKING));
 			// System.out.println(helper.hashPin(1234));
 			// System.out.println(helper.unhashPin("\"#$%"));
-			//for testing ATM
+			// for testing ATM
 			// ATM atm = new ATM(4321,app);
 			// System.out.println(atm.verifyPin(1717));
 			// System.out.println(atm.withdraw("1234",300));
@@ -79,11 +78,62 @@ public class Main
 			// System.out.println(atm.transfer(1234,1233,100));
 			// System.out.println(atm.collect(1234,1,20));
 			// System.out.println(atm.wire(1234,1233,19));
+			//for testing Teller
 			Teller teller = new Teller (4321,app);
 			System.out.println(teller.customerOwnsAccount("4321","1234"));
 			teller.changeInterestRate(1234,1.4);
-			teller.deleteTransactionHistory();
+			//teller.deleteTransactionHistory();
+			String sql = "DELETE FROM Owns " +
+                                "WHERE tID = 1111";
+			try{
+				Statement stmt = helper.getConnection().createStatement();
+				stmt.executeUpdate(sql);
+				
+			} catch (Exception e){
+				System.out.println(e);
+			}
 			teller.deleteCustomers();
+			sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1" + 
+                                    " WHERE accountId = 1";
+			try{
+				Statement stmt = helper.getConnection().createStatement();
+				stmt.executeUpdate(sql);
+				
+			} catch (Exception e){
+				System.out.println(e);
+			}
+			//teller.deleteClosedAccounts();
+			ArrayList<Integer> coOwners = new ArrayList();
+			app.createCustomer("1233", "1111","Andrew","66 Sueno");
+			coOwners.add(1111);
+			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
+			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
+			List<String> res2 = teller.customerReport(4321);
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
+			res2 = teller.generateMonthly(4321);
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
+			System.out.println(teller.listClosedAccounts());
+			app.setDate(2018, 2, 8);
+			app.deposit("1233",10000.00);
+			app.setDate(2018, 2, 10);
+			app.deposit("1233",100.00);
+			app.setDate(2018, 2, 14);
+			app.deposit("1233",10000.00);
+			app.setDate(2018, 2, 25);
+			app.deposit("1233",10000.00);
+			app.setDate(2018, 2, 28);
+			app.deposit("1233",3000.00);
+			res2 = teller.generateDTER();
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
+			teller.addInterest();
+			teller.writeCheck(1234,100);
 		}
 	}
 	//!### FINALIZAMOS
