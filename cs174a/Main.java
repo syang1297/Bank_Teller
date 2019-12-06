@@ -203,15 +203,13 @@ public class Main
 			fatal.add("401605312");
 			fatal.add("Fatal Castro");
 			fatal.add("3756 La Cumbre Plaza");
-			atm = new ATM(401605312, app);
-			atm.setPin(8193);
+
 
 			List<String> billy = new ArrayList();
 			billy.add("231403227");
 			billy.add("Billy Clinton");
 			billy.add("5777 Hollister");
-			atm = new ATM(231403227, app);
-			atm.setPin(1468);
+
 
 			co.removeAll(co);
 			co.add(fatal);
@@ -221,21 +219,23 @@ public class Main
 			helper.setBranch("41725","Los Angeles");
 			atm = new ATM(201674933, app);
 			atm.setPin(9824);
+			atm = new ATM(401605312, app);
+			atm.setPin(8193);
+			atm = new ATM(231403227, app);
+			atm.setPin(1468);
 
 
 			List<String> olive = new ArrayList();
 			olive.add("210389768");
 			olive.add("Olive Stoner");
 			olive.add("6689 El Colegio #151");
-			atm = new ATM(210389768, app);
-			atm.setPin(8452);
+
 
 			List<String> magic = new ArrayList();
 			magic.add("188212217");
 			magic.add("Magic Jordon");
 			magic.add("3852 Court Rd");
-			atm = new ATM(188212217, app);
-			atm.setPin(7351);
+
 
 			co.removeAll(co);
 			co.add(magic);
@@ -244,7 +244,10 @@ public class Main
 			helper.setBranch("76543","Santa Barbara");
 			atm = new ATM(212116070, app);
 			atm.setPin(9173);
-			co.removeAll(co);
+			atm = new ATM(210389768, app);
+			atm.setPin(8452);
+			atm = new ATM(188212217, app);
+			atm.setPin(7351);
 			
 			co.removeAll(co);
 			co.add(magic);
@@ -260,15 +263,13 @@ public class Main
 			pit.add("400651982");
 			pit.add("Pit Wilson");
 			pit.add("911 State St");
-			atm = new ATM(400651982 , app);
-			atm.setPin(1821);
+
 
 			List<String> hurryson = new ArrayList();
 			hurryson.add("212431965");
 			hurryson.add("Hurryson Ford");
 			hurryson.add("678 State St");
-			atm = new ATM(212431965, app);
-			atm.setPin(3532);
+
 
 			co.removeAll(co);
 			co.add(pit);
@@ -279,6 +280,10 @@ public class Main
 			helper.setBranch("43942","Santa Barbara");
 			atm = new ATM(361721022, app);
 			atm.setPin(1234);
+			atm = new ATM(400651982 , app);
+			atm.setPin(1821);
+			atm = new ATM(212431965, app);
+			atm.setPin(3532);
 
 			List<String> li = new ArrayList();
 			li.add("212116070");
@@ -291,9 +296,6 @@ public class Main
 
 			teller.createAccount(AccountType.SAVINGS, co, 34000.00, "29107", "209378521", "-1", "Kelvin Costner", "Santa Cruz #3579");
 			helper.setBranch("29107","Los Angeles");
-			// atm = ATM(29107);
-			// atm.setPin(4659);
-			// app.createPocketAccount("43947","29107",30,"400651982");
 
 			List<String> george = new ArrayList();
 			george.add("201674933");
@@ -306,16 +308,13 @@ public class Main
 
 			teller.createAccount(AccountType.SAVINGS, co, 2300.00, "19023", "412231856", "-1", "Cindy Laugher", "7000 Hollister");
 			helper.setBranch("19023","San Francisco");
-			// atm = ATM(19023);
-			// atm.setPin(3764);
 
 
 			List<String> david = new ArrayList();
 			david.add("207843218");
 			david.add("David Copperfield");
 			david.add("1357 State St");
-			atm = new ATM(207843218, app);
-			atm.setPin(8582);
+
 
 			List<String> joe = new ArrayList();
 			joe.add("344151573");
@@ -333,6 +332,8 @@ public class Main
 			helper.setBranch("32156","Goleta");
 			// atm = ATM(32156);
 			// atm.setPin(7351);
+			atm = new ATM(207843218, app);
+			atm.setPin(8582);
 
 			co.removeAll(co);
 			System.out.println("fatal");
