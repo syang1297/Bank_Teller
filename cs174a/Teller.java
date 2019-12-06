@@ -54,7 +54,8 @@ public class Teller {
             System.out.println("Failed to create statement");
             System.out.println(e);
         }
-        helper.addTransaction(amount, TransactionType.WRITECHECK, getCheckNumber(),Integer.toString(accountID));
+        //toAccount is 0 bc no account
+        helper.addTransaction(amount, TransactionType.WRITECHECK, getCheckNumber(),Integer.toString(accountID), Integer.toString(-1));
         return;
     }
 
@@ -511,8 +512,7 @@ public class Teller {
                                 " ORDER BY transDate DESC";
                         ResultSet transactions = stmt2.executeQuery(sql);
                         double currDay = day;
-                        while(transactions.next()){
-                            
+                        while(transactions.next()){    
                             String tDate = transactions.getString("transDate");
                             String tMonth = "" + tDate.charAt(5) + tDate.charAt(6);
                             String tYear = "" + tDate.charAt(0) + tDate.charAt(1) + tDate.charAt(2) + tDate.charAt(3);
@@ -541,23 +541,27 @@ public class Teller {
                             }
                             currDay = Double.parseDouble(tDay);
                         }
-                        double bot = 0;
-                        double top = 0;
-                        for(int i=0;i<balances.size();i++){
-                            System.out.println("dayweight: "+ dayWeights.get(i) + " balance: "+balances.get(i));
-                            bot+=dayWeights.get(i);
-                            top+=balances.get(i)*dayWeights.get(i);
+                        double newBalance = accounts.getDouble("balance");
+                        if(balances.size()!=0){
+                            double bot = 0;
+                            double top = 0;
+                            for(int i=0;i<balances.size();i++){
+                                System.out.println("dayweight: "+ dayWeights.get(i) + " balance: "+balances.get(i));
+                                bot+=dayWeights.get(i);
+                                top+=balances.get(i)*dayWeights.get(i);
+                            }
+                            newBalance = top/bot;
                         }
-                        double newBalance = top/bot;
                         double interestAdded = newBalance * accounts.getDouble("interestRate")/100.0;
                         newBalance = accounts.getDouble("balance") + interestAdded;
                         try{
                             sql = "UPDATE AccountPrimarilyOwns " +
-                                    "SET balance = " + newBalance + ", interestAdded = 1" + 
+                                    "SET balance = " + Double.toString(newBalance) + ", interestAdded = 1" + 
                                     " WHERE accountId = " + currAID;
                             stmt2.executeUpdate(sql);
                             System.out.println("New Balance: "+newBalance+" Added interest: "+ interestAdded +" To: " + currAID);
-                            helper.addTransaction(interestAdded, TransactionType.ACCRUEINTEREST,0,currAID);
+                            //0 for check and -1 for to account
+                            helper.addTransaction(interestAdded, TransactionType.ACCRUEINTEREST,0,currAID, Integer.toString(-1));
                         } catch (Exception e){
                             System.out.println("Failed to add interest.");
                             System.out.println(e);
@@ -603,6 +607,7 @@ public class Teller {
         if(coOwners.size() == 0){
             return;
         }
+        //TODO: add co-owners and check if account already exists
         System.out.println("Adding coOwners...");
         return;
     }

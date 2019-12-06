@@ -99,10 +99,13 @@ public class Helper{
     //return 0 means it failed (possibly due to incorrect accounttype with transaction type);
     //TODO: transactions that involve two accounts, how to keep track of the other accounts
     String addTransaction(double amount, TransactionType transType, int checkNo,
-                            String aID){
+                            String aID, String toAID){
         String transactionID = this.newTransactionID();
         String fee = "0";
         String checkNumber = Integer.toString(checkNo);
+        String acctType="";
+        String sql = "";
+
         //TODO: check if this transaction is allowed according to account 
         //TODO: check if it's the first transaction of the month to add $5 fee
         //if it's a pocket account
@@ -110,14 +113,23 @@ public class Helper{
             Statement stmt = _connection.createStatement();
             //check if transaction type is allowed for type of account
             try {
-                String sql = "SELECT accountType " +
-                                "FROM AccountPrimarilyOwns " +
-                                "WHERE accountID = "+aID;
-                ResultSet rs = stmt.executeQuery(sql);
-                String acctType="";
-                while(rs.next()){
-					acctType = rs.getString("accountType");
-				}
+                if(transType == TransactionType.TOPUP){
+                    String sqlPocket = "SELECT accountType " +
+                                    "FROM AccountPrimarilyOwns " +
+                                    "WHERE accountID = " + toAID;
+                    ResultSet rs = stmt.executeQuery(sqlPocket);
+                        while(rs.next()){
+                            acctType = rs.getString("accountType");
+                        }
+                }else{
+                    sql = "SELECT accountType " +
+                                    "FROM AccountPrimarilyOwns " +
+                                    "WHERE accountID = "+aID;
+                    ResultSet rs = stmt.executeQuery(sql);
+                    while(rs.next()){
+                        acctType = rs.getString("accountType");
+                    }
+                }
                 // String acct = (String) acctType;
                 switch(acctType){
                     case "STUDENT_CHECKING":                       
@@ -136,40 +148,30 @@ public class Helper{
                         }                         
                         break;
                     case "POCKET":
-                        if(transType == TransactionType.TOPUP || transType == TransactionType.PURCHASE || transType == TransactionType.PAYFRIEND
-                        || transType == TransactionType.COLLECT ){
-                            //Shouldn't be necessary because we're adding feePaid before adding to transaction table
-                            // sql = "SELECT feePaid " + 
-                            //         "FROM PocketAccountLinkedWith " +
-                            //         "WHERE accountID = aID";
-                            // Resultset rs = stmt.executeQuery(sql);
-                            // String feePaid = rs.getString("feePaid");
-                            // if(feePaid.equals("0")){
-                            //     amount += 5;
-                            // }
-                        }
-                        else{
+                    System.out.println("Adding pocket transaction");
+                        if(transType != TransactionType.TOPUP && transType != TransactionType.PURCHASE && transType != TransactionType.PAYFRIEND
+                        && transType != TransactionType.COLLECT ){
                             System.out.println("Invalid transaction/account type combo");
                             return "0";
-                        }  
+                        } 
                         break;
                 }
                     try {
                         System.out.println("Getting taxID...");
-                        sql = "SELECT taxID " +
+                        String sqlTaxID = "SELECT taxID " +
                                         "FROM AccountPrimarilyOwns " +
                                         "WHERE accountID = "+aID;
-                        rs = stmt.executeQuery(sql);
+                        ResultSet rss = stmt.executeQuery(sqlTaxID);
                         int taxID=0;
-                        while(rs.next()){
-                            taxID = rs.getInt("taxID");
+                        while(rss.next()){
+                            taxID = rss.getInt("taxID");
                         }
                         try {
                             System.out.println("Trying to add to transactions...");
                             sql = "INSERT INTO TransactionBelongs " +
                                     "VALUES (" + amount + ", " + fee + ", '" + transType + "', '" + 
                                     this.getDate() + "', " + checkNumber + ", " + transactionID + 
-                                    ", " + aID + "," + taxID + ")"; 
+                                    ", " + aID + "," + toAID + ", " + taxID + ")"; 
                             stmt.executeUpdate(sql);
                             } catch (Exception e) {
                                 System.out.println("Adding to transaction table failed");

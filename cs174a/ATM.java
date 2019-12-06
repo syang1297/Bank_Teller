@@ -126,7 +126,7 @@ public class ATM {
 					} catch (Exception e) {
 						System.out.println("Failed to deposit and add new balance to table");
 						System.out.println(e);
-						result += String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",Double.toString(newBalance));
+						result += String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",(newBalance));
 						return result;
 					}
 				}
@@ -140,8 +140,9 @@ public class ATM {
 			System.out.println(e);
 			return result;
 		}
-		System.out.println("Withdrew from account");
-		helper.addTransaction(amount,TransactionType.WITHDRAWAL,0,accountID);
+        System.out.println("Withdrew from account");
+        //0 for check number and -1 for toAccount
+		helper.addTransaction(amount,TransactionType.WITHDRAWAL,0,accountID,Integer.toString(-1));
 		return result;
 	}
 
@@ -231,8 +232,9 @@ public class ATM {
                             "SET balance = " + Double.toString(newBalance) + 
                             "WHERE accountId = " + accountID;
                 stmt.executeUpdate(sql);
-                helper.addTransaction(oldBalance, TransactionType.PURCHASE, 0, accountID);
-                return "0 " + String.format("%.2f",balance) + " " + Double.toString(newBalance);
+                //0 for check number and -1 for toAccount
+                helper.addTransaction(amount, TransactionType.PURCHASE, 0, accountID, Integer.toString(-1));
+                return "0 " + String.format("%.2f",oldBalance) + " " +String.format("%.2f", newBalance);
                 //TODO: isClosed helper
                 
             }
@@ -318,8 +320,7 @@ public class ATM {
                                 "SET balance = " + Double.toString(toBalance2) +
                                 "WHERE accountId = " + Integer.toString(destinationID);
                         stmt.executeUpdate(sql);
-                        helper.addTransaction(amount,TransactionType.TRANSFER,0,Integer.toString(destinationID));
-                        helper.addTransaction(-1*amount,TransactionType.TRANSFER,0,Integer.toString(accountID));
+                        helper.addTransaction(amount,TransactionType.TRANSFER,0,Integer.toString(accountID), Integer.toString(destinationID));
                         System.out.println("Transferred funds.");
                         return "0";
                     } catch (Exception e) {
@@ -419,8 +420,7 @@ public class ATM {
                                     "SET balance = " + Double.toString(fromBalance2) +
                                     " WHERE accountId = " + Integer.toString(accountID);
                             stmt.executeUpdate(sql);
-                            helper.addTransaction(-1*amount,TransactionType.COLLECT,0,Integer.toString(pocketID));
-                            helper.addTransaction(amount,TransactionType.DEPOSIT,0,Integer.toString(accountID));
+                            helper.addTransaction(amount,TransactionType.COLLECT,0,Integer.toString(pocketID), Integer.toString(accountID));
                             System.out.println("Collected from pocket account.");
                             return "0";
                         } catch (Exception e) {
@@ -513,8 +513,7 @@ public class ATM {
                                 "SET balance = " + Double.toString(toBalance2) +
                                 "WHERE accountId = " + Integer.toString(destinationID);
                         stmt.executeUpdate(sql);
-                        helper.addTransaction(-1*amount,TransactionType.WIRE,0,Integer.toString(accountID));
-                        helper.addTransaction(amount,TransactionType.WIRE,0,Integer.toString(destinationID));
+                        helper.addTransaction(amount,TransactionType.WIRE,0,Integer.toString(accountID), Integer.toString(destinationID));
                         System.out.println("Wire successful.");
                         return "0";
                     } catch (Exception e) {
