@@ -31,10 +31,11 @@ public class Teller {
         try{
                 Statement stmt = helper.getConnection().createStatement();
                 double newBalance = 0;
+                int closed=0;
             try {
                 sql = "SELECT * FROM AccountPrimarilyOwns WHERE accountID = "+accountID;
                 ResultSet rs =stmt.executeQuery(sql);
-                int closed=0;
+                
                 while(rs.next()){
                     newBalance = rs.getDouble("balance")-amount;
                     closed = rs.getInt("isClosed");
@@ -806,10 +807,11 @@ public class Teller {
     //add function to check if a customer owns the account
     //done in customer class
     boolean customerOwnsAccount(String tin, String id){
-        boolean student = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.STUDENT_CHECKING);
-        boolean checking = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.INTEREST_CHECKING);
-        boolean pocket = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.POCKET);
-        boolean saving = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.SAVINGS);
+        Customer customer = new Customer(Integer.parseInt(tin));
+        boolean student = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.STUDENT_CHECKING);
+        boolean checking = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.INTEREST_CHECKING);
+        boolean pocket = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.POCKET);
+        boolean saving = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.SAVINGS);
         return (student||checking||pocket||saving);
     }
 }

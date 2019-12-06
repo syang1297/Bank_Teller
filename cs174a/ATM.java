@@ -156,7 +156,7 @@ public class ATM {
             //checks if account belongs to customer and if it's a pocket account
             int feePaid = 0;
             System.out.println("Checking if account belongs to customer...");
-            if(customer.acctBelongsToCustomer(Integer.parseInt(accountID), customer.getTaxID(), AccountType.POCKET)){
+            if(customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.POCKET)){
                 if(amount <= 0.0){
                     System.out.println("Cannot purchase using a negative amount");
                     return "1";
@@ -248,12 +248,12 @@ public class ATM {
 
     //return 0 if successful or 1 if not successful
     String transfer(int accountID, int destinationID, double amount){
-        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean student1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
-        boolean checking1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
-        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
-        boolean saving1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.SAVINGS);
+        boolean student0 = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean student1 = customer.acctBelongsToCustomer(destinationID, AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID,  AccountType.INTEREST_CHECKING);
+        boolean checking1 = customer.acctBelongsToCustomer(destinationID, AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
+        boolean saving1 = customer.acctBelongsToCustomer(destinationID, AccountType.SAVINGS);
         Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2 =0.0;
         int isClosed1=0, isClosed2=0;
         if(amount <= 0.0){
@@ -342,10 +342,10 @@ public class ATM {
     //return 0 if successful or 1 if not successful
     String collect(int accountID, int pocketID, double amount){
         System.out.println("Checking if account belongs to customer...");
-        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
-        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
-        boolean pocket = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.POCKET);
+        boolean student0 = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
+        boolean pocket = customer.acctBelongsToCustomer(accountID, AccountType.POCKET);
         Double fromBalance1=0.0, fromBalance2=0.0, pocketBalance1=0.0, pocketBalance2=0.0;
         int isClosed1=0;
         boolean isLinked=false;
@@ -453,9 +453,9 @@ public class ATM {
     //close accountID if necessary
     String wire(int accountID, int destinationID, double amount){
         System.out.println("Check if account belongs to customer...");
-        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
-        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
+        boolean student0 = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
         Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2=0.0;
         int isClosed1=0, isClosed2=0;
         if(amount <= 0.0){
