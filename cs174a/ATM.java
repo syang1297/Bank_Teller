@@ -61,7 +61,8 @@ public class ATM {
 		double newBalance = 0.00;
 		String acctType = "";
 		String result = "1 ";
-		int isClosed = 0;
+        int isClosed = 0;
+        String accountType = "";
 		try{
 			Statement stmt = helper.getConnection().createStatement();
 			try {
@@ -73,7 +74,8 @@ public class ATM {
 					aid = rs.getInt("accountID");
 					dbID = Integer.toString(aid);
 					if(accountID.equals(dbID)){
-						accountExists = true;
+                        accountExists = true;
+                        accountType = rs.getString("accountType");
 						break;
 					}
 				}
@@ -81,7 +83,11 @@ public class ATM {
 					System.out.println("Account doesn't exist");
 					rs.close();
 					return "1";
-				}
+                }
+                else if(accountType.equals("POCKET")){
+                    System.out.println("Cannot withdraw from pocket account");
+                    return "1";
+                }
 				else{
 					System.out.println("Account exists");
 					isClosed = rs.getInt("isClosed");
@@ -248,7 +254,7 @@ public class ATM {
                 
             }
             else{
-                System.out.println("Account does not belong to customer");
+                System.out.println("Account does not belong to customer or is not a pocket account");
                 return "1";
             }
         } catch (Exception e) {
@@ -270,6 +276,10 @@ public class ATM {
         int isClosed1=0, isClosed2=0;
         if(amount <= 0.0 || amount>2000){
             System.out.println("Cannot transfer negative amount");
+            return "1";
+        }
+        if(amount>2000){
+            System.out.println("Cannot transfer more than $2,000");
             return "1";
         }
         if(student0 || checking0 || saving0){
@@ -343,7 +353,10 @@ public class ATM {
                     return "1";
                 }
             }
+            System.out.println("Accounts either dne, is not CHECKINGS/SAVINGS type, customer is not owner, or accounts don't have common owner");
+            return "1";
         }
+        System.out.println("Accounts either dne, is not CHECKINGS/SAVINGS type, customer is not owner, or accounts don't have common owner");
         return "1";
     }
 
@@ -357,13 +370,12 @@ public class ATM {
         boolean student0 = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
         boolean checking0 = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
         boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
-        boolean pocket = customer.acctBelongsToCustomer(accountID, AccountType.POCKET);
+        boolean pocket = customer.acctBelongsToCustomer(pocketID, AccountType.POCKET);
         Double fromBalance1=0.0, fromBalance2=0.0, pocketBalance1=0.0, pocketBalance2=0.0;
         int isClosed1=0, isClosed2 =0;
         boolean isLinked=false;
         int feePaid = 0;
-        double fee=0;
-        if(!pocket){
+        if(pocket){
             if(student0 || checking0 || saving0){
                 try {
                     Statement stmt = helper.getConnection().createStatement();
@@ -430,7 +442,11 @@ public class ATM {
                                     System.out.println("Can't collect bc amount with fee is greater than pocket account balance: "+pocketBalance1);
                                     return "1";                                    
                                 }
-                                pocketBalance2 = pocketBalance1 - amount - 5;        
+                                pocketBalance2 = pocketBalance1 - amount - 5; 
+                                sql = "UPDATE PocketAccountLinkedWith " +
+                                "SET feePaid = 1" +
+                                " WHERE aID = " + Integer.toString(pocketID);
+                                stmt.executeUpdate(sql);  
                             }else{
                                 pocketBalance2 = pocketBalance1 - amount;
                             }
@@ -450,12 +466,6 @@ public class ATM {
                                 stmt.executeUpdate(sql);
                             }
                             System.out.println("Updating balances...");
-                            if(feePaid == 0){
-                                sql = "UPDATE PocketAccountLinkedWith " +
-                                "SET feePaid = 1" +
-                                " WHERE aID = " + Integer.toString(pocketID);
-                                stmt.executeUpdate(sql);                                
-                            }
                             sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET balance = " + Double.toString(pocketBalance2) +
                                     " WHERE accountId = " + Integer.toString(pocketID);
@@ -483,8 +493,10 @@ public class ATM {
                     return "1";
                 }
             }
+            System.out.println("AccountID is pocket account and cannot be collected into");
+            return "1";
         }
-        System.out.println("AccountID refers to a pocket account.");
+        System.out.println("PocketID does not refer to a pocket account.");
         return "1";
     }
 
@@ -498,7 +510,7 @@ public class ATM {
         boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
         Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2=0.0;
         int isClosed1=0, isClosed2=0;
-        double fee=0;
+        String accountType = "";
         if(amount <= 0.0){
             System.out.println("Cannot wire negative amount");
             return "1";
@@ -531,9 +543,14 @@ public class ATM {
                         while(rs.next()){
                             toBalance1 = rs.getDouble("balance");
                             isClosed2 = rs.getInt("isClosed");
+                            accountType = rs.getString("accountType");
                         }
                         if(isClosed2 == 1){
                             System.out.println("Destination account already marked for closed... Can't transer");
+                            return "1";
+                        }
+                        if(accountType.equals("POCKET")){
+                            System.out.println("Can only wire into a checkings or savings account");
                             return "1";
                         }
                         System.out.println("Update accounts...");
@@ -577,6 +594,7 @@ public class ATM {
                     return "1";
                 }
         }
+        System.out.println("Can only wire from checkings or savings account");
         return "1";
     }
 

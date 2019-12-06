@@ -27,6 +27,13 @@ public class Teller {
     void writeCheck(int accountID, double amount){
         int closed=0;
         String sql="";
+        String acctType = "";
+        boolean student = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
+        boolean interest = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
+        if(!student || !interest){
+            System.out.println("Can only write check from checkings account");
+            return;
+        }
         try{
                 Statement stmt = helper.getConnection().createStatement();
                 double newBalance = 0;
@@ -36,6 +43,11 @@ public class Teller {
                 while(rs.next()){
                     newBalance = rs.getDouble("balance")-amount;
                     closed = rs.getInt("isClosed");
+                    acctType = rs.getString("accountType");
+                }
+                if(acctType.equals("SAVINGS")){
+                    System.out.println("Cannot write check from savings account");
+                    return;
                 }
             } catch(Exception e){
                 System.out.println("Failed to get balance");
@@ -604,11 +616,6 @@ public class Teller {
                         " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
                         AccountType.STUDENT_CHECKING + "'";
                     ResultSet accounts= stmt.executeQuery(sql);
-                    //TODO: Figure out what the check to add interest is, should be last day of the month and no interest added
-                    // if(accounts.next() == false){
-                    //     System.out.println("Interest has already been added for this month. No action");
-                    //     return "1";
-                    // }
                     System.out.println("Adding interest...");
                     while(accounts.next()){
                         ArrayList<Double> dayWeights = new ArrayList<Double>();

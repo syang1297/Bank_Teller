@@ -31,6 +31,7 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
+<<<<<<< HEAD
 			// app.dropTables();
 			// Helper helper= new Helper();
 			// //for testing app.java
@@ -79,6 +80,56 @@ public class Main
 			// System.out.println(atm.transfer(1234,1233,100));
 			// System.out.println(atm.collect(1234,1,200));
 			// System.out.println(atm.wire(1234,1233,19));
+=======
+			app.dropTables();
+			Helper helper= new Helper();
+			//for testing app.java
+			r = app.createTables();
+			app.setDate(2018, 2, 7);
+			r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1234", 1000, "4321", "Bob", "66 DP");
+			// System.out.println(r);
+			r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
+			r = app.createPocketAccount("1", "1234", 500.0, "4321");
+			r = app.createPocketAccount("2", "1234", 100.0, "4321");
+			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			r = app.deposit("1234",1000.00);
+			r = app.topUp("1", 10.00);
+			app.topUp("1", 4.0);
+			r = app.topUp("2", 200.00);
+			r = app.payFriend("1","2",50);
+			r = app.listClosedAccounts();
+			//for testing customer.java
+			// r = helper.getDate();
+			// System.out.println(r);
+			// r = helper.getDate();
+			// System.out.println(r);
+			// r = Integer.toString(customer.getPin());
+			// System.out.println(r);
+			// r = customer.setPin(8888);
+			// r = Integer.toString(customer.getPin());
+			// System.out.println(r);
+			// r = customer.setName("Bob");
+			// r = customer.getName();
+			// System.out.println(r);
+			// r = customer.setName("Shu");
+			// r = customer.getName();
+			// System.out.println(r);
+			// List<Integer> res=customer.getAccountIDs(customer.getTaxID(),AccountType.STUDENT_CHECKING);
+			// for(int i =0;i<res.size();i++){
+			// 	System.out.println("AccountID "+Integer.toString(i)+": "+res.get(i));
+			// }
+			// System.out.println(customer.acctBelongsToCustomer(1234,AccountType.STUDENT_CHECKING));
+			// System.out.println(helper.hashPin(1234));
+			// System.out.println(helper.unhashPin("\"#$%"));
+			// for testing ATM
+			ATM atm = new ATM(4321,app);
+			// System.out.println(atm.verifyPin(1717));
+			// System.out.println(atm.purchase("1234",10));
+			atm.withdraw("1234",950);
+			// System.out.println(atm.transfer(1234,1233, 2000.00));
+			// System.out.println(atm.collect(2,1,200));
+			// System.out.println(atm.wire(1234,1,19));
+>>>>>>> 3c585db9a3efa90d5923808fc4d3a50c0180852d
 			
 			// //for testing Teller
 			// Teller teller = new Teller (app);

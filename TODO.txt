@@ -1,3 +1,4 @@
+NOTE: Bc transactions delete on cascade, do not delete closed accounts until generate monthly satement
 Andrew
 
 
@@ -5,14 +6,6 @@ Andrew
 
 
 Shu
--check that error return strings are correct (esp the ones w/ account info) in Testable
--figure out what the check to add interest is
--test edge cases w/ negative balance
--move everything out of testable that wasn't given
--check switch case for interest rates (bc interest rate may be updated)
--check delete cascade stuff
--make sure only allowed transactions are happening on accounts
--feePaid updates to 1 once fee is paid
 
 After finished
 -final sweep of piazza
@@ -22,6 +15,7 @@ After finished
 -link w/ GUI
 -test all functions
 -make slides demo
+-make sure all details in spec is taken care of
 
 -make sure all integrity constraints are taken care of
 -test edge cases
@@ -44,6 +38,26 @@ After finished
 -add toAccountId into TransactionBelongs table (still store twice)
 -fix table default values
 -check write check
+-check that error return strings are correct (esp the ones w/ account info) in Testable
+-move everything out of testable that wasn't given
+-check switch case for interest rates (bc interest rate may be updated)
+-make sure only allowed transactions are happening on accounts
+-figure out what the check to add interest is
+-test edge cases w/ negative balance
+-feePaid updates to 1 once fee is paid
+-update transfer w/ requirements
+-check delete cascade stuff
+-check transactions do not deplete account
+
+
+
+
+
+
+
+
+
+
 -when to close pocket accounts and what to do with them in that case
 -switch primary owner function
 -rewrite customer functions to use its own taxID
