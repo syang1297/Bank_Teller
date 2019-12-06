@@ -72,7 +72,7 @@ public class Teller {
             System.out.println(e);
         }
         //toAccount is 0 bc no account
-        helper.addTransaction(amount, TransactionType.WRITECHECK, getCheckNumber(),Integer.toString(accountID), Integer.toString(-1),0);
+        helper.addTransaction(amount, TransactionType.WRITECHECK, getCheckNumber(),Integer.toString(accountID), Integer.toString(-1));
         return;
     }
 
@@ -253,14 +253,14 @@ public class Teller {
                                     accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "PURCHASE":
-                                    toAccount = transactions.getInt("toAID");
-                                    if(Integer.toString(toAccount).equals(accounts.getString("accountID"))){
-                                        initBalance -= amt;
-                                    }else{
-                                        initBalance += amt;
-                                        amt=-1*amt;
-                                    }
+                                    initBalance += amt;
+                                    amt=-1*amt;
                                     accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "FEE":
+                                    initBalance += amt;
+                                    amt=-1*amt;
+                                    accountInfo = accountInfo + "FEE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                             }
                         }
@@ -661,7 +661,7 @@ public class Teller {
                             stmt2.executeUpdate(sql);
                             System.out.println("New Balance: "+newBalance+" Added interest: "+ interestAdded +" To: " + currAID);
                             //0 for check and -1 for to account
-                            helper.addTransaction(interestAdded, TransactionType.ACCRUEINTEREST,0,currAID, Integer.toString(-1),0);
+                            helper.addTransaction(interestAdded, TransactionType.ACCRUEINTEREST,0,currAID, Integer.toString(-1));
                         } catch (Exception e){
                             System.out.println("Failed to add interest.");
                             System.out.println(e);

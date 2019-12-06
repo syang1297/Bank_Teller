@@ -254,7 +254,6 @@ public class App implements Testable
 				System.out.println("Creating table TransactionBelongs");
 				String sql = "CREATE TABLE TransactionBelongs(" +
 								"amount REAL," +
-								"fee REAL," +
 								"transType VARCHAR(32)," +
 								"transDate VARCHAR(10)," +
 								"checkNo INTEGER," +
@@ -527,7 +526,7 @@ public class App implements Testable
 			return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 		}
 		//add to transaction table
-		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id, Integer.toString(-1),0);
+		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id, Integer.toString(-1));
 		return "0 " + id + " " + accountType + " " + String.format("%.2f", initialBalance) + " " + tin;
 	}
 
@@ -653,7 +652,6 @@ public class App implements Testable
 			return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 		}
 		System.out.println("Successfully created new Pocket account.");
-		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, linkedId, id,0);
 		return "0 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 	}
 
@@ -847,7 +845,7 @@ public class App implements Testable
 			return result;
 		}
 		System.out.println("Added deposit.");
-		helper.addTransaction(amount,TransactionType.DEPOSIT,0,accountId, Integer.toString(-1),0);
+		helper.addTransaction(amount,TransactionType.DEPOSIT,0,accountId, Integer.toString(-1));
 		return result;
 	}
 
@@ -927,7 +925,6 @@ public class App implements Testable
 		boolean pocketExists = false;
 		boolean linkedExists = false;
 		int feePaid = 0;
-		double fee=0;
 		double pocketBalance = 0.00;
 		double linkedBalance = 0.00;
 		int linkedId = 0;
@@ -1016,7 +1013,7 @@ public class App implements Testable
 							stmt.executeUpdate(sql);
 							try {
 								if(feePaid == 0){
-									fee=5;
+									helper.addTransaction(5,TransactionType.FEE,0,dbID,"-1");
 									pocketBalance = pocketBalance + amount - 5;
 									try {
 										sql = "UPDATE PocketAccountLinkedWith " +
@@ -1036,7 +1033,8 @@ public class App implements Testable
 										"SET balance = " + (pocketBalance) +
 										" WHERE accountId = " + dbID;
 								stmt.executeUpdate(sql);
-								helper.addTransaction(amount, TransactionType.TOPUP, 0, linkedID, accountId,fee);
+								helper.addTransaction(amount, TransactionType.TOPUP, 0, linkedID, accountId);
+								
 								return "0 " + String.format("%.2f",(linkedBalance)) + " " + String.format("%.2f",(pocketBalance));
 							} catch (Exception e) {
 								System.out.println("Failed to update pocketAccount with topup");
@@ -1095,7 +1093,6 @@ public class App implements Testable
 		double toBalance = 0.00;
 		int toid = 0;
 		String toID = "";
-		double fee=0;
 		if(amount <= 0){
 			return "1";
 		}
@@ -1164,7 +1161,7 @@ public class App implements Testable
 					}
 				}
 				if(toFeePaid == 0){
-					fee+=5;
+					helper.addTransaction(5,TransactionType.FEE,0,toID,"-1");
 					System.out.println("Paying to account fee...");
 					toBalance = amount + toBalance - 5;
 					try {
@@ -1194,7 +1191,7 @@ public class App implements Testable
 					return "1";
 				}
 				if(fromFeePaid == 0){
-					fee+=5;
+					helper.addTransaction(5,TransactionType.FEE,0,fromID,"-1");
 					System.out.println("Paying from account fee...");
 					fromBalance = fromBalance - amount - 5;
 					try {
@@ -1234,7 +1231,7 @@ public class App implements Testable
 			return "1";
 		}
 		System.out.println("Paid friend.");
-		helper.addTransaction(amount,TransactionType.PAYFRIEND,0, from, to,fee);
+		helper.addTransaction(amount,TransactionType.PAYFRIEND,0, from, to);
 		return "0 " + String.format("%.2f",(fromBalance)) + " " + String.format("%.2f",(toBalance));
 	}
 

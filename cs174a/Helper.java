@@ -23,7 +23,8 @@ public class Helper{
         PAYFRIEND,
         WIRE,
         WRITECHECK,
-        ACCRUEINTEREST
+        ACCRUEINTEREST,
+        FEE
     }
     
     private OracleConnection _connection;
@@ -86,7 +87,7 @@ public class Helper{
     //return 0 means it failed (possibly due to incorrect accounttype with transaction type);
     //TODO: transactions that involve two accounts, how to keep track of the other accounts
     String addTransaction(double amount, TransactionType transType, int checkNo,
-                            String aID, String toAID, double fee){
+                            String aID, String toAID){
         String transactionID = this.newTransactionID();
         String checkNumber = Integer.toString(checkNo);
         String acctType="";
@@ -132,9 +133,9 @@ public class Helper{
                         }                         
                         break;
                     case "POCKET":
-                    System.out.println("Adding pocket transaction");
+                        System.out.println("Adding pocket transaction");
                         if(transType != TransactionType.TOPUP && transType != TransactionType.PURCHASE && transType != TransactionType.PAYFRIEND
-                        && transType != TransactionType.COLLECT ){
+                        && transType != TransactionType.COLLECT && transType != TransactionType.FEE){
                             System.out.println("Invalid transaction/account type combo");
                             return "0";
                         } 
@@ -153,7 +154,7 @@ public class Helper{
                         try {
                             System.out.println("Trying to add to transactions...");
                             sql = "INSERT INTO TransactionBelongs " +
-                                    "VALUES (" + amount + ", " + String.format(" %.2f",(fee)) + ", '" + transType + "', '" + 
+                                    "VALUES (" + amount  + ", '" + transType + "', '" + 
                                     this.getDate() + "', " + checkNumber + ", " + transactionID + 
                                     ", " + aID + "," + toAID + ", " + taxID + ")"; 
                             stmt.executeUpdate(sql);
