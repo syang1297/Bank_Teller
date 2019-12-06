@@ -196,7 +196,7 @@ public class Teller {
                                         initBalance += amt;
                                         amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "TRANSFER: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TRANSFER: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "WITHDRAWAL":
                                     initBalance += amt;
@@ -211,7 +211,7 @@ public class Teller {
                                         initBalance += amt;
                                         amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "WIRE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WIRE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "WRITECHECK":
                                     initBalance += amt;
@@ -230,7 +230,7 @@ public class Teller {
                                         initBalance += amt;
                                         amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "COLLECT: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "COLLECT: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "PAYFRIEND":
                                     toAccount = transactions.getInt("toAID");
@@ -240,7 +240,7 @@ public class Teller {
                                         initBalance += amt;
                                         amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "TOPUP":
                                     toAccount = transactions.getInt("toAID");
@@ -250,17 +250,17 @@ public class Teller {
                                         initBalance += amt;
                                         amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "PURCHASE":
                                     initBalance += amt;
                                     amt=-1*amt;
-                                    accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "FEE":
                                     initBalance += amt;
                                     amt=-1*amt;
-                                    accountInfo = accountInfo + "FEE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "FEE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                             }
                         }
