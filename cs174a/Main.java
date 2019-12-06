@@ -41,7 +41,7 @@ public class Main
 			r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
 			r = app.createPocketAccount("1", "1234", 500.0, "4321");
 			// r = app.createPocketAccount("2", "1234", 100.0, "4321");
-			// r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
 			// r = app.deposit("1234",1000.00);
 			// atm.deposit(1234, 1000.00);
 			// atm.topUp(1, 200.0);
@@ -68,10 +68,10 @@ public class Main
 			// r = customer.setName("Shu");
 			// r = customer.getName();
 			// System.out.println(r);
-			// List<Integer> res=customer.getAccountIDs(customer.getTaxID(),AccountType.STUDENT_CHECKING);
-			// for(int i =0;i<res.size();i++){
-			// 	System.out.println("AccountID "+Integer.toString(i)+": "+res.get(i));
-			// }
+			List<Integer> res=customer.getAccountIDs(customer.getTaxID(),AccountType.STUDENT_CHECKING);
+			for(int i =0;i<res.size();i++){
+				System.out.println("AccountID "+Integer.toString(i)+": "+res.get(i));
+			}
 			// System.out.println(customer.acctBelongsToCustomer(1234,4321,AccountType.STUDENT_CHECKING));
 			// System.out.println(helper.hashPin(1234));
 			// System.out.println(helper.unhashPin("\"#$%"));
@@ -86,25 +86,25 @@ public class Main
 			
 			//for testing Teller
 			Teller teller = new Teller (4321,app);
-			System.out.println(teller.customerOwnsAccount("4321","1234"));
-			teller.changeInterestRate(1234,1.4);
-			//teller.deleteTransactionHistory();
-			String sql = "DELETE FROM Owns " +
-                                "WHERE tID = 1111";
-			try{
-				Statement stmt = helper.getConnection().createStatement();
-				stmt.executeUpdate(sql);
+			// System.out.println(teller.customerOwnsAccount("4321","1234"));
+			// teller.changeInterestRate(1234,1.4);
+			// //teller.deleteTransactionHistory();
+			// String sql = "DELETE FROM Owns " +
+            //                     "WHERE tID = 1111";
+			// try{
+			// 	Statement stmt = helper.getConnection().createStatement();
+			// 	stmt.executeUpdate(sql);
 				
-			} catch (Exception e){
-				System.out.println(e);
-			}
-			teller.deleteCustomers();
-			sql = "UPDATE AccountPrimarilyOwns " +
-                                    "SET isClosed = 1" + 
-                                    " WHERE accountId = 1";
-			try{
-				Statement stmt = helper.getConnection().createStatement();
-				stmt.executeUpdate(sql);
+			// } catch (Exception e){
+			// 	System.out.println(e);
+			// }
+			// teller.deleteCustomers();
+			// sql = "UPDATE AccountPrimarilyOwns " +
+            //                         "SET isClosed = 1" + 
+            //                         " WHERE accountId = 1";
+			// try{
+			// 	Statement stmt = helper.getConnection().createStatement();
+			// 	stmt.executeUpdate(sql);
 				
 			// } catch (Exception e){
 			// 	System.out.println(e);
@@ -123,11 +123,11 @@ public class Main
 			// 	System.out.println(res2.get(i));
 			// }
 			// // res2 = teller.generateMonthly(4321);
-			// res2 = teller.generateMonthly(4321);
+			res2 = teller.generateMonthly(4321);
 			// System.out.println(res2);
-			// // for(int i=0;i<res2.size();i++){
-			// // 	System.out.println(res2.get(i));
-			// // }
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
 			// // System.out.println(teller.listClosedAccounts());
 			// // app.setDate(2018, 2, 8);
 			// app.deposit("1233",10000.00);
@@ -149,21 +149,21 @@ public class Main
 			// app.setDate(2018, 2, 10);
 			// app.deposit("1233",100.00);
 			// app.setDate(2018, 2, 14);
-			app.deposit("1233",10000.00);
-			app.setDate(2018, 2, 25);
-			app.deposit("1233",10000.00);
-			app.setDate(2018, 2, 28);
-			app.deposit("1233",3000.00);
-			res2 = teller.generateDTER();
-			for(int i=0;i<res2.size();i++){
-				System.out.println(res2.get(i));
-			}
-			teller.addInterest();
-			teller.writeCheck(1234,100.03);
+			// app.deposit("1233",10000.00);
+			// app.setDate(2018, 2, 25);
+			// app.deposit("1233",10000.00);
+			// app.setDate(2018, 2, 28);
+			// app.deposit("1233",3000.00);
+			// res2 = teller.generateDTER();
+			// for(int i=0;i<res2.size();i++){
+			// 	System.out.println(res2.get(i));
+			// }
+			// teller.addInterest();
+			// teller.writeCheck(1234,100.03);
 			// atm.withdraw("1234",1420.96);
 			// System.out.println(atm.collect(1234,2,244.99));
 			//atm.purchase("2",244.99);
-			atm.transfer(1234,1233,1420.96);
+			// atm.transfer(1234,1233,1420.96);
 		}
 	}
 	//!### FINALIZAMOS
