@@ -11,11 +11,15 @@ import java.sql.Statement;
 
 public class Customer {
     private int taxID;
+    private String name;
+    private String addr;
     private Helper helper;
     
     //constructor
-    Customer(int tax){
+    Customer(int tax, String name, String addr){
         this.taxID = tax;
+        this.name = name;
+        this.addr = addr;
         helper = new Helper();
     }
 
@@ -28,7 +32,7 @@ public class Customer {
     //get name from db for the customer
     String getName(){
         String res="1";
-        System.out.println("Getting name of customer...");
+
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -41,7 +45,7 @@ public class Customer {
                     
                 }
                 rs.close();
-                System.out.println("Got customer name.");
+
                 return res;
             } catch (Exception e) {
                 System.out.println("Failed to get customer name");
@@ -57,37 +61,38 @@ public class Customer {
 
     //get address from db for customer
     String getAddress(){
-        String res="1";
-        System.out.println("Getting address of customer...");
-        try {
-            Statement stmt = helper.getConnection().createStatement();
-            try {
-                String sql = "SELECT addr " +
-                            "FROM Customer " +
-                            "WHERE taxID = " + Integer.toString(this.taxID);
-                ResultSet rs = stmt.executeQuery(sql);
-                 while(rs.next()){
-                    res = rs.getString("addr");
-                }
-                rs.close();
-                System.out.println("Got customer address.");
-                return res;
-            } catch (Exception e) {
-                System.out.println("Failed to get customer address");
-                System.out.println(e);
-                return "1";
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to create statement in getAddress()");
-            System.out.println(e);
-            return "1";
-        }
+        // String res="1";
+        // System.out.println("Getting address of customer...");
+        // try {
+        //     Statement stmt = helper.getConnection().createStatement();
+        //     try {
+        //         String sql = "SELECT addr " +
+        //                     "FROM Customer " +
+        //                     "WHERE taxID = " + Integer.toString(this.taxID);
+        //         ResultSet rs = stmt.executeQuery(sql);
+        //          while(rs.next()){
+        //             res = rs.getString("addr");
+        //         }
+        //         rs.close();
+        //         System.out.println("Got customer address.");
+        //         return res;
+        //     } catch (Exception e) {
+        //         System.out.println("Failed to get customer address");
+        //         System.out.println(e);
+        //         return "1";
+        //     }
+        // } catch (Exception e) {
+        //     System.out.println("Failed to create statement in getAddress()");
+        //     System.out.println(e);
+        //     return "1";
+        // }
+        return this.addr;
     }
 
     //get pin from db for customer and unhash
     int getPin(){
         int res=1;
-        System.out.println("Getting pin of customer...");
+
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -117,9 +122,9 @@ public class Customer {
     //set pin and hash and store to db for customer
     //check that pin is 4 digits
     String setPin(int unhashedPin){
-        //TODO: add check that pin has indeed been checked
         String pin = Integer.toString(unhashedPin);
         if(pin.length() != 4){
+            System.out.println("Pin too short.");
             return "1";
         }
         String hashedPin = helper.hashPin(unhashedPin);
@@ -130,6 +135,7 @@ public class Customer {
                             "SET pin = '" + hashedPin + 
                             "' WHERE taxID = " + Integer.toString(this.taxID);
                 stmt.executeUpdate(sql);
+                System.out.println("Set pin.");
                 return "0";
             } catch (Exception e) {
                 System.out.println("Failed to set customer pin");
@@ -145,7 +151,6 @@ public class Customer {
 
     //set address and store to db for customer
     String setAddress(String addr){
-        //TODO: add check that pin has indeed been checked
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
@@ -168,7 +173,6 @@ public class Customer {
 
     //set name and store to db for customer
     String setName(String name){
-         //TODO: add check that pin has indeed been checked
          try {
              Statement stmt = helper.getConnection().createStatement();
              try {
@@ -188,9 +192,8 @@ public class Customer {
              return "1";
          }
     }
-    //TODO: checking and savings are not the same
     //get accounts associated with customers taxID and the account type
-    List<Integer> getAccountIDs(int taxID, AccountType type){
+    List<Integer> getAccountIDs(AccountType type){
         List<Integer> accountIDs = new ArrayList<Integer>();
         String pocket = "POCKET";
         String sql = "";
@@ -203,7 +206,7 @@ public class Customer {
                     try {
                         sql = "SELECT * " +
                                         "FROM AccountPrimarilyOwns " +
-                                        "WHERE taxID = " + Integer.toString(taxID);
+                                        "WHERE taxID = " + Integer.toString(this.taxID);
                         ResultSet rs = stmt.executeQuery(sql);
                         while(rs.next()){
                             if(!pocket.equals(rs.getString("accountType"))){
@@ -218,7 +221,7 @@ public class Customer {
                     try {
                         sql = "SELECT * " +
                                 "FROM Owns " +
-                                "WHERE tID = " + Integer.toString(taxID);
+                                "WHERE tID = " + Integer.toString(this.taxID);
                         ResultSet rss = stmt.executeQuery(sql);
                         while(rss.next()){
                             accountIDs.add(rss.getInt("aID"));
@@ -233,7 +236,7 @@ public class Customer {
                     try {
                         sql = "SELECT * " +
                                 "FROM PocketAccountLinkedWith " +
-                                "WHERE tID = " + Integer.toString(taxID);
+                                "WHERE tID = " + Integer.toString(this.taxID);
                         ResultSet rsss = stmt.executeQuery(sql);
                         while(rsss.next()){
                             accountIDs.add(rsss.getInt("aID"));
@@ -256,8 +259,8 @@ public class Customer {
         return accountIDs;
     }
 
-    boolean acctBelongsToCustomer(int accountId, int taxID, AccountType accountType){
-        List<Integer> accounts = getAccountIDs(taxID, accountType);
+    boolean acctBelongsToCustomer(int accountId, AccountType accountType){
+        List<Integer> accounts = getAccountIDs(accountType);
         int i = 0;
         while(i < accounts.size()){
             if(accounts.get(i) == accountId){

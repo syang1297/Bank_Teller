@@ -23,7 +23,8 @@ public class Helper{
         PAYFRIEND,
         WIRE,
         WRITECHECK,
-        ACCRUEINTEREST
+        ACCRUEINTEREST,
+        FEE
     }
     
     private OracleConnection _connection;
@@ -59,11 +60,25 @@ public class Helper{
         return this._connection;
     }
 
+    void setBranch(String accountID, String branch){
+        try {
+            Statement stmt = _connection.createStatement();
+            try{
+                String sql = "UPDATE AccountPrimarilyOwns SET bankBranch = "+branch+" WHERE accountID = "+accountID;
+            } catch(Exception e){
+                System.out.println("couldn't set branch");
+                System.out.println(e); 
+            }
+        } catch (Exception e) {
+            System.out.println(e); 
+        }
+    }
+
     String getDate(){
         String res="";
         try {
             Statement stmt = _connection.createStatement();
-            System.out.println("Getting date from DB");
+
 			String sql ="SELECT * FROM GlobalDate";
 			ResultSet query = stmt.executeQuery(sql);
             while (query.next()){
@@ -82,42 +97,37 @@ public class Helper{
         }
         return res;
     }
-    //verifies supplied taxID exists in database
-    boolean verifyTaxIDExists(int taxID){
-        // try {
-        //     OracleDataSource ods = new OracleDataSource();
-        //     OracleConnection _connection = (OracleConnection) ods.getConnection();
-        //     Statement stmt = _connection.createStatement();
-        // } catch (Exception e) {
-        //     System.out.println("Failed to connect to database....");
-        //     System.out.println(e);
-        //     return false;
-        // }
-        return false;
-    }
     //checkNo = 0 means there's no check associated
     //return 0 means it failed (possibly due to incorrect accounttype with transaction type);
-    //TODO: transactions that involve two accounts, how to keep track of the other accounts
     String addTransaction(double amount, TransactionType transType, int checkNo,
-                            String aID){
+                            String aID, String toAID){
         String transactionID = this.newTransactionID();
-        String fee = "0";
         String checkNumber = Integer.toString(checkNo);
-        //TODO: check if this transaction is allowed according to account 
-        //TODO: check if it's the first transaction of the month to add $5 fee
+        String acctType="";
+        String sql = "";
+
         //if it's a pocket account
         try {
             Statement stmt = _connection.createStatement();
             //check if transaction type is allowed for type of account
             try {
-                String sql = "SELECT accountType " +
-                                "FROM AccountPrimarilyOwns " +
-                                "WHERE accountID = "+aID;
-                ResultSet rs = stmt.executeQuery(sql);
-                String acctType="";
-                while(rs.next()){
-					acctType = rs.getString("accountType");
-				}
+                if(transType == TransactionType.TOPUP){
+                    String sqlPocket = "SELECT accountType " +
+                                    "FROM AccountPrimarilyOwns " +
+                                    "WHERE accountID = " + toAID;
+                    ResultSet rs = stmt.executeQuery(sqlPocket);
+                        while(rs.next()){
+                            acctType = rs.getString("accountType");
+                        }
+                }else{
+                    sql = "SELECT accountType " +
+                                    "FROM AccountPrimarilyOwns " +
+                                    "WHERE accountID = "+aID;
+                    ResultSet rs = stmt.executeQuery(sql);
+                    while(rs.next()){
+                        acctType = rs.getString("accountType");
+                    }
+                }
                 // String acct = (String) acctType;
                 switch(acctType){
                     case "STUDENT_CHECKING":                       
@@ -136,40 +146,30 @@ public class Helper{
                         }                         
                         break;
                     case "POCKET":
-                        if(transType == TransactionType.TOPUP || transType == TransactionType.PURCHASE || transType == TransactionType.PAYFRIEND
-                        || transType == TransactionType.COLLECT ){
-                            //Shouldn't be necessary because we're adding feePaid before adding to transaction table
-                            // sql = "SELECT feePaid " + 
-                            //         "FROM PocketAccountLinkedWith " +
-                            //         "WHERE accountID = aID";
-                            // Resultset rs = stmt.executeQuery(sql);
-                            // String feePaid = rs.getString("feePaid");
-                            // if(feePaid.equals("0")){
-                            //     amount += 5;
-                            // }
-                        }
-                        else{
+           
+                        if(transType != TransactionType.TOPUP && transType != TransactionType.PURCHASE && transType != TransactionType.PAYFRIEND
+                        && transType != TransactionType.COLLECT && transType != TransactionType.FEE){
                             System.out.println("Invalid transaction/account type combo");
                             return "0";
-                        }  
+                        } 
                         break;
                 }
                     try {
-                        System.out.println("Getting taxID...");
-                        sql = "SELECT taxID " +
+                     
+                        String sqlTaxID = "SELECT taxID " +
                                         "FROM AccountPrimarilyOwns " +
                                         "WHERE accountID = "+aID;
-                        rs = stmt.executeQuery(sql);
+                        ResultSet rss = stmt.executeQuery(sqlTaxID);
                         int taxID=0;
-                        while(rs.next()){
-                            taxID = rs.getInt("taxID");
+                        while(rss.next()){
+                            taxID = rss.getInt("taxID");
                         }
                         try {
-                            System.out.println("Trying to add to transactions...");
+                    
                             sql = "INSERT INTO TransactionBelongs " +
-                                    "VALUES (" + amount + ", " + fee + ", '" + transType + "', '" + 
+                                    "VALUES (" + amount  + ", '" + transType + "', '" + 
                                     this.getDate() + "', " + checkNumber + ", " + transactionID + 
-                                    ", " + aID + "," + taxID + ")"; 
+                                    ", " + aID + "," + toAID + ", " + taxID + ")"; 
                             stmt.executeUpdate(sql);
                             } catch (Exception e) {
                                 System.out.println("Adding to transaction table failed");
@@ -191,17 +191,11 @@ public class Helper{
             System.out.println(e);
             return "0";
         }
-        System.out.println("Added transaction.");
+     
         return "1";
     }
 
-    //TODO: creates new transaction id, using random rn
     String newTransactionID(){
-        // int max = 10000; 
-        // int min = 1; 
-        // int range = max - min + 1; 
-        // int rand = (int)(Math.random() * range) + min; 
-        // return Integer.toString(rand);
         int maxTID = 1;
         try {
             Statement stmt = _connection.createStatement();
@@ -238,11 +232,6 @@ public class Helper{
     }
 
     String newOwnsID(){
-        // int max = 10000; 
-        // int min = 1; 
-        // int range = max - min + 1; 
-        // int rand = (int)(Math.random() * range) + min; 
-        // return Integer.toString(rand);
         int maxNumKey = 1;
         try {
             Statement stmt = _connection.createStatement();
@@ -278,9 +267,6 @@ public class Helper{
         return Integer.toString(maxNumKey);
     }
 
-    boolean accountIdExists(String accountID, String table){
-        return false;
-    }
     String hashPin(int pin){
         String res="";
         while(pin>0){
@@ -297,8 +283,33 @@ public class Helper{
         for(int i=0;i<4;i++){
             res=res+Integer.toString((int)hashedPin.charAt(i)-33);
         }
-
         return Integer.parseInt(res);
     }
 
+    void monthlyReset(){
+        String sql="";
+        try {
+            Statement stmt = _connection.createStatement();
+            try {
+                sql = "SELECT * FROM AccountPrimarilyOwns";
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next() != false){
+                    sql = "UPDATE AccountPrimarilyOwns SET interestAdded = 0";
+                    stmt.executeUpdate(sql);
+                }
+                sql = "SELECT * FROM PocketAccountLinkedWith";
+                rs = stmt.executeQuery(sql);
+                if(rs.next() != false){
+                    sql = "UPDATE PocketAccountLinkedWith SET feePaid = 0";
+                    stmt.executeUpdate(sql);
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to reset");
+                System.out.println(e);
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
+    }
 }
