@@ -29,8 +29,8 @@ public class Helper{
     private OracleConnection _connection;
     Helper(){
         final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -86,15 +86,12 @@ public class Helper{
     //return 0 means it failed (possibly due to incorrect accounttype with transaction type);
     //TODO: transactions that involve two accounts, how to keep track of the other accounts
     String addTransaction(double amount, TransactionType transType, int checkNo,
-                            String aID, String toAID){
+                            String aID, String toAID, int fee){
         String transactionID = this.newTransactionID();
-        String fee = "0";
         String checkNumber = Integer.toString(checkNo);
         String acctType="";
         String sql = "";
 
-        //TODO: check if this transaction is allowed according to account 
-        //TODO: check if it's the first transaction of the month to add $5 fee
         //if it's a pocket account
         try {
             Statement stmt = _connection.createStatement();
@@ -156,7 +153,7 @@ public class Helper{
                         try {
                             System.out.println("Trying to add to transactions...");
                             sql = "INSERT INTO TransactionBelongs " +
-                                    "VALUES (" + amount + ", " + fee + ", '" + transType + "', '" + 
+                                    "VALUES (" + amount + ", " + Integer.toString(fee) + ", '" + transType + "', '" + 
                                     this.getDate() + "', " + checkNumber + ", " + transactionID + 
                                     ", " + aID + "," + toAID + ", " + taxID + ")"; 
                             stmt.executeUpdate(sql);
@@ -275,7 +272,7 @@ public class Helper{
 
         return Integer.parseInt(res);
     }
-    
+
     void monthlyReset(){
         String sql="";
         try {

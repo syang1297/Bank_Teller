@@ -67,8 +67,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -254,7 +254,7 @@ public class App implements Testable
 				System.out.println("Creating table TransactionBelongs");
 				String sql = "CREATE TABLE TransactionBelongs(" +
 								"amount REAL," +
-								"fee INTEGER," +
+								"fee REAL," +
 								"transType VARCHAR(32)," +
 								"transDate VARCHAR(10)," +
 								"checkNo INTEGER," +
@@ -527,7 +527,7 @@ public class App implements Testable
 			return "1 " + id + " " + accountType + " " + String.format("%.2f",initialBalance) + " " + tin;
 		}
 		//add to transaction table
-		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id, Integer.toString(-1));
+		helper.addTransaction(initialBalance, TransactionType.DEPOSIT, 0, id, Integer.toString(-1),0);
 		return "0 " + id + " " + accountType + " " + String.format("%.2f", initialBalance) + " " + tin;
 	}
 
@@ -653,7 +653,7 @@ public class App implements Testable
 			return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 		}
 		System.out.println("Successfully created new Pocket account.");
-		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, linkedId, id);
+		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, linkedId, id,0);
 		return "0 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 	}
 
@@ -847,7 +847,7 @@ public class App implements Testable
 			return result;
 		}
 		System.out.println("Added deposit.");
-		helper.addTransaction(amount,TransactionType.DEPOSIT,0,accountId, Integer.toString(-1));
+		helper.addTransaction(amount,TransactionType.DEPOSIT,0,accountId, Integer.toString(-1),0);
 		return result;
 	}
 
@@ -927,6 +927,7 @@ public class App implements Testable
 		boolean pocketExists = false;
 		boolean linkedExists = false;
 		int feePaid = 0;
+		int fee=0;
 		double pocketBalance = 0.00;
 		double linkedBalance = 0.00;
 		int linkedId = 0;
@@ -1015,6 +1016,7 @@ public class App implements Testable
 							stmt.executeUpdate(sql);
 							try {
 								if(feePaid == 0){
+									fee=5;
 									pocketBalance = pocketBalance + amount - 5;
 									try {
 										sql = "UPDATE PocketAccountLinkedWith " +
@@ -1034,7 +1036,7 @@ public class App implements Testable
 										"SET balance = " + (pocketBalance) +
 										" WHERE accountId = " + dbID;
 								stmt.executeUpdate(sql);
-								helper.addTransaction(amount, TransactionType.TOPUP, 0, linkedID, accountId);
+								helper.addTransaction(amount, TransactionType.TOPUP, 0, linkedID, accountId,fee);
 								return "0 " + String.format("%.2f",(linkedBalance)) + " " + String.format("%.2f",(pocketBalance));
 							} catch (Exception e) {
 								System.out.println("Failed to update pocketAccount with topup");
@@ -1093,7 +1095,7 @@ public class App implements Testable
 		double toBalance = 0.00;
 		int toid = 0;
 		String toID = "";
-
+		int fee=0;
 		if(amount <= 0){
 			return "1";
 		}
@@ -1162,6 +1164,7 @@ public class App implements Testable
 					}
 				}
 				if(toFeePaid == 0){
+					fee+=5;
 					System.out.println("Paying to account fee...");
 					toBalance = amount + toBalance - 5;
 					try {
@@ -1191,6 +1194,7 @@ public class App implements Testable
 					return "1";
 				}
 				if(fromFeePaid == 0){
+					fee+=5;
 					System.out.println("Paying from account fee...");
 					fromBalance = fromBalance - amount - 5;
 					try {
@@ -1230,7 +1234,7 @@ public class App implements Testable
 			return "1";
 		}
 		System.out.println("Paid friend.");
-		helper.addTransaction(amount,TransactionType.PAYFRIEND,0, from, to);
+		helper.addTransaction(amount,TransactionType.PAYFRIEND,0, from, to,fee);
 		return "0 " + String.format("%.2f",(fromBalance)) + " " + String.format("%.2f",(toBalance));
 	}
 

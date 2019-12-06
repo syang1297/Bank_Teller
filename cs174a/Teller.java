@@ -30,7 +30,6 @@ public class Teller {
         try{
                 Statement stmt = helper.getConnection().createStatement();
                 double newBalance = 0;
-                int closed=0;
             try {
                 sql = "SELECT * FROM AccountPrimarilyOwns WHERE accountID = "+accountID;
                 ResultSet rs =stmt.executeQuery(sql);
@@ -73,7 +72,7 @@ public class Teller {
             System.out.println(e);
         }
         //toAccount is 0 bc no account
-        helper.addTransaction(amount, TransactionType.WRITECHECK, getCheckNumber(),Integer.toString(accountID), Integer.toString(-1));
+        helper.addTransaction(amount, TransactionType.WRITECHECK, getCheckNumber(),Integer.toString(accountID), Integer.toString(-1),0);
         return;
     }
 
@@ -657,7 +656,7 @@ public class Teller {
                             stmt2.executeUpdate(sql);
                             System.out.println("New Balance: "+newBalance+" Added interest: "+ interestAdded +" To: " + currAID);
                             //0 for check and -1 for to account
-                            helper.addTransaction(interestAdded, TransactionType.ACCRUEINTEREST,0,currAID, Integer.toString(-1));
+                            helper.addTransaction(interestAdded, TransactionType.ACCRUEINTEREST,0,currAID, Integer.toString(-1),0);
                         } catch (Exception e){
                             System.out.println("Failed to add interest.");
                             System.out.println(e);

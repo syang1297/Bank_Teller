@@ -141,7 +141,7 @@ public class ATM {
 		}
         System.out.println("Withdrew from account");
         //0 for check number and -1 for toAccount
-		helper.addTransaction(amount,TransactionType.WITHDRAWAL,0,accountID,Integer.toString(-1));
+		helper.addTransaction(amount,TransactionType.WITHDRAWAL,0,accountID,Integer.toString(-1),0);
 		return result;
 	}
 
@@ -156,6 +156,7 @@ public class ATM {
             Statement stmt = helper.getConnection().createStatement();
             //checks if account belongs to customer and if it's a pocket account
             int feePaid = 0;
+            int fee = 0;
             System.out.println("Checking if account belongs to customer...");
             if(customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.POCKET)){
                 if(amount <= 0.0){
@@ -183,7 +184,7 @@ public class ATM {
                             break;
                         }
                     }
-                    if(isClosed = 1){
+                    if(isClosed == 1){
                         return "1";
                     }
                     // rs.close();
@@ -216,6 +217,7 @@ public class ATM {
                 
                 if(feePaid == 0){
                     try{
+                        fee=5;
                          newBalance -= 5;
                         sql = "UPDATE PocketAccountLinkedWith " +
                                 "SET feePaid = " + Integer.toString(1) +
@@ -242,7 +244,7 @@ public class ATM {
                             "WHERE accountId = " + accountID;
                 stmt.executeUpdate(sql);
                 //0 for check number and -1 for toAccount
-                helper.addTransaction(amount, TransactionType.PURCHASE, 0, accountID, Integer.toString(-1));
+                helper.addTransaction(amount, TransactionType.PURCHASE, 0, accountID, Integer.toString(-1),fee);
                 return "0 " + String.format("%.2f",oldBalance) + " " +String.format("%.2f", newBalance);
                 //TODO: isClosed helper
                 
@@ -268,7 +270,7 @@ public class ATM {
         boolean saving1 = customer.acctBelongsToCustomer(destinationID, AccountType.SAVINGS);
         Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2 =0.0;
         int isClosed1=0, isClosed2=0;
-        if(amount <= 0.0){
+        if(amount <= 0.0 || amount>2000){
             System.out.println("Cannot transfer negative amount");
             return "1";
         }
@@ -329,7 +331,7 @@ public class ATM {
                                 "SET balance = " + Double.toString(toBalance2) +
                                 "WHERE accountId = " + Integer.toString(destinationID);
                         stmt.executeUpdate(sql);
-                        helper.addTransaction(amount,TransactionType.TRANSFER,0,Integer.toString(accountID), Integer.toString(destinationID));
+                        helper.addTransaction(amount,TransactionType.TRANSFER,0,Integer.toString(accountID), Integer.toString(destinationID),0);
                         System.out.println("Transferred funds.");
                         return "0";
                     } catch (Exception e) {
@@ -362,6 +364,7 @@ public class ATM {
         int isClosed1=0, isClosed2 =0;
         boolean isLinked=false;
         int feePaid = 0;
+        int fee=0;
         if(!pocket){
             if(student0 || checking0 || saving0){
                 try {
@@ -424,6 +427,7 @@ public class ATM {
                                 return "1";
                             }
                             if(feePaid == 0){
+                                fee+=5;
                                 if(pocketBalance1 < amount + 5){
                                     System.out.println("Can't collect bc amount with fee is greater than pocket account balance: "+pocketBalance1);
                                     return "1";                                    
@@ -433,6 +437,7 @@ public class ATM {
                                 pocketBalance2 = pocketBalance1 - amount;
                             }
                             fromBalance2 = fromBalance1 + (amount * .97);
+                            fee+=amount*.03;
                             fromBalance2 = Double.parseDouble(String.format("%.2f",fromBalance2));
                             pocketBalance2 = Double.parseDouble(String.format("%.2f",pocketBalance2));
                             //update balances for pocket and account
@@ -461,18 +466,7 @@ public class ATM {
                                     "SET balance = " + Double.toString(fromBalance2) +
                                     " WHERE accountId = " + Integer.toString(accountID);
                             stmt.executeUpdate(sql);
-<<<<<<< HEAD
-                            helper.addTransaction(-1*amount,TransactionType.COLLECT,0,Integer.toString(pocketID));
-                            helper.addTransaction(amount,TransactionType.DEPOSIT,0,Integer.toString(accountID));
-=======
-                            if(pocketBalance2<=0.01){
-                                sql = "UPDATE AccountPrimarilyOwns " +
-                                    "SET isClosed = 1" +
-                                    " WHERE accountId = " + Integer.toString(pocketID);
-                                stmt.executeUpdate(sql);
-                            }
-                            helper.addTransaction(amount,TransactionType.COLLECT,0,Integer.toString(pocketID), Integer.toString(accountID));
->>>>>>> sy_dev
+                            helper.addTransaction(amount,TransactionType.COLLECT,0,Integer.toString(pocketID), Integer.toString(accountID),fee);
                             System.out.println("Collected from pocket account.");
                             return "0";
                         } catch (Exception e) {
@@ -506,6 +500,7 @@ public class ATM {
         boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
         Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2=0.0;
         int isClosed1=0, isClosed2=0;
+        int fee=0;
         if(amount <= 0.0){
             System.out.println("Cannot wire negative amount");
             return "1";
@@ -564,12 +559,13 @@ public class ATM {
                         stmt.executeUpdate(sql);
                         //destinationID
                         toBalance2 = toBalance1 + (amount * .98);
+                        fee+=amount*.02;
                         toBalance2 = Double.parseDouble(String.format("%.2f",toBalance2));
                         sql = "UPDATE AccountPrimarilyOwns " +
                                 "SET balance = " + Double.toString(toBalance2) +
                                 "WHERE accountId = " + Integer.toString(destinationID);
                         stmt.executeUpdate(sql);
-                        helper.addTransaction(amount,TransactionType.WIRE,0,Integer.toString(accountID), Integer.toString(destinationID));
+                        helper.addTransaction(amount,TransactionType.WIRE,0,Integer.toString(accountID), Integer.toString(destinationID),fee);
                         System.out.println("Wire successful.");
                         return "0";
                     } catch (Exception e) {
