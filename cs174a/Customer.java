@@ -131,6 +131,8 @@ public class Customer {
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
+                // System.out.print(hashedPin);
+                // System.out.print
                 String sql = "UPDATE Customer " +
                             "SET pin = '" + hashedPin + 
                             "' WHERE taxID = " + Integer.toString(this.taxID);

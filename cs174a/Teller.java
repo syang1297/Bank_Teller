@@ -577,7 +577,10 @@ public class Teller {
                     }
                     res.add(account);
                 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> sy_dev
             } catch(Exception e){
                 System.out.println("Failed to get info.");
                 System.out.println(e);
@@ -611,7 +614,6 @@ public class Teller {
                 Helper helper2 = new Helper();
                 Statement stmt2 = helper2.getConnection().createStatement();
                 try {
-             
                     sql = "SELECT * " +
                         "FROM AccountPrimarilyOwns" + 
                         " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
@@ -709,13 +711,7 @@ public class Teller {
     }
 
     //create new account and store on db
-    void createAccount(AccountType type, List<List<String>> coOwners, double balance, String accountID, String taxID, String linkedId){
-        System.out.println("Enter new customer addr");
-        String newaddr = System.console().readLine();
-        System.out.println("Enter new customer name");
-        String newname = System.console().readLine();
-        Customer customer = new Customer(Integer.parseInt(taxID), newname, newaddr);
-
+    void createAccount(AccountType type, List<List<String>> coOwners, double balance, String accountID, String taxID, String linkedId, String newname, String newaddr){
         switch(type){
             case STUDENT_CHECKING:
                 app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, taxID, newname, newaddr);
@@ -742,8 +738,8 @@ public class Teller {
                 for(int i = 0; i < coOwners.size(); i++){
                     String taxId = coOwners.get(i).get(0);
                     int tID = Integer.parseInt(taxId);
-                    String addr = coOwners.get(i).get(1);
-                    String name = coOwners.get(i).get(2);
+                    String addr = coOwners.get(i).get(2);
+                    String name = coOwners.get(i).get(1);
                     //check if coOwner exists
                     try {
                         //check if owner exists
@@ -751,11 +747,10 @@ public class Teller {
                                             "FROM CUSTOMER " +
                                             "WHERE taxID = " + tID;
                         ResultSet customers = stmt.executeQuery(ownerExists);
-                        if(customers.next() == false){
-                     
+                        if(customers.next() == false){ 
+                            // System.out.println("co owner doesn't exist already");                    
                             app.createCustomer(accountID, taxId, name, addr);
                         }else{
-              
                             try {
                                 String sql = "INSERT INTO Owns " +
                                             "VALUES (" + accountID + ", " + tID + ", " + helper.newOwnsID() + ")";
