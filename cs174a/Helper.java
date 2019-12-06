@@ -64,7 +64,8 @@ public class Helper{
         try {
             Statement stmt = _connection.createStatement();
             try{
-                String sql = "UPDATE AccountPrimarilyOwns SET bankBranch = "+branch+" WHERE accountID = "+accountID;
+                String sql = "UPDATE AccountPrimarilyOwns SET bankBranch = '"+branch+"' WHERE accountID = "+accountID;
+                stmt.executeUpdate(sql);
             } catch(Exception e){
                 System.out.println("couldn't set branch");
                 System.out.println(e); 

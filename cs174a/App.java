@@ -282,7 +282,7 @@ public class App implements Testable
 								"PRIMARY KEY (aID, otherAccountID)," +
 								"FOREIGN KEY (aID, tID) REFERENCES " +
 								"AccountPrimarilyOwns(accountID, taxID) ON DELETE CASCADE," +
-								"FOREIGN KEY (otherAccountID, tID) REFERENCES " +
+								"FOREIGN KEY (otherAccountID, otherTaxID) REFERENCES " +
 								"AccountPrimarilyOwns(accountID, taxID) ON DELETE CASCADE)";			
 				stmt.executeUpdate(sql);			
 			} catch (Exception e) {
@@ -591,7 +591,6 @@ public class App implements Testable
 						aid = rs.getInt("accountID");
 						dbID = Integer.toString(aid);
 						if(linkedId.equals(dbID)){
-
 							linkedIsClosed = rs.getInt("isClosed");
 							linkedAccountInitBalance = rs.getDouble("balance");
 							acctType = rs.getString("accountType");
@@ -625,7 +624,6 @@ public class App implements Testable
 								"', 0)";
 						stmt.executeQuery(sql);
 						try {
-	
 							sql = "INSERT INTO PocketAccountLinkedWith " +
 									"VALUES (" + id + ", " + tin + ", " + linkedId+", "+linkedTID+", 0)"; 
 							stmt.executeQuery(sql);
@@ -690,7 +688,6 @@ public class App implements Testable
 					aid = rs.getInt("accountID");
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
-	
 						accountExists = true;
 						// accountClosed = rs.getInt("isClosed");
 						break;
@@ -707,7 +704,6 @@ public class App implements Testable
 						return "1";
 					}
 					try {
-
 						sql = "SELECT * " +
 								"FROM Customer WHERE taxID = " + tin ;
 						rs = stmt.executeQuery(sql);
@@ -719,11 +715,10 @@ public class App implements Testable
 						try {
 							//Give newly made customer default pin of 1717
 							String hashedPin = helper.hashPin(1717);
-
 							sql = "INSERT INTO Customer " + 
 									"VALUES (" + tin + ",'" + address + "','" + hashedPin + "','" + name+"')";
 									// System.out.println(sql);
-							// stmt.executeQuery(sql);
+							stmt.executeQuery(sql);
 							try {
 					
 								sql = "INSERT INTO Owns " + 

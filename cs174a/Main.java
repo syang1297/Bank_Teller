@@ -210,7 +210,6 @@ public class Main
 			billy.add("Billy Clinton");
 			billy.add("5777 Hollister");
 
-
 			co.removeAll(co);
 			co.add(fatal);
 			co.add(billy);

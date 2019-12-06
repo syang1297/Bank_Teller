@@ -733,8 +733,8 @@ public class Teller {
                 for(int i = 0; i < coOwners.size(); i++){
                     String taxId = coOwners.get(i).get(0);
                     int tID = Integer.parseInt(taxId);
-                    String addr = coOwners.get(i).get(1);
-                    String name = coOwners.get(i).get(2);
+                    String addr = coOwners.get(i).get(2);
+                    String name = coOwners.get(i).get(1);
                     //check if coOwner exists
                     try {
                         //check if owner exists
@@ -742,11 +742,10 @@ public class Teller {
                                             "FROM CUSTOMER " +
                                             "WHERE taxID = " + tID;
                         ResultSet customers = stmt.executeQuery(ownerExists);
-                        if(customers.next() == false){
-                     
+                        if(customers.next() == false){ 
+                            // System.out.println("co owner doesn't exist already");                    
                             app.createCustomer(accountID, taxId, name, addr);
                         }else{
-              
                             try {
                                 String sql = "INSERT INTO Owns " +
                                             "VALUES (" + accountID + ", " + tID + ", " + helper.newOwnsID() + ")";
