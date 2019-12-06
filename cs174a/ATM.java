@@ -3,7 +3,7 @@ package cs174a;
 import cs174a.Helper.*;
 import cs174a.Customer.*;
 import cs174a.Testable.*;
-
+import java.util.*;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -26,7 +26,13 @@ public class ATM {
         }
         return false;
     }
-
+    List<Integer> getCustomerAccounts(){
+        List<Integer> res=customer.getAccountIDs(AccountType.STUDENT_CHECKING);
+        res.addAll(customer.getAccountIDs(AccountType.INTEREST_CHECKING));
+        res.addAll(customer.getAccountIDs(AccountType.SAVINGS));
+        res.addAll(customer.getAccountIDs(AccountType.POCKET));
+        return res;
+    }
     //checks if account can accept deposits and if so, deposits balance into accountID
     //if account is already marked as closed for the month, reject deposit
     //update account balance

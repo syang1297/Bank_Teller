@@ -24,12 +24,13 @@ public class Teller {
     }
 
     //add check transaction to an account 
-    void writeCheck(int accountID, double amount){
+    void writeCheck(int accountID, double amount, int taxID){
+        Customer customer = new Customer(taxID);
         int closed=0;
         String sql="";
         String acctType = "";
-        boolean student = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean interest = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
+        boolean student = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean interest = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
         if(!student || !interest){
             System.out.println("Can only write check from checkings account");
             return;

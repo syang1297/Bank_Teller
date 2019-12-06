@@ -164,7 +164,7 @@ public class Main
 					case "0"://ATM
 						while(true){
 							System.out.println("Please enter your taxID");
-							input = System.console().readLine();
+							String taxID = System.console().readLine();
 							ATM atm = new ATM(Integer.parseInt(input),app);
 							while(true){
 								System.out.println("Please enter your PIN or enter 0 to exit");
@@ -173,6 +173,7 @@ public class Main
 									break;
 								}
 								else if(atm.verifyPin(Integer.parseInt(input))){
+									System.out.println("Verified.");
 									break;
 								} else {
 									System.out.println("Try again.");
@@ -181,21 +182,36 @@ public class Main
 							if(input.equals("0")){
 								break;
 							}
-							System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Exit\n");
-							input = System.console().readLine();
-							switch(input){
-								case "0":
-								case "1":
-								case "2":
-								case "3":
-								case "4":
-								case "5":
-								case "6":
-								case "7":
+							while(true){
+								System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Exit\n");
+								input = System.console().readLine();
+								List<Integer> accounts = atm.getCustomerAccounts();
+								String temp ="Accounts: ";
+								for(int i=0;i<accounts.size();i++){
+									temp=temp+accounts.get(i)+" , ";
+								}
+								System.out.println(temp);
+								switch(input){
+									case "0":
+										break;
+									case "1":
+										break;
+									case "2":
+										break;
+									case "3":
+										break;
+									case "4":
+										break;
+									case "5":
+										break;
+									case "6":
+										break;
+									case "7":
+										break;
+								}
+								if(input.equals("7")){
 									break;
-							}
-							if(input.equals("7")){
-								break;
+								}
 							}
 						}
 						break;
