@@ -713,12 +713,6 @@ public class Teller {
 
     //create new account and store on db
     void createAccount(AccountType type, List<List<String>> coOwners, double balance, String accountID, String taxID, String linkedId){
-        System.out.println("Enter new customer addr");
-        String newaddr = System.console().readLine();
-        System.out.println("Enter new customer name");
-        String newname = System.console().readLine();
-        Customer customer = new Customer(Integer.parseInt(taxID), newname, newaddr);
-
         switch(type){
             case STUDENT_CHECKING:
                 app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, taxID, newname, newaddr);

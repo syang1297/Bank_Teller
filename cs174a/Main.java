@@ -437,7 +437,11 @@ public class Main
 								String acctId = System.console().readLine();
 								System.out.println("Enter primary owner taxID");
 								String primID = System.console().readLine();
-								teller.createAccount(type, coOwners, Double.parseDouble(amt), acctId, primID, linked);
+								System.out.println("Enter primary owner name");
+								String name = System.console().readLine();
+								System.out.println("Enter primary owner address");
+								String addr = System.console().readLine();
+								teller.createAccount(type, coOwners, Double.parseDouble(amt), acctId, primID, linked,name,addr);
 								System.out.println("Added account...................");
 								break;
 							case 7: //delete accounts
