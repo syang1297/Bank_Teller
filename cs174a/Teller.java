@@ -614,12 +614,12 @@ public class Teller {
         try {
             Statement stmt = helper.getConnection().createStatement();
             try {
-                String sql = "SELECT taxID " +
+                String sql = "SELECT accountID " +
                             "FROM AccountPrimarilyOwns " +
-                            "WHERE isclose = 1";
+                            "WHERE isClosed = 1";
                 ResultSet closed = stmt.executeQuery(sql);
                 while(closed.next()){
-                    closedAccounts.add(closed.getInt("taxID"));
+                    closedAccounts.add(closed.getInt("accountID"));
                 }
             } catch (Exception e) {
                 System.out.println("Failed to get accounts marked for closed into list");
@@ -637,9 +637,9 @@ public class Teller {
                 return "1";
             }
             try {
-                for(int i = 0; i < closedAccounts.size() - 1; i++){
+                for(int i = 0; i < closedAccounts.size(); i++){
                     String delOwns = "DELETE FROM Owns " +
-                    "WHERE tID = " + closedAccounts.get(i);
+                    "WHERE aID = " + closedAccounts.get(i);
                     stmt.executeUpdate(delOwns);
                 }
             } catch (Exception e) {

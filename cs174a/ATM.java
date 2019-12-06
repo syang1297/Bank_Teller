@@ -107,7 +107,8 @@ public class ATM {
 					try {
 						System.out.println("Updating balances...");
                         newBalance = oldBalance - amount;
-                        if(newBalance < 0.01){
+                        System.out.println(Double.toString(newBalance));
+                        if(newBalance < 0.00){
                             System.out.println("Cannot withdraw more money than there is.");
                             return "1";
                         }

@@ -33,15 +33,15 @@ public class Main
 		{
 			app.dropTables();
 			Helper helper= new Helper();
-			ATM atm = new ATM(1234, app);
+			ATM atm = new ATM(4321, app);
 			//for testing app.java
 			r = app.createTables();
 			app.setDate(2018, 2, 7);
 			r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
 			// System.out.println(r);
-			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 1000.00, "4321", "Bob", "66 DP");
-			r = app.createPocketAccount("1", "1234", 100.0, "4321");
-			r = app.createPocketAccount("2", "1234", 100.0, "4321");
+			r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 1000.00, "4321", "Bob", "66 DP");
+			// r = app.createPocketAccount("1", "1234", 100.0, "4321");
+			// r = app.createPocketAccount("2", "1234", 100.0, "4321");
 			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
 			// r = app.deposit("1234",1000.00);
 			// atm.deposit(1234, 1000.00);
@@ -110,26 +110,29 @@ public class Main
 			// }
 			// //teller.deleteClosedAccounts();
 			ArrayList<Integer> coOwners = new ArrayList();
-			app.createCustomer("1233", "1111","Andrew","66 Sueno");
-			coOwners.add(1111);
+			// app.createCustomer("1233", "1111","Andrew","66 Sueno");
+			// coOwners.add(1111);
 			teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000.0,"1234","-1");
-			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
-			List<String> res2 = teller.customerReport(1111);
-			for(int i=0;i<res2.size();i++){
-				System.out.println(res2.get(i));
-			}
-			// res2 = teller.generateMonthly(4321);
-			res2 = teller.generateMonthly(4321);
-			System.out.println(res2);
+			app.createCustomer("1234", "8989", "Shu", "addr");
+			atm.withdraw("1234", 999.99);
+			teller.deleteClosedAccounts();
+			// teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","-1");
+			// List<String> res2 = teller.customerReport(1111);
 			// for(int i=0;i<res2.size();i++){
 			// 	System.out.println(res2.get(i));
 			// }
-			// System.out.println(teller.listClosedAccounts());
-			// app.setDate(2018, 2, 8);
-			// app.deposit("1233",10000.00);
-			// app.setDate(2018, 2, 10);
-			// app.deposit("1233",100.00);
-			// app.setDate(2018, 2, 14);
+			// // res2 = teller.generateMonthly(4321);
+			// res2 = teller.generateMonthly(4321);
+			// System.out.println(res2);
+			// // for(int i=0;i<res2.size();i++){
+			// // 	System.out.println(res2.get(i));
+			// // }
+			// // System.out.println(teller.listClosedAccounts());
+			// // app.setDate(2018, 2, 8);
+			// // app.deposit("1233",10000.00);
+			// // app.setDate(2018, 2, 10);
+			// // app.deposit("1233",100.00);
+			// // app.setDate(2018, 2, 14);
 			// app.deposit("1233",10000.00);
 			// app.setDate(2018, 2, 25);
 			// app.deposit("1233",10000.00);
