@@ -576,7 +576,6 @@ public class Teller {
                     }
                     res.add(account);
                 }
-]
             } catch(Exception e){
                 System.out.println("Failed to get info.");
                 System.out.println(e);
@@ -610,22 +609,17 @@ public class Teller {
                 Helper helper2 = new Helper();
                 Statement stmt2 = helper2.getConnection().createStatement();
                 try {
-             ]
                     sql = "SELECT * " +
                         "FROM AccountPrimarilyOwns" + 
                         " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
                         AccountType.STUDENT_CHECKING + "'";
                     ResultSet accounts= stmt.executeQuery(sql);
-<<<<<<< HEAD
                     if(accounts.next() == false){
                         System.out.println("WARNING: Interest already added for this month");
                         return "1";
                     }
                     accounts= stmt.executeQuery(sql);
                     System.out.println("Adding interest...");
-=======
-     ]
->>>>>>> andrew
                     while(accounts.next()){
                         ArrayList<Double> dayWeights = new ArrayList<Double>();
                         ArrayList<Double> balances = new ArrayList<Double>();
@@ -712,7 +706,7 @@ public class Teller {
     }
 
     //create new account and store on db
-    void createAccount(AccountType type, List<List<String>> coOwners, double balance, String accountID, String taxID, String linkedId){
+    void createAccount(AccountType type, List<List<String>> coOwners, double balance, String accountID, String taxID, String linkedId, String newname, String newaddr){
         switch(type){
             case STUDENT_CHECKING:
                 app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, taxID, newname, newaddr);

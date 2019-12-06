@@ -271,7 +271,7 @@ public class Helper{
         String res="";
         while(pin>0){
             int temp=pin%10;
-            temp=temp+33;
+            temp=temp+65;
             res=Character.toString ((char) temp)+res;
             pin=pin/10;
         }

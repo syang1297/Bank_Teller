@@ -494,7 +494,7 @@ public class App implements Testable
 						String sqlValues = tin + ",'" + address + "','"+ hashedPin +"','" + name+"'";
 						sql = "INSERT INTO Customer " +
 								"VALUES (" + sqlValues + ")";
-
+						// System.out.println(sql);
 						stmt.executeUpdate(sql);
 					} catch (Exception e) {
 						System.out.println("Unable to write to customer table");
@@ -606,7 +606,6 @@ public class App implements Testable
 						return "1 " + id + " POCKET " + "0.0" + " " + tin;
 					}
 					try {
-	
 						sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(linkedAccountInitBalance - initialTopUp) + 
 							" " + "WHERE accountId = " + dbID;
@@ -620,8 +619,6 @@ public class App implements Testable
 					}
 					// rs.close();
 					try {
-
-						
 						sql = "INSERT INTO AccountPrimarilyOwns " + 
 								"VALUES (" + id + ", " + tin + ", '" + bankBranch + "', " + initialTopUp +
 								", '" + helper.getDate() + "'," + "0, " + 0.0 + ", '" +  "POCKET" +
@@ -725,11 +722,13 @@ public class App implements Testable
 
 							sql = "INSERT INTO Customer " + 
 									"VALUES (" + tin + ",'" + address + "','" + hashedPin + "','" + name+"')";
-							stmt.executeQuery(sql);
+									// System.out.println(sql);
+							// stmt.executeQuery(sql);
 							try {
 					
 								sql = "INSERT INTO Owns " + 
 										"VALUES (" + accountId + ", " + tin + ", " + helper.newOwnsID() +")";
+								
 								stmt.executeQuery(sql);
 							} catch (Exception e) {
 								System.out.println("Failed to add customer to Owns table");
