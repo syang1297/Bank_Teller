@@ -269,7 +269,7 @@ public class Helper{
         for(int i=0;i<4;i++){
             res=res+Integer.toString((int)hashedPin.charAt(i)-33);
         }
-
+        System.out.println(res);
         return Integer.parseInt(res);
     }
 
