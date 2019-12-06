@@ -15,7 +15,7 @@ public class ATM {
     private App app;
 
     ATM(int taxID, App app){
-        customer = new Customer(taxID);
+        customer = new Customer(taxID, "default name", "default addr");
         helper = new Helper();
         this.app = app;
     }

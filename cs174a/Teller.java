@@ -24,7 +24,7 @@ public class Teller {
 
     //add check transaction to an account 
     void writeCheck(int accountID, double amount, int taxID){
-        Customer customer = new Customer(taxID);
+        Customer customer = new Customer(taxID, "default name", "default addr");
         int closed=0;
         String sql="";
         String acctType = "";
@@ -704,16 +704,21 @@ public class Teller {
 
     //create new account and store on db
     void createAccount(AccountType type, List<List<String>> coOwners, double balance, String accountID, String taxID, String linkedId){
-        Customer customer = new Customer(Integer.parseInt(taxID));
+        System.out.println("Enter new customer addr");
+        String newaddr = System.console().readLine();
+        System.out.println("Enter new customer name");
+        String newname = System.console().readLine();
+        Customer customer = new Customer(Integer.parseInt(taxID), newname, newaddr);
+
         switch(type){
             case STUDENT_CHECKING:
-                app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, taxID, customer.getName(), customer.getAddress());
+                app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, taxID, newname, newaddr);
                 break;
             case INTEREST_CHECKING:
-                app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, accountID, balance, taxID, customer.getName(), customer.getAddress());
+                app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, accountID, balance, taxID, newname, newaddr);
                 break;
             case SAVINGS:
-                app.createCheckingSavingsAccount(AccountType.SAVINGS, accountID, balance, taxID, customer.getName(), customer.getAddress());
+                app.createCheckingSavingsAccount(AccountType.SAVINGS, accountID, balance, taxID, newname, newaddr);
                 break;
             case POCKET:
                 if(Integer.parseInt(linkedId) < 1){
@@ -958,7 +963,7 @@ public class Teller {
     //add function to check if a customer owns the account
     //done in customer class
     boolean customerOwnsAccount(String tin, String id){
-        Customer customer = new Customer(Integer.parseInt(tin));
+        Customer customer = new Customer(Integer.parseInt(tin), "default name", "default addr");
         boolean student = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.STUDENT_CHECKING);
         boolean checking = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.INTEREST_CHECKING);
         boolean pocket = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.POCKET);

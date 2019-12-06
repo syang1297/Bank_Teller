@@ -11,11 +11,15 @@ import java.sql.Statement;
 
 public class Customer {
     private int taxID;
+    private String name;
+    private String addr;
     private Helper helper;
     
     //constructor
-    Customer(int tax){
+    Customer(int tax, String name, String addr){
         this.taxID = tax;
+        this.name = name;
+        this.addr = addr;
         helper = new Helper();
     }
 
@@ -57,31 +61,32 @@ public class Customer {
 
     //get address from db for customer
     String getAddress(){
-        String res="1";
-        System.out.println("Getting address of customer...");
-        try {
-            Statement stmt = helper.getConnection().createStatement();
-            try {
-                String sql = "SELECT addr " +
-                            "FROM Customer " +
-                            "WHERE taxID = " + Integer.toString(this.taxID);
-                ResultSet rs = stmt.executeQuery(sql);
-                 while(rs.next()){
-                    res = rs.getString("addr");
-                }
-                rs.close();
-                System.out.println("Got customer address.");
-                return res;
-            } catch (Exception e) {
-                System.out.println("Failed to get customer address");
-                System.out.println(e);
-                return "1";
-            }
-        } catch (Exception e) {
-            System.out.println("Failed to create statement in getAddress()");
-            System.out.println(e);
-            return "1";
-        }
+        // String res="1";
+        // System.out.println("Getting address of customer...");
+        // try {
+        //     Statement stmt = helper.getConnection().createStatement();
+        //     try {
+        //         String sql = "SELECT addr " +
+        //                     "FROM Customer " +
+        //                     "WHERE taxID = " + Integer.toString(this.taxID);
+        //         ResultSet rs = stmt.executeQuery(sql);
+        //          while(rs.next()){
+        //             res = rs.getString("addr");
+        //         }
+        //         rs.close();
+        //         System.out.println("Got customer address.");
+        //         return res;
+        //     } catch (Exception e) {
+        //         System.out.println("Failed to get customer address");
+        //         System.out.println(e);
+        //         return "1";
+        //     }
+        // } catch (Exception e) {
+        //     System.out.println("Failed to create statement in getAddress()");
+        //     System.out.println(e);
+        //     return "1";
+        // }
+        return this.addr;
     }
 
     //get pin from db for customer and unhash

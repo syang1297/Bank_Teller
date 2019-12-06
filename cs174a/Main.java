@@ -145,7 +145,7 @@ public class Main
 			//load in their data/create tables
 
 			while(true){
-				System.out.println("\nWelcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, or -1 to exit.");
+				System.out.println("\nWelcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, 2 for set date, or -1 to exit.");
 				input = System.console().readLine();
 				switch(input){
 					case "0"://ATM
@@ -179,7 +179,7 @@ public class Main
 								temp=temp +"\nPocket Accounts: ";
 								temp=temp+accounts.get(1);
 								System.out.println(temp);
-								System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Exit\n");
+								System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Back to Main\n");
 								input = System.console().readLine();
 								if(input.equals("6") || input.equals("1")){
 									System.out.println("Enter a pocket account.");
@@ -248,7 +248,7 @@ public class Main
 					case "1"://TELLER
 						while(true){
 						System.out.println("Welcome to Teller Interface");
-						System.out.println("Select a transaction:\n(0)Enter Check Transaction\n(1)Generate Monthly Statemet\n(2)List Closed Accounts\n(3)DTER\n(4)Customer Report\n(5)Add Interest\n(6)Create Account\n(7)Delete Closed Acounts\n(8)Delete Customers\n(9)Delete Transactions\n(10)Go Back to Main\n(-1)Exit");
+						System.out.println("Select a transaction:\n(0)Enter Check Transaction\n(1)Generate Monthly Statemet\n(2)List Closed Accounts\n(3)DTER\n(4)Customer Report\n(5)Add Interest\n(6)Create Account\n(7)Delete Closed Acounts\n(8)Delete Customers\n(9)Delete Transactions\n(10)Go Back to Main\n");
 						String inp = System.console().readLine();
 						switch(Integer.parseInt(inp)){
 							case 0: //enter check
@@ -272,39 +272,141 @@ public class Main
 								String tax = "";
 								System.out.println("Enter taxID for customer");
 								tax = System.console().readLine();
-								teller.generateMonthly(Integer.parseInt(tax));
+								List<String> monthly = teller.generateMonthly(Integer.parseInt(tax));
+								for(int i = 0; i < monthly.size(); i++){
+									System.out.println(monthly.get(i));
+								}
 								break;
 							case 2: //closed accounts
-							break;
-
+								System.out.println("Listing closed acounts..........");
+								System.out.println(teller.listClosedAccounts());
+								break;
 							case 3: //DTER
-							break;
-
+								System.out.println("generateDTER");
+								List<String> dter = teller.generateDTER();
+								for(int i = 0; i < dter.size(); i++){
+									System.out.println(dter.get(i));
+								}
+								break;
 							case 4: //customer report
-							break;
-
+								System.out.println("Printing customer report");
+								String id = "";
+								System.out.println("Enter taxId for customer report");
+								id = System.console().readLine();
+								List<String> report = teller.customerReport(Integer.parseInt(id));
+								for(int i = 0; i < report.size(); i++){
+									System.out.println(report.get(i));
+								}
+								break;
 							case 5: //add interest
-							break;
-
+								System.out.println("Add interest to accounts. Be sure it's the end of the month!");
+								teller.addInterest();
+								System.out.println("Interest added on accounts");
+								break;
 							case 6: //create account
-							break;
-
+								System.out.println("Create an acount...........");
+								String create = "";
+								String linked = "-1";
+								AccountType type = AccountType.STUDENT_CHECKING;
+								System.out.println("Choose account type. \n(0)STUDENT_CHECKING\n(1)INTEREST_CHECKING\n(2)SAVINGS\n(3)POCKET\n");
+								create = System.console().readLine();
+								while(true){
+								switch(create){
+									case "0":
+										break;
+									case "1":
+										type = AccountType.INTEREST_CHECKING;
+										break;
+									case "2":
+										type = AccountType.SAVINGS;
+										break;
+									case "3":
+										type = AccountType.POCKET;
+										System.out.println("Enter linkedAccount id");
+										linked = System.console().readLine();
+										break;
+									default:
+										System.out.println("Incorrect value. Please enter account type");
+										create = System.console().readLine();
+								}
+								break;
+							}
+								System.out.println("\nDo you want to add co-owners? \n(y) Yes\n(n) No" );
+								create = System.console().readLine();
+								List<List<String>> coOwners = new ArrayList();
+								switch(create){
+									case "y":
+										System.out.println("\nHow many co-owners do you want to add?");
+										String num = System.console().readLine();
+										for(int i = 0; i < Integer.parseInt(num); i++){
+											System.out.println("\nAdding co-owner number: " + i);
+											System.out.println("Enter co-owner taxID");
+											String coID = System.console().readLine();
+											System.out.println("Enter co-owner addr");
+											String addr = System.console().readLine();
+											System.out.println("Enter co-owner name");
+											String name = System.console().readLine();
+											List<String> co = new ArrayList();
+											co.add(coID);
+											co.add(addr);
+											co.add(name);
+											coOwners.add(co);
+										}
+										System.out.println("\nDone adding co-owners");
+										break;
+									case "n":
+										break;
+								}
+								System.out.println("\nEnter amount for account");
+								String amt = System.console().readLine();
+								System.out.println("Enter new accountID");
+								String acctId = System.console().readLine();
+								System.out.println("Enter primary owner taxID");
+								String primID = System.console().readLine();
+								teller.createAccount(type, coOwners, Double.parseDouble(amt), acctId, primID, linked);
+								System.out.println("Added account...................");
+								break;
 							case 7: //delete accounts
-							break;
-
+								System.out.println("Delete closed accounts. Make sure you already generatedMonthly and DTER");
+								System.out.println("It's the end of the month and you've already done the above?\n(y)Yes\n(n)No");
+								String go = "";
+								go = System.console().readLine();
+								if(go.equals("n")){
+									break;
+								}
+								if("0".equals(teller.deleteClosedAccounts())){
+									System.out.println("Closed accounts deleted successfully\n");
+								}else{
+									System.out.println("Failed to close accounts");
+								}
+								break;
 							case 8: //delete customers
-							break;
-
+								System.out.println("Delete customers. Make sure you already generatedMonthly and DTER");
+								System.out.println("It's the end of the month and you've already done the above?\n(y)Yes\n(n)No");
+								String cust = "";
+								cust = System.console().readLine();
+								if(cust.equals("n")){
+									break;
+								}
+								teller.deleteCustomers();	
+								System.out.println("Deleted customers with no accounts");							
+								break;
 							case 9: //delete transactions
-							break;
-
+								System.out.println("Delete transactions. Make sure you already generatedMonthly and DTER");
+								System.out.println("It's the end of the month and you've already done the above?\n(y)Yes\n(n)No");
+								String trans = "";
+								trans = System.console().readLine();
+								if(trans.equals("n")){
+									break;
+								}
+								teller.deleteTransactionHistory();
+								System.out.println("Deleted transaction history");
+								break;
 							case 10: //back to main
 							break;
 
-							case -1: //exit
-								break;
 						}
-						if(input.equals("7")){
+						if(inp.equals("10")){
 							break;
 						}
 					}
@@ -324,8 +426,6 @@ public class Main
 						in = System.console().readLine();
 						String day = in;
 						app.setDate(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
-						// System.out.println("Welcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, 2 to set date, or -1 to exit.");
-						// input = System.console().readLine();
 						break;
 					}
 					break;
