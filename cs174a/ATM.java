@@ -26,11 +26,10 @@ public class ATM {
         }
         return false;
     }
-    List<Integer> getCustomerAccounts(){
-        List<Integer> res=customer.getAccountIDs(AccountType.STUDENT_CHECKING);
-        res.addAll(customer.getAccountIDs(AccountType.INTEREST_CHECKING));
-        res.addAll(customer.getAccountIDs(AccountType.SAVINGS));
-        res.addAll(customer.getAccountIDs(AccountType.POCKET));
+    List<List<Integer>> getCustomerAccounts(){
+        List<List<Integer>> res = new ArrayList<List<Integer>>();
+        res.add(customer.getAccountIDs(AccountType.STUDENT_CHECKING));
+        res.add(customer.getAccountIDs(AccountType.POCKET));
         return res;
     }
     //checks if account can accept deposits and if so, deposits balance into accountID

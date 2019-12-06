@@ -30,8 +30,8 @@ public class Helper{
     private OracleConnection _connection;
     Helper(){
         final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -269,7 +269,6 @@ public class Helper{
         for(int i=0;i<4;i++){
             res=res+Integer.toString((int)hashedPin.charAt(i)-33);
         }
-        System.out.println(res);
         return Integer.parseInt(res);
     }
 
