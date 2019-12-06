@@ -8,7 +8,7 @@ Andrew
 -make sure check for transanction not allowed is 0 rather than 0.01
 -make sure all transactions check if account should be set as isClosed after the changing of balance
 -check not makign transactions on closed accoutns
-
+-make helper functions to put in set date to reset fee paid, interest paid, other monthly variables on month switch
 Shu
 -add toAccountId into TransactionBelongs table (still store twice)
 -update monthly statement after adding another other acct info to transaction table

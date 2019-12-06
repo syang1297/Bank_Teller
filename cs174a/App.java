@@ -982,10 +982,18 @@ public class App implements Testable
 					}
 					else{
 						System.out.println("Linked account exists.");
-						if(amount <= 0 || (linkedBalance - amount) <= 0){
+						if(amount <= 0 || (linkedBalance - amount) < 0){
 							return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 						}
 						linkedBalance -= amount;
+						if(linkedBalance<=0.01){
+							sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1 " +
+                                    "WHERE accountId = " + linkedID;
+                            stmt.executeUpdate(sql);
+                            sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = "+ dbID;
+                            stmt.executeUpdate(sql);
+						}
 						try {
 							sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(linkedBalance) + 
@@ -1121,9 +1129,17 @@ public class App implements Testable
 					return "1";
 				}
 				System.out.println("Pocket accounts exist.");
-				if(fromBalance - 5 - amount<=0){
+				if(fromBalance - amount<0){
 					System.out.println("Not enough money in account.");
 					return "1";
+				} else if (fromBalance - amount<=0.01) {
+					try {
+						sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = "+ fromID;
+					} catch (Exception e ){
+						System.out.println("Could not close from account");
+						System.out.println(e);
+						return "1";
+					}
 				}
 				if(toFeePaid == 0){
 					System.out.println("Paying to account fee...");
