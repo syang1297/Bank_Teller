@@ -12,7 +12,7 @@ Andrew
 
 Shu
 -add toAccountId into TransactionBelongs table (still store twice)
--update monthly statement after adding another other acct info to transaction table
+-update monthly statement after adding another other acct info to transaction table (DTER) --update all that call transanctions
 -change everytime we called addTransactions
 -take $5 fee and 3% thingy for addtransaction in collect and purchase
 -check that error return strings are correct (esp the ones w/ account info)
@@ -21,8 +21,10 @@ Shu
 -figure out what the check to add interest is
 -test edge cases w/ negative balance
 -move everything out of testable that wasn't given
+-check switch case for interest rates (bc interest rate may be updated)
 
 After finished
+-final sweep of piazza
 -detailed readme
 -do we need to load data for presentation?
 -fix TODOs in functions
