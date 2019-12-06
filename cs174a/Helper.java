@@ -277,10 +277,18 @@ public class Helper{
         try {
             Statement stmt = _connection.createStatement();
             try {
-                sql = "UPDATE AccountsPrimarilyOwns SET interestAdded = 0";
-                stmt.executeUpdate(sql);
-                sql = "UPDATE PocketAccountLinkedWith SET feePaid = 0";
-                stmt.executeUpdate(sql);
+                sql = "SELECT * FROM AccountPrimarilyOwns";
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next() != false){
+                    sql = "UPDATE AccountPrimarilyOwns SET interestAdded = 0";
+                    stmt.executeUpdate(sql);
+                }
+                sql = "SELECT * FROM PocketAccountLinkedWith";
+                rs = stmt.executeQuery(sql);
+                if(rs.next() != false){
+                    sql = "UPDATE PocketAccountLinkedWith SET feePaid = 0";
+                    stmt.executeUpdate(sql);
+                }
             } catch (Exception e) {
                 System.out.println("Failed to reset");
                 System.out.println(e);

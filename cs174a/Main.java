@@ -141,11 +141,12 @@ public class Main
 			// start of GUI code
 			String input ="";
 			Teller teller = new Teller (app);
+			Helper helper = new Helper();
 			//drop tables
 			//load in their data/create tables
 
 			while(true){
-				System.out.println("\nWelcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, 2 for set date, or -1 to exit.");
+				System.out.println("\nWelcome to Andrew and Shu's Bank, enter \n(0)for ATM\n(1)for teller\n(2)for set date\n(3)for reset monthly\n(-1)to exit.");
 				input = System.console().readLine();
 				switch(input){
 					case "0"://ATM
@@ -248,7 +249,7 @@ public class Main
 					case "1"://TELLER
 						while(true){
 						System.out.println("Welcome to Teller Interface");
-						System.out.println("Select a transaction:\n(0)Enter Check Transaction\n(1)Generate Monthly Statemet\n(2)List Closed Accounts\n(3)DTER\n(4)Customer Report\n(5)Add Interest\n(6)Create Account\n(7)Delete Closed Acounts\n(8)Delete Customers\n(9)Delete Transactions\n(10)Go Back to Main\n");
+						System.out.println("Select a transaction:\n(0)Enter Check Transaction\n(1)Generate Monthly Statemet\n(2)List Closed Accounts\n(3)DTER\n(4)Customer Report\n(5)Add Interest\n(6)Create Account\n(7)Delete Closed Acounts\n(8)Delete Customers\n(9)Delete Transactions\n(10)Change interest rate\n(11)Go Back to Main\n");
 						String inp = System.console().readLine();
 						switch(Integer.parseInt(inp)){
 							case 0: //enter check
@@ -300,7 +301,9 @@ public class Main
 								break;
 							case 5: //add interest
 								System.out.println("Add interest to accounts. Be sure it's the end of the month!");
-								teller.addInterest();
+								if((teller.addInterest().equals("1"))){
+									break;
+								}
 								System.out.println("Interest added on accounts");
 								break;
 							case 6: //create account
@@ -402,11 +405,25 @@ public class Main
 								teller.deleteTransactionHistory();
 								System.out.println("Deleted transaction history");
 								break;
-							case 10: //back to main
+							case 10: //change interest rate
+								while(true){
+									System.out.println("Change interest rate for an account");
+									System.out.println("Enter accountID");
+									String acc = System.console().readLine();
+									System.out.println("Enter customer taxID");
+									String tid = System.console().readLine();
+									System.out.println("Enter new interest rate");
+									String rate = System.console().readLine();
+									teller.changeInterestRate(Integer.parseInt(acc), Integer.parseInt(tid), Double.parseDouble(rate));
+									System.out.println("Interest rate changed");
+									break;
+								}
+								break;
+							case 11: //back to main
 							break;
 
 						}
-						if(inp.equals("10")){
+						if(inp.equals("11")){
 							break;
 						}
 					}
@@ -429,6 +446,20 @@ public class Main
 						break;
 					}
 					break;
+					case "3":
+						while(true){
+							System.out.println("If it's the end of the month, you should do monthly reset.");
+							System.out.println("Only do monthly reset if you've already done other end of the month functions");
+							System.out.println("(y)Yes\n(n)No");
+							String del = "";
+							del = System.console().readLine();
+							if(del.equals("y")){
+								helper.monthlyReset();
+								System.out.println("Reset monthly data.");
+							}
+							break;
+						}
+						break;
 					case "-1":
 						System.out.println("Thanks for using our bank.");
 						break;

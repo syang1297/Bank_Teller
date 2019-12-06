@@ -616,6 +616,11 @@ public class Teller {
                         " WHERE interestAdded = 0 AND accountType <> '" + AccountType.POCKET + "' AND accountType <> '" + 
                         AccountType.STUDENT_CHECKING + "'";
                     ResultSet accounts= stmt.executeQuery(sql);
+                    if(accounts.next() == false){
+                        System.out.println("WARNING: Interest already added for this month");
+                        return "1";
+                    }
+                    accounts= stmt.executeQuery(sql);
                     System.out.println("Adding interest...");
                     while(accounts.next()){
                         ArrayList<Double> dayWeights = new ArrayList<Double>();
