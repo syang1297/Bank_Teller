@@ -1,12 +1,8 @@
 -fix TODOs in functions
 -link w/ GUI
--DONE: implement testable and class functions
 -test all functions
 -make slides demo
 -make sure all integrity constraints are taken care of
--check that tables are updating correctly
--DONE: make sure code compiles w. the scripts given by TAs
--check that return string amounts at %.2f
 -check that error return strings are correct (esp the ones w/ account info)
 -when to close pocket accounts and what to do with them in that case
 -putting money from pocket back to linked account
@@ -21,16 +17,26 @@
 -rewrite customer functions to use its own taxID
 -rewrite teller functions to take taxID as argument and init customer object where needed
 -add otherAccountId into TransactionBelongs table
--set date doesn't set correctly
--seperate accrue interest and add interest so that add interest called accrue interest
--update monthly statement after adding another var to transaction table
--accrue interest transaction
+
+
+-update monthly statement after adding another other acct info to transaction table
+
 -figure out what the check to add interest is
 -check if a transaction will make a balance go below $0.01, not 0
 -store balances as doubles in DB
 -test edge cases w/ negative balance
 -move everything out of testable that wasn't given
 -detailed readme
--make sure hash and unhash pin called
+
 -do we need to load data for presentation?
+
+
+
+---------------------------------DONE------------------------------------
+-implement testable and class functions
+-make sure code compiles w. the scripts given by TAs
 -owns is updating correctly
+-check that return string amounts at %.2f
+-check that tables are updating correctly
+-set date doesn't set correctly
+-make sure hash and unhash pin called
