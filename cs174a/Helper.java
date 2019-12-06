@@ -29,8 +29,8 @@ public class Helper{
     private OracleConnection _connection;
     Helper(){
         final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##andrewdoan";
-		final String DB_PASSWORD = "3772365";
+		final String DB_USER = "c##syang01";
+		final String DB_PASSWORD = "4621538";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -235,6 +235,47 @@ public class Helper{
             return "-1";
         }
         return Integer.toString(maxTID);
+    }
+
+    String newOwnsID(){
+        // int max = 10000; 
+        // int min = 1; 
+        // int range = max - min + 1; 
+        // int rand = (int)(Math.random() * range) + min; 
+        // return Integer.toString(rand);
+        int maxNumKey = 1;
+        try {
+            Statement stmt = _connection.createStatement();
+            try {
+                //checks if trans table empty
+                String sql = "SELECT * FROM Owns";
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next()){
+                    try {
+                        sql = "SELECT MAX(numKey) FROM Owns";
+                        rs = stmt.executeQuery(sql);
+                        if(rs.next()){
+                            maxNumKey = rs.getInt(1);
+                            maxNumKey+=1;
+                        }
+                        rs.close();
+                    } catch (Exception e) {
+                        System.out.println("Failed to get max transaction ID from TransactionBelongs");
+                        System.out.println(e);
+                        return "-1";
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to check if TransactionBelongs is empty");
+                System.out.println(e);
+                return "-1";
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+            return "-1";
+        }
+        return Integer.toString(maxNumKey);
     }
 
     boolean accountIdExists(String accountID, String table){

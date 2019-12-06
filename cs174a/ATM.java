@@ -22,6 +22,7 @@ public class ATM {
     }
 
     //takes inserted pin and checks it against customer's getpin()
+    //TODO: make sure it's hashed
     boolean verifyPin(int pin){
         if(pin == customer.getPin()){
             return true;
@@ -33,6 +34,7 @@ public class ATM {
     //if account is already marked as closed for the month, reject deposit
     //update account balance
     //check accountID belongs to customer and that it's checkings or savings account
+<<<<<<< HEAD
     void deposit(double balance, int accountID){
         String type = "";
         try{
@@ -64,6 +66,13 @@ public class ATM {
         if(customer.acctBelongsToCustomer(accountID,customer.getTaxID(),type)){
             app.deposit(Integer.parseString(accountID),balance);
         }
+=======
+    boolean deposit(int accountID, double balance){
+        if(app.deposit(Integer.toString(accountID), balance) == "0"){
+            return true;
+        }
+        return false;
+>>>>>>> sy_dev
     }
 
     //checks accountID is for a pocket account
@@ -73,6 +82,9 @@ public class ATM {
     //check accountID belongs to customer
     //check if feePaid, if not, add $5
     boolean topUp(int accountID, double amount){
+        if(app.topUp(Integer.toString(accountID), amount) == "0"){
+            return true;
+        }
         return false;
     }
 
@@ -120,7 +132,7 @@ public class ATM {
 					rs.close();
 					if(amount <= 0.00){
 						System.out.println("Cannot withdraw negative amount");
-						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						result += String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",Double.toString(newBalance));
 						return result;					
 					}
 					if(acctType.equals("POCKET")){
@@ -129,7 +141,8 @@ public class ATM {
 					try {
 						System.out.println("Updating balances...");
                         newBalance = oldBalance - amount;
-                        if(newBalance < 0.01){
+                        System.out.println(Double.toString(newBalance));
+                        if(newBalance < 0.00){
                             System.out.println("Cannot withdraw more money than there is.");
                             return "1";
                         }
@@ -147,7 +160,7 @@ public class ATM {
 					} catch (Exception e) {
 						System.out.println("Failed to deposit and add new balance to table");
 						System.out.println(e);
-						result += Double.toString(oldBalance) + " " + Double.toString(newBalance);
+						result += String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",Double.toString(newBalance));
 						return result;
 					}
 				}
@@ -253,7 +266,7 @@ public class ATM {
                             "WHERE accountId = " + accountID;
                 stmt.executeUpdate(sql);
                 helper.addTransaction(oldBalance, TransactionType.PURCHASE, 0, accountID);
-                return "0 " + balance + " " + Double.toString(newBalance);
+                return "0 " + String.format("%.2f",balance) + " " + Double.toString(newBalance);
                 //TODO: isClosed helper
                 
             }
@@ -554,7 +567,10 @@ public class ATM {
 
     //make sure both accounts are pocket accounts or else return false
     //take amount out of pocketID and add to friend TaxID
-    boolean payFriend(int pocketID, int friendTaxID, int friendID, double amount){
+    boolean payFriend(int pocketID, int friendaccountID, double amount){
+        if(app.payFriend(Integer.toString(pocketID), Integer.toString(friendaccountID), amount) == "0"){
+            return true;
+        }
         return false;
     }
 
