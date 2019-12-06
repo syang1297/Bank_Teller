@@ -113,10 +113,7 @@ public class Main
 			app.createCustomer("1234", "8989", "Shu", "addr");
 			teller.deleteClosedAccounts();
 			teller.createAccount(AccountType.POCKET,coOwners,1000.0,"1234","1111","-1");
-			List<String> res2 = teller.customerReport(1111);
-			for(int i=0;i<res2.size();i++){
-				System.out.println(res2.get(i));
-			}
+			
 			// System.out.println(teller.listClosedAccounts());
 			// app.setDate(2018, 2, 8);
 			app.deposit("1233",10000.00);
@@ -128,10 +125,6 @@ public class Main
 			app.deposit("1233",10000.00);
 			app.setDate(2018, 2, 28);
 			app.deposit("1233",3000.00);
-			res2 = teller.generateDTER();
-			for(int i=0;i<res2.size();i++){
-				System.out.println(res2.get(i));
-			}
 			System.out.println(teller.listClosedAccounts());
 			app.setDate(2018, 2, 8);
 			app.deposit("1233",10000.00);
@@ -143,16 +136,24 @@ public class Main
 			app.deposit("1233",10000.00);
 			app.setDate(2018, 2, 28);
 			app.deposit("1233",3000.00);
-			res2 = teller.generateDTER();
-			for(int i=0;i<res2.size();i++){
-				System.out.println(res2.get(i));
-			}
 			teller.addInterest();
 			teller.writeCheck(1234,100.03);
 			atm.withdraw("1234",1420.96);
 			System.out.println(atm.collect(1234,2,244.99));
 			atm.purchase("2",100);
 			atm.transfer(1233,1234,1420.96);
+			List<String> res2 = teller.generateMonthly(4321);
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
+			// res2 = teller.generateDTER();
+			// for(int i=0;i<res2.size();i++){
+			// 	System.out.println(res2.get(i));
+			// }
+			// res2 = teller.customerReport(1111);
+			// for(int i=0;i<res2.size();i++){
+			// 	System.out.println(res2.get(i));
+			// }
 		}
 	}
 	//!### FINALIZAMOS
