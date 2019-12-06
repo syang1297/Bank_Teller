@@ -23,14 +23,15 @@ public class Helper{
         PAYFRIEND,
         WIRE,
         WRITECHECK,
-        ACCRUEINTEREST
+        ACCRUEINTEREST,
+        FEE
     }
     
     private OracleConnection _connection;
     Helper(){
         final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -88,13 +89,10 @@ public class Helper{
     String addTransaction(double amount, TransactionType transType, int checkNo,
                             String aID, String toAID){
         String transactionID = this.newTransactionID();
-        String fee = "0";
         String checkNumber = Integer.toString(checkNo);
         String acctType="";
         String sql = "";
 
-        //TODO: check if this transaction is allowed according to account 
-        //TODO: check if it's the first transaction of the month to add $5 fee
         //if it's a pocket account
         try {
             Statement stmt = _connection.createStatement();
@@ -135,9 +133,9 @@ public class Helper{
                         }                         
                         break;
                     case "POCKET":
-                    System.out.println("Adding pocket transaction");
+                        System.out.println("Adding pocket transaction");
                         if(transType != TransactionType.TOPUP && transType != TransactionType.PURCHASE && transType != TransactionType.PAYFRIEND
-                        && transType != TransactionType.COLLECT ){
+                        && transType != TransactionType.COLLECT && transType != TransactionType.FEE){
                             System.out.println("Invalid transaction/account type combo");
                             return "0";
                         } 
@@ -156,7 +154,7 @@ public class Helper{
                         try {
                             System.out.println("Trying to add to transactions...");
                             sql = "INSERT INTO TransactionBelongs " +
-                                    "VALUES (" + amount + ", " + fee + ", '" + transType + "', '" + 
+                                    "VALUES (" + amount  + ", '" + transType + "', '" + 
                                     this.getDate() + "', " + checkNumber + ", " + transactionID + 
                                     ", " + aID + "," + toAID + ", " + taxID + ")"; 
                             stmt.executeUpdate(sql);
@@ -276,4 +274,22 @@ public class Helper{
         return Integer.parseInt(res);
     }
 
+    void monthlyReset(){
+        String sql="";
+        try {
+            Statement stmt = _connection.createStatement();
+            try {
+                sql = "UPDATE AccountsPrimarilyOwns SET interestAdded = 0";
+                stmt.executeUpdate(sql);
+                sql = "UPDATE PocketAccountLinkedWith SET feePaid = 0";
+                stmt.executeUpdate(sql);
+            } catch (Exception e) {
+                System.out.println("Failed to reset");
+                System.out.println(e);
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to create statement");
+            System.out.println(e);
+        }
+    }
 }

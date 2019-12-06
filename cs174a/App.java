@@ -67,8 +67,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -254,7 +254,6 @@ public class App implements Testable
 				System.out.println("Creating table TransactionBelongs");
 				String sql = "CREATE TABLE TransactionBelongs(" +
 								"amount REAL," +
-								"fee INTEGER," +
 								"transType VARCHAR(32)," +
 								"transDate VARCHAR(10)," +
 								"checkNo INTEGER," +
@@ -659,7 +658,6 @@ public class App implements Testable
 			return "1 " + id + " POCKET " + "0.0" + " " + tin;
 		}
 		System.out.println("Successfully created new Pocket account.");
-		helper.addTransaction(initialTopUp, TransactionType.TOPUP, 0, linkedId, id);
 		return "0 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 	}
 
@@ -969,15 +967,18 @@ public class App implements Testable
 				sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				rs = stmt.executeQuery(sql);
+				int isClosed = 0;
 				while(rs.next()){
 					aid = rs.getInt("accountID");
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
 						pocketBalance = rs.getDouble("balance");
+						isClosed = rs.getInt("isClosed");
 						break;
 					}
 				}
 				rs.close();
+				
 				linkedID = Integer.toString(linkedId);
 				try {
 					System.out.println("Getting attributes of linked Account...");
@@ -995,12 +996,19 @@ public class App implements Testable
 						rs.close();
 						return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 					}
+					if(isClosed==1){
+						System.out.println("Pocket account is closed");
+						return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
+					}
 					else{
 						System.out.println("Linked account exists.");
 						if(amount <= 0 || (linkedBalance - amount) < 0){
 							return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 						}
 						linkedBalance -= amount;
+						if(linkedBalance<0){
+							return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
+						}
 						if(linkedBalance<=0.01){
 							sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET isClosed = 1 " +
@@ -1016,6 +1024,7 @@ public class App implements Testable
 							stmt.executeUpdate(sql);
 							try {
 								if(feePaid == 0){
+									helper.addTransaction(5,TransactionType.FEE,0,dbID,"-1");
 									pocketBalance = pocketBalance + amount - 5;
 									try {
 										sql = "UPDATE PocketAccountLinkedWith " +
@@ -1036,6 +1045,7 @@ public class App implements Testable
 										" WHERE accountId = " + dbID;
 								stmt.executeUpdate(sql);
 								helper.addTransaction(amount, TransactionType.TOPUP, 0, linkedID, accountId);
+								
 								return "0 " + String.format("%.2f",(linkedBalance)) + " " + String.format("%.2f",(pocketBalance));
 							} catch (Exception e) {
 								System.out.println("Failed to update pocketAccount with topup");
@@ -1094,7 +1104,6 @@ public class App implements Testable
 		double toBalance = 0.00;
 		int toid = 0;
 		String toID = "";
-
 		if(amount <= 0){
 			System.out.println("Cannot pay friend negative amount");
 			return "1";
@@ -1132,17 +1141,29 @@ public class App implements Testable
 				sql = "SELECT * " +
 								"FROM AccountPrimarilyOwns";
 				rs = stmt.executeQuery(sql);
+				int toClosed = 0;
+				int fromClosed = 0;
 				while(rs.next()){
 					int id = rs.getInt("accountID");
 					String ID = Integer.toString(id);
 					if(ID.equals(fromID)){
 						fromBalance = rs.getDouble("balance");
+						fromClosed = rs.getInt("isClosed");
 					}
 					if(ID.equals(toID)){
 						toBalance = rs.getDouble("balance");
+						toClosed = rs.getInt("isClosed");
 					}
 				}
-				
+				if(toClosed == 1 || fromClosed == 1){
+					System.out.println("An account is closed");
+					return "1";
+				}
+				if(pocketFromExists == false || pocketToExists == false){
+					System.out.println("Pocket accounts dont exist.");
+					rs.close();
+					return "1";
+				}
 				System.out.println("Pocket accounts exist.");
 				if(fromBalance - amount<0){
 					System.out.println("Not enough money in account.");
@@ -1157,6 +1178,7 @@ public class App implements Testable
 					}
 				}
 				if(toFeePaid == 0){
+					helper.addTransaction(5,TransactionType.FEE,0,toID,"-1");
 					System.out.println("Paying to account fee...");
 					toBalance = amount + toBalance - 5;
 					try {
@@ -1186,6 +1208,7 @@ public class App implements Testable
 					return "1";
 				}
 				if(fromFeePaid == 0){
+					helper.addTransaction(5,TransactionType.FEE,0,fromID,"-1");
 					System.out.println("Paying from account fee...");
 					fromBalance = fromBalance - amount - 5;
 					try {

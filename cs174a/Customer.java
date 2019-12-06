@@ -190,7 +190,7 @@ public class Customer {
     }
     //TODO: checking and savings are not the same
     //get accounts associated with customers taxID and the account type
-    List<Integer> getAccountIDs(int taxID, AccountType type){
+    List<Integer> getAccountIDs(AccountType type){
         List<Integer> accountIDs = new ArrayList<Integer>();
         String pocket = "POCKET";
         String sql = "";
@@ -203,7 +203,7 @@ public class Customer {
                     try {
                         sql = "SELECT * " +
                                         "FROM AccountPrimarilyOwns " +
-                                        "WHERE taxID = " + Integer.toString(taxID);
+                                        "WHERE taxID = " + Integer.toString(this.taxID);
                         ResultSet rs = stmt.executeQuery(sql);
                         while(rs.next()){
                             if(!pocket.equals(rs.getString("accountType"))){
@@ -218,7 +218,7 @@ public class Customer {
                     try {
                         sql = "SELECT * " +
                                 "FROM Owns " +
-                                "WHERE tID = " + Integer.toString(taxID);
+                                "WHERE tID = " + Integer.toString(this.taxID);
                         ResultSet rss = stmt.executeQuery(sql);
                         while(rss.next()){
                             accountIDs.add(rss.getInt("aID"));
@@ -233,7 +233,7 @@ public class Customer {
                     try {
                         sql = "SELECT * " +
                                 "FROM PocketAccountLinkedWith " +
-                                "WHERE tID = " + Integer.toString(taxID);
+                                "WHERE tID = " + Integer.toString(this.taxID);
                         ResultSet rsss = stmt.executeQuery(sql);
                         while(rsss.next()){
                             accountIDs.add(rsss.getInt("aID"));
@@ -256,8 +256,8 @@ public class Customer {
         return accountIDs;
     }
 
-    boolean acctBelongsToCustomer(int accountId, int taxID, AccountType accountType){
-        List<Integer> accounts = getAccountIDs(taxID, accountType);
+    boolean acctBelongsToCustomer(int accountId, AccountType accountType){
+        List<Integer> accounts = getAccountIDs(accountType);
         int i = 0;
         while(i < accounts.size()){
             if(accounts.get(i) == accountId){

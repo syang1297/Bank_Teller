@@ -163,7 +163,7 @@ public class ATM {
             //checks if account belongs to customer and if it's a pocket account
             int feePaid = 0;
             System.out.println("Checking if account belongs to customer...");
-            if(customer.acctBelongsToCustomer(Integer.parseInt(accountID), customer.getTaxID(), AccountType.POCKET)){
+            if(customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.POCKET)){
                 if(amount <= 0.0){
                     System.out.println("Cannot purchase using a negative amount");
                     return "1";
@@ -178,14 +178,19 @@ public class ATM {
                     String sql = "SELECT * " +
                                     "FROM AccountPrimarilyOwns";
                     ResultSet rs = stmt.executeQuery(sql);
+                    int isClosed = 0;
                     while(rs.next()){
                         aid = rs.getInt("accountID");
                         dbID = Integer.toString(aid);
                         if(accountID.equals(dbID)){
                             accountExists = true;
+                            isClosed = rs.getInt("isClosed");
                             // balance = rs.getDouble("balance");
                             break;
                         }
+                    }
+                    if(isClosed == 1){
+                        return "1";
                     }
                     // rs.close();
                     if(accountExists == false){
@@ -217,6 +222,7 @@ public class ATM {
                 
                 if(feePaid == 0){
                     try{
+                        helper.addTransaction(5,TransactionType.FEE,0,accountID,"-1");
                          newBalance -= 5;
                         sql = "UPDATE PocketAccountLinkedWith " +
                                 "SET feePaid = " + Integer.toString(1) +
@@ -229,6 +235,10 @@ public class ATM {
                     }
                 }
                 newBalance = Double.parseDouble(String.format("%.2f",newBalance));
+                if(newBalance<0){
+                    System.out.println("Not enough funds to purchase.");
+                    return "1";
+                }
                 if(newBalance <= 0.01 ){
                     sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = " + accountID;
                     stmt.executeUpdate(sql);
@@ -257,15 +267,15 @@ public class ATM {
 
     //return 0 if successful or 1 if not successful
     String transfer(int accountID, int destinationID, double amount){
-        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean student1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
-        boolean checking1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
-        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
-        boolean saving1 = customer.acctBelongsToCustomer(destinationID, customer.getTaxID(), AccountType.SAVINGS);
+        boolean student0 = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean student1 = customer.acctBelongsToCustomer(destinationID, AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID,  AccountType.INTEREST_CHECKING);
+        boolean checking1 = customer.acctBelongsToCustomer(destinationID, AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
+        boolean saving1 = customer.acctBelongsToCustomer(destinationID, AccountType.SAVINGS);
         Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2 =0.0;
         int isClosed1=0, isClosed2=0;
-        if(amount <= 0.0){
+        if(amount <= 0.0 || amount>2000){
             System.out.println("Cannot transfer negative amount");
             return "1";
         }
@@ -305,7 +315,11 @@ public class ATM {
                             System.out.println("Destination account already marked for closed... Can't transer");
                             return "1";
                         }
-                        if(fromBalance2 <= 0.01 && fromBalance2 >=0){
+                        if(fromBalance2 < 0){
+                            System.out.println("Not enough funds to transfer.");
+                            return "1";
+                        }
+                        else if(fromBalance2 <= 0.01){
                             sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET isClosed = 1 " +
                                     "WHERE accountId = " + Integer.toString(accountID);
@@ -313,10 +327,7 @@ public class ATM {
                             sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = ("+
                             "SELECT aID FROM PocketAccountLinkedWith WHERE otherAccountID = " + Integer.toString(accountID) + ")";
                             stmt.executeUpdate(sql);
-                        } else if(fromBalance2 <0){
-                            System.out.println("Can't transfer bc from account will have negative balance");
-                            return "1";
-                        }
+                        } 
                         fromBalance2 = Double.parseDouble(String.format("%.2f",fromBalance2));
                         sql = "UPDATE AccountPrimarilyOwns " +
                                 "SET balance = " + Double.toString(fromBalance2) +
@@ -357,12 +368,12 @@ public class ATM {
     //return 0 if successful or 1 if not successful
     String collect(int accountID, int pocketID, double amount){
         System.out.println("Checking if account belongs to customer...");
-        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
-        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
-        boolean pocket = customer.acctBelongsToCustomer(pocketID, customer.getTaxID(), AccountType.POCKET);
+        boolean student0 = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
+        boolean pocket = customer.acctBelongsToCustomer(pocketID, AccountType.POCKET);
         Double fromBalance1=0.0, fromBalance2=0.0, pocketBalance1=0.0, pocketBalance2=0.0;
-        int isClosed1=0;
+        int isClosed1=0, isClosed2 =0;
         boolean isLinked=false;
         int feePaid = 0;
         if(pocket){
@@ -414,14 +425,20 @@ public class ATM {
                             while(rs.next()){
                                 if(pocketID==rs.getInt("accountID")){
                                     pocketBalance1 = rs.getDouble("balance");
+                                    isClosed2 = rs.getInt("isClosed");
                                     break;
                                 }
+                            }
+                            if(isClosed2 == 1){
+                                System.out.println("Cannot collect because account marked for isClosed");
+                                return "1";
                             }
                             if(pocketBalance1 < amount){
                                 System.out.println("Can't collect bc amount is greater than pocket account balance: "+pocketBalance1);
                                 return "1";
                             }
                             if(feePaid == 0){
+                                helper.addTransaction(5,TransactionType.FEE,0,Integer.toString(pocketID),"-1");
                                 if(pocketBalance1 < amount + 5){
                                     System.out.println("Can't collect bc amount with fee is greater than pocket account balance: "+pocketBalance1);
                                     return "1";                                    
@@ -435,9 +452,20 @@ public class ATM {
                                 pocketBalance2 = pocketBalance1 - amount;
                             }
                             fromBalance2 = fromBalance1 + (amount * .97);
+                            helper.addTransaction(amount*.03,TransactionType.FEE,0,Integer.toString(accountID),"-1");
                             fromBalance2 = Double.parseDouble(String.format("%.2f",fromBalance2));
                             pocketBalance2 = Double.parseDouble(String.format("%.2f",pocketBalance2));
                             //update balances for pocket and account
+                            if(pocketBalance2<0){
+                                System.out.println("Can't collect bc not enough funds");
+                                return "1";
+                            }
+                            if(pocketBalance2<=0.01){
+                                sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1" +
+                                    " WHERE accountId = " + Integer.toString(pocketID);
+                                stmt.executeUpdate(sql);
+                            }
                             System.out.println("Updating balances...");
                             sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET balance = " + Double.toString(pocketBalance2) +
@@ -447,12 +475,6 @@ public class ATM {
                                     "SET balance = " + Double.toString(fromBalance2) +
                                     " WHERE accountId = " + Integer.toString(accountID);
                             stmt.executeUpdate(sql);
-                            if(pocketBalance2<=0.01){
-                                sql = "UPDATE AccountPrimarilyOwns " +
-                                    "SET isClosed = 1" +
-                                    " WHERE accountId = " + Integer.toString(pocketID);
-                                stmt.executeUpdate(sql);
-                            }
                             helper.addTransaction(amount,TransactionType.COLLECT,0,Integer.toString(pocketID), Integer.toString(accountID));
                             System.out.println("Collected from pocket account.");
                             return "0";
@@ -484,9 +506,9 @@ public class ATM {
     //close accountID if necessary
     String wire(int accountID, int destinationID, double amount){
         System.out.println("Check if account belongs to customer...");
-        boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
-        boolean checking0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.INTEREST_CHECKING);
-        boolean saving0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.SAVINGS);
+        boolean student0 = customer.acctBelongsToCustomer(accountID, AccountType.STUDENT_CHECKING);
+        boolean checking0 = customer.acctBelongsToCustomer(accountID, AccountType.INTEREST_CHECKING);
+        boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
         Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2=0.0;
         int isClosed1=0, isClosed2=0;
         String accountType = "";
@@ -533,7 +555,7 @@ public class ATM {
                             return "1";
                         }
                         System.out.println("Update accounts...");
-                        if(fromBalance2 <= 0.01){
+                        if(fromBalance2 <= 0.0){
                             System.out.println("Can't transfer bc from account will have negative/0 balance");
                             return "1";
                         }
@@ -553,6 +575,7 @@ public class ATM {
                         stmt.executeUpdate(sql);
                         //destinationID
                         toBalance2 = toBalance1 + (amount * .98);
+                        helper.addTransaction(amount*.02,TransactionType.FEE,0,Integer.toString(destinationID),"-1");
                         toBalance2 = Double.parseDouble(String.format("%.2f",toBalance2));
                         sql = "UPDATE AccountPrimarilyOwns " +
                                 "SET balance = " + Double.toString(toBalance2) +

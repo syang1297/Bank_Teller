@@ -14,13 +14,11 @@ import oracle.jdbc.pool.OracleDataSource;
 import java.sql.SQLException;
 
 public class Teller {
-    private Customer customer;
     private Helper helper;
     private App app;
     //constructor
-    Teller(int taxID,App app){
+    Teller(App app){
         //TODO: creating actual customer from teller interface
-        this.customer = new Customer(taxID);
         this.helper = new Helper();
         this.app = app;
     }
@@ -58,6 +56,10 @@ public class Teller {
             try {
                 if(closed==1){
                     System.out.println("Account closed, can't write check");
+                    return;
+                }
+                if(newBalance<0){
+                    System.out.println("Not enough balance to write check");
                     return;
                 }
                 if(newBalance<=0.01){
@@ -179,9 +181,7 @@ public class Teller {
                         boolean madeDeposit = false;
                         double initBalance = accounts.getDouble("balance");
                         sql = "SELECT * FROM TransactionBelongs WHERE aID = " + 
-                                accounts.getString("accountID");
-                                // accounts.getString("accountID") + ") OR (toAID = " + 
-                                // accounts.getString("accountID") + ")";
+                                accounts.getString("accountID") + " OR toAID = " + accounts.getString("accountID");
                         ResultSet transactions = stmt2.executeQuery(sql);
                         while(transactions.next()){
                             String tDate = transactions.getString("transDate");
@@ -206,11 +206,13 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "TRANSFER: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TRANSFER: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "WITHDRAWAL":
                                     initBalance += amt;
+                                    amt=-1*amt;
                                     accountInfo = accountInfo + "WITHDRAWAL: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WIRE":
@@ -219,11 +221,13 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "WIRE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WIRE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "WRITECHECK":
                                     initBalance += amt;
+                                    amt=-1*amt;
                                     accountInfo = accountInfo + "WRITECHECK: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "ACCRUEINTEREST":
@@ -236,8 +240,9 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "COLLECT: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "COLLECT: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "PAYFRIEND":
                                     toAccount = transactions.getInt("toAID");
@@ -245,8 +250,9 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "TOPUP":
                                     toAccount = transactions.getInt("toAID");
@@ -254,24 +260,25 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "PURCHASE":
-                                    toAccount = transactions.getInt("toAID");
-                                    if(Integer.toString(toAccount).equals(accounts.getString("accountID"))){
-                                        initBalance -= amt;
-                                    }else{
-                                        initBalance += amt;
-                                    }
-                                    accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    initBalance += amt;
+                                    amt=-1*amt;
+                                    accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
+                                    break;
+                                case "FEE":
+                                    initBalance += amt;
+                                    amt=-1*amt;
+                                    accountInfo = accountInfo + "FEE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                             }
-                        
+                        }
                         accountInfo = accountInfo + "\nINITIAL BALANCE: " + String.format(" %.2f",(initBalance)) + "\tFINAL BALANCE: " + String.format("%.2f",accounts.getDouble("balance"))+ "\n\n";
                         totalBalance+=accounts.getDouble("balance");
                         res.add(accountInfo);
-                        }
                     } catch (Exception e){
                         System.out.println("Failed get transactions");
                         System.out.println(e);
@@ -300,7 +307,8 @@ public class Teller {
 
                     try{
                         double initBalance = accounts.getDouble("balance");
-                        sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
+                        sql = "SELECT * FROM TransactionBelongs WHERE aID = " + 
+                                accounts.getString("accountID") + " OR toAID = " + accounts.getString("accountID");
                         ResultSet transactions = stmt2.executeQuery(sql);
                         boolean madeDeposit = false;
                         while(transactions.next()){
@@ -318,7 +326,7 @@ public class Teller {
                                         continue;
                                     }
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "DEPOSIT: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "DEPOSIT: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "TRANSFER":
                                     toAccount = transactions.getInt("toAID");
@@ -326,12 +334,14 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "TRANSFER: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TRANSFER: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "WITHDRAWAL":
                                     initBalance += amt;
-                                    accountInfo = accountInfo + "WITHDRAWAL: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
+                                    amt=-1*amt;
+                                    accountInfo = accountInfo + "WITHDRAWAL: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WIRE":
                                     toAccount = transactions.getInt("toAID");
@@ -339,16 +349,18 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "WIRE: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WIRE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "WRITECHECK":
                                     initBalance += amt;
-                                    accountInfo = accountInfo + "WRITECHECK: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
+                                    amt=-1*amt;
+                                    accountInfo = accountInfo + "WRITECHECK: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "ACCRUEINTEREST":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "ACCRUEINTEREST: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "ACCRUEINTEREST: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "COLLECT":
                                     toAccount = transactions.getInt("toAID");
@@ -356,8 +368,9 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "COLLECT: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "COLLECT: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "PAYFRIEND":
                                     toAccount = transactions.getInt("toAID");
@@ -365,8 +378,9 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "TOPUP":
                                     toAccount = transactions.getInt("toAID");
@@ -374,17 +388,19 @@ public class Teller {
                                         initBalance -= amt;
                                     }else{
                                         initBalance += amt;
+                                        amt=-1*amt;
                                     }
-                                    accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TOPUP: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                                 case "PURCHASE":
-                                    toAccount = transactions.getInt("toAID");
-                                    if(Integer.toString(toAccount).equals(accounts.getString("accountID"))){
-                                        initBalance -= amt;
-                                    }else{
-                                        initBalance += amt;
-                                    }
-                                    accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    initBalance += amt;
+                                    amt=-1*amt;
+                                    accountInfo = accountInfo + "PURCHASE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
+                                    break;
+                                case "FEE":
+                                    initBalance += amt;
+                                    amt=-1*amt;
+                                    accountInfo = accountInfo + "FEE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + " | TO ACCOUNT: " + toAccount + "\n"; 
                                     break;
                             }
                         }
@@ -443,7 +459,8 @@ public class Teller {
                         ResultSet accounts = stmt2.executeQuery(sql);
                         while(accounts.next()){
                             try{
-                                sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
+                                sql = "SELECT * FROM TransactionBelongs WHERE aID = " + 
+                                accounts.getString("accountID") + " OR toAID = " + accounts.getString("accountID");
                                 ResultSet transactions = stmt3.executeQuery(sql);
                                 while(transactions.next()){
                                     String tDate = transactions.getString("transDate");
@@ -478,7 +495,8 @@ public class Teller {
                             ResultSet accounts = stmt2.executeQuery(sql);
                             while(accounts.next()){
                                 try{
-                                    sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
+                                    sql = "SELECT * FROM TransactionBelongs WHERE aID = " + 
+                                accounts.getString("accountID") + " OR toAID = " + accounts.getString("accountID");
                                     ResultSet transactions = stmt3.executeQuery(sql);
                                     while(transactions.next()){
                                         String tDate = transactions.getString("transDate");
@@ -506,7 +524,7 @@ public class Teller {
                             System.out.println(e);
                         }
                         if(totalSum>10000){
-                            res.add("TAXID: " + customers.getString("taxID") + " | SUM OF DEPOSITS: " + totalSum);
+                            res.add("TAXID: " + customers.getString("taxID") + " | SUM OF TRANSACTIONS: " + totalSum);
                         }
                     }
                 }catch(Exception e){
@@ -685,23 +703,24 @@ public class Teller {
     }
 
     //create new account and store on db
-    void createAccount(AccountType type, List<Integer> coOwners, double balance, String accountID, String linkedId){
+    void createAccount(AccountType type, List<Integer> coOwners, double balance, String accountID, String taxID, String linkedId){
+        Customer customer = new Customer(Integer.parseInt(taxID));
         switch(type){
             case STUDENT_CHECKING:
-                app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+                app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, accountID, balance, taxID, customer.getName(), customer.getAddress());
                 break;
             case INTEREST_CHECKING:
-                app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+                app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, accountID, balance, taxID, customer.getName(), customer.getAddress());
                 break;
             case SAVINGS:
-                app.createCheckingSavingsAccount(AccountType.SAVINGS, accountID, balance, Integer.toString(customer.getTaxID()), customer.getName(), customer.getAddress());
+                app.createCheckingSavingsAccount(AccountType.SAVINGS, accountID, balance, taxID, customer.getName(), customer.getAddress());
                 break;
             case POCKET:
                 if(Integer.parseInt(linkedId) < 1){
                     System.out.println("Invalid linkedID");
                     return;
                 }
-                app.createPocketAccount(accountID, linkedId, balance, Integer.toString(customer.getTaxID()));
+                app.createPocketAccount(accountID, linkedId, balance, taxID);
                 break;
         }
         if(coOwners.size() == 0){
@@ -851,7 +870,7 @@ public class Teller {
     }
 
     //change interest for an account
-    void changeInterestRate(int accountID, double interestRate){
+    void changeInterestRate(int accountID, int taxID, double interestRate){
         boolean owns=false;
         String sql="";
         try{
@@ -859,7 +878,7 @@ public class Teller {
             try {
                 sql = "SELECT * " +
                                 "FROM AccountPrimarilyOwns " +
-                                "WHERE taxID = " + Integer.toString(customer.getTaxID()) +
+                                "WHERE taxID = " + Integer.toString(taxID) +
                                 "AND accountType = '" + AccountType.INTEREST_CHECKING + "'";
                 ResultSet rs = stmt.executeQuery(sql);
                 while(rs.next()){
@@ -896,10 +915,11 @@ public class Teller {
     //add function to check if a customer owns the account
     //done in customer class
     boolean customerOwnsAccount(String tin, String id){
-        boolean student = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.STUDENT_CHECKING);
-        boolean checking = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.INTEREST_CHECKING);
-        boolean pocket = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.POCKET);
-        boolean saving = customer.acctBelongsToCustomer(Integer.parseInt(id), Integer.parseInt(tin), AccountType.SAVINGS);
+        Customer customer = new Customer(Integer.parseInt(tin));
+        boolean student = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.STUDENT_CHECKING);
+        boolean checking = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.INTEREST_CHECKING);
+        boolean pocket = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.POCKET);
+        boolean saving = customer.acctBelongsToCustomer(Integer.parseInt(id), AccountType.SAVINGS);
         return (student||checking||pocket||saving);
     }
 }
