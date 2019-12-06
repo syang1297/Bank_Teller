@@ -156,7 +156,7 @@ public class ATM {
             Statement stmt = helper.getConnection().createStatement();
             //checks if account belongs to customer and if it's a pocket account
             int feePaid = 0;
-            int fee = 0;
+            double fee = 0;
             System.out.println("Checking if account belongs to customer...");
             if(customer.acctBelongsToCustomer(Integer.parseInt(accountID), AccountType.POCKET)){
                 if(amount <= 0.0){
@@ -364,7 +364,7 @@ public class ATM {
         int isClosed1=0, isClosed2 =0;
         boolean isLinked=false;
         int feePaid = 0;
-        int fee=0;
+        double fee=0;
         if(!pocket){
             if(student0 || checking0 || saving0){
                 try {
@@ -500,7 +500,7 @@ public class ATM {
         boolean saving0 = customer.acctBelongsToCustomer(accountID, AccountType.SAVINGS);
         Double fromBalance1=0.0, fromBalance2=0.0, toBalance1=0.0, toBalance2=0.0;
         int isClosed1=0, isClosed2=0;
-        int fee=0;
+        double fee=0;
         if(amount <= 0.0){
             System.out.println("Cannot wire negative amount");
             return "1";

@@ -927,7 +927,7 @@ public class App implements Testable
 		boolean pocketExists = false;
 		boolean linkedExists = false;
 		int feePaid = 0;
-		int fee=0;
+		double fee=0;
 		double pocketBalance = 0.00;
 		double linkedBalance = 0.00;
 		int linkedId = 0;
@@ -1095,7 +1095,7 @@ public class App implements Testable
 		double toBalance = 0.00;
 		int toid = 0;
 		String toID = "";
-		int fee=0;
+		double fee=0;
 		if(amount <= 0){
 			return "1";
 		}
