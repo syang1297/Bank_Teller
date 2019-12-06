@@ -627,6 +627,7 @@ public class App implements Testable
 							sql = "INSERT INTO PocketAccountLinkedWith " +
 									"VALUES (" + id + ", " + tin + ", " + linkedId+", "+linkedTID+", 0)"; 
 							stmt.executeQuery(sql);
+							helper.addTransaction(initialTopUp, TransactionType.TOPUP,0,linkedId,id);
 						} catch (Exception e) {
 							System.out.println("Failed to add new pocketAccount to Pocket table");
 							System.out.println(e);
