@@ -35,7 +35,7 @@ public class Main
 			// Helper helper= new Helper();
 			// //for testing app.java
 			// r = app.createTables();
-			// app.setDate(2018, 2, 7);
+			app.setDate(2018, 2, 7);
 			// r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
 			// // System.out.println(r);
 			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
@@ -141,16 +141,16 @@ public class Main
 			// start of GUI code
 			String input ="";
 			while(true){
-				System.out.println("Welcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, or -1 to exit.");
+				System.out.println("\nWelcome to Andrew and Shu's Bank, enter 0 for ATM, 1 for teller, or -1 to exit.");
 				input = System.console().readLine();
 				switch(input){
 					case "0"://ATM
 						while(true){
-							System.out.println("Please enter your taxID");
+							System.out.println("\nPlease enter your taxID");
 							String taxID = System.console().readLine();
-							ATM atm = new ATM(Integer.parseInt(input),app);
+							ATM atm = new ATM(Integer.parseInt(taxID),app);
 							while(true){
-								System.out.println("Please enter your PIN or enter 0 to exit");
+								System.out.println("\nPlease enter your PIN or enter 0 to exit");
 								input = System.console().readLine();
 								if (input.equals("0")){
 									break;
@@ -166,28 +166,68 @@ public class Main
 								break;
 							}
 							while(true){
+								String acc = "";
+								String amt="";
+								String acc2 = "";
+								List<List<Integer>> accounts = atm.getCustomerAccounts();
+								String temp ="\nAccounts: ";
+								temp=temp+accounts.get(0);
+								temp=temp +"\nPocket Accounts: ";
+								temp=temp+accounts.get(1);
+								System.out.println(temp);
 								System.out.println("Select a transaction:\n(0)Deposit\n(1)Top-up\n(2)Withdrawal\n(3)Transfer\n(4)Collect\n(5)Wire\n(6)Pay-friend\n(7)Exit\n");
 								input = System.console().readLine();
-								List<Integer> accounts = atm.getCustomerAccounts();
-								String temp ="Accounts: ";
-								for(int i=0;i<accounts.size();i++){
-									temp=temp+accounts.get(i)+" , ";
+								if(input.equals("6") || input.equals("1")){
+									System.out.println("Enter a pocket account.");
+								} else if(!input.equals("7")){
+									System.out.println("Enter an account.");
 								}
-								System.out.println(temp);
+								if(!input.equals("7")){
+									System.console().readLine();
+								}
 								switch(input){
 									case "0":
+										System.out.println("Enter an amount.");
+										 amt = System.console().readLine();
+										atm.deposit(Integer.parseInt(acc),Double.parseDouble(amt));
 										break;
 									case "1":
+										System.out.println("Enter an amount.");
+										 amt = System.console().readLine();
+										atm.topUp(Integer.parseInt(acc),Double.parseDouble(amt));
 										break;
 									case "2":
+										System.out.println("Enter an amount.");
+										 amt = System.console().readLine();
+										atm.withdraw(acc,Double.parseDouble(amt));
 										break;
 									case "3":
+										System.out.println("Enter another account.");
+										 acc2 = System.console().readLine();
+										System.out.println("Enter an amount.");
+										 amt = System.console().readLine();
+										atm.transfer(Integer.parseInt(acc),Integer.parseInt(acc2),Double.parseDouble(amt));
 										break;
 									case "4":
+										System.out.println("Enter a pocket account.");
+										 acc2 = System.console().readLine();
+										System.out.println("Enter an amount.");
+										 amt = System.console().readLine();
+										atm.collect(Integer.parseInt(acc),Integer.parseInt(acc2),Double.parseDouble(amt));
 										break;
 									case "5":
+										System.out.println("Enter another account.");
+										 acc2 = System.console().readLine();
+										System.out.println("Enter an amount.");
+										 amt = System.console().readLine();
+										atm.wire(Integer.parseInt(acc),Integer.parseInt(acc2),Double.parseDouble(amt));
 										break;
 									case "6":
+										System.out.println("Enter another pocket account.");
+										 acc2 = System.console().readLine();
+										System.out.println("Enter an amount.");
+										 amt = System.console().readLine();
+										atm.payFriend(Integer.parseInt(acc),Integer.parseInt(acc2),Double.parseDouble(amt));
 										break;
 									case "7":
 										break;
@@ -195,6 +235,9 @@ public class Main
 								if(input.equals("7")){
 									break;
 								}
+							}
+							if(input.equals("7")){
+									break;
 							}
 						}
 						break;
