@@ -1,5 +1,5 @@
 Andrew
--switch transaction switch cases due to toAccountId
+
 
 
 
@@ -55,3 +55,4 @@ After finished
 -make helper functions to put in set date to reset fee paid, interest paid, other monthly variables on month switch
 -take $5 fee and 3% thingy for addtransaction in collect and purchase
 -add fee to transaction table
+-switch transaction switch cases due to toAccountId

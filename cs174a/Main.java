@@ -146,14 +146,15 @@ public class Main
 			for(int i=0;i<res2.size();i++){
 				System.out.println(res2.get(i));
 			}
-			// res2 = teller.generateDTER();
-			// for(int i=0;i<res2.size();i++){
-			// 	System.out.println(res2.get(i));
-			// }
-			// res2 = teller.customerReport(1111);
-			// for(int i=0;i<res2.size();i++){
-			// 	System.out.println(res2.get(i));
-			// }
+			res2 = teller.customerReport(4321);
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
+			res2 = teller.generateDTER();
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
+			
 		}
 	}
 	//!### FINALIZAMOS
