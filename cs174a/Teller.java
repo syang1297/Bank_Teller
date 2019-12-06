@@ -168,6 +168,88 @@ public class Teller {
                                         continue;
                                     }
                                     initBalance -= amt;
+                                    accountInfo = accountInfo + "DEPOSIT: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "TRANSFER":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "TRANSFER: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "WITHDRAWAL":
+                                    initBalance += amt;
+                                    accountInfo = accountInfo + "WITHDRAWAL: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "WIRE":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "WIRE: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "WRITECHECK":
+                                    initBalance += amt;
+                                    accountInfo = accountInfo + "WRITECHECK: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "ACCRUEINTEREST":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "ACCRUEINTEREST: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "COLLECT":
+                                    initBalance += amt;
+                                    accountInfo = accountInfo + "COLLECT: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                                case "PAYFRIEND":
+                                    initBalance -= amt;
+                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format(" %.2f",(amt)) + " | DATE: " + tDate + "\n"; 
+                                    break;
+                            }
+                        
+                        accountInfo = accountInfo + "\nINITIAL BALANCE: " + String.format(" %.2f",(initBalance)) + "\tFINAL BALANCE: " + String.format("%.2f",accounts.getDouble("balance"))+ "\n\n";
+                        totalBalance+=accounts.getDouble("balance");
+                        res.add(accountInfo);
+                        }
+                    } catch (Exception e){
+                        System.out.println("Failed get transactions");
+                        System.out.println(e);
+                    }
+                }
+            }
+             catch(Exception e){
+                System.out.println("Failed to get primary accounts");
+                System.out.println(e);
+            }
+            //getting account info for customers' co-owned accounts
+            try {
+            System.out.println("Getting co-owned account info...");
+            sql = "SELECT * FROM AccountPrimarilyOwns,Owns WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = "+taxID ;
+            ResultSet accounts = stmt.executeQuery(sql);
+            if(accounts.next() != false){
+                System.out.println("Owner is a co-owner");
+                sql = "SELECT * FROM AccountPrimarilyOwns,Owns WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = "+taxID ;
+                accounts = stmt.executeQuery(sql);
+                while(accounts.next()){
+                    String status=" (CLOSED)";
+                    if(accounts.getInt("isClosed") == 0){
+                        status = " (OPEN)";
+                    } 
+                    String accountInfo = "\n-------------TRANSACTIONS OF MONTH "+ stringMonth + " FOR ACCOUNT " + accounts.getString("accountId") + status +"-------------\n";
+
+                    try{
+                        double initBalance = accounts.getDouble("balance");
+                        sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
+                        ResultSet transactions = stmt2.executeQuery(sql);
+                        boolean madeDeposit = false;
+                        while(transactions.next()){
+                            String tDate = transactions.getString("transDate");
+                            String tMonth = "" + tDate.charAt(5) + tDate.charAt(6);
+                            String tYear = "" + tDate.charAt(0) + tDate.charAt(1) + tDate.charAt(2) + tDate.charAt(3);
+                            if(Integer.parseInt(stringMonth)!=month || Integer.parseInt(stringYear)!=year) {
+                                continue;
+                            }           
+                            double amt = transactions.getDouble("amount");
+                            switch(transactions.getString("transType")){
+                                case "DEPOSIT":
+                                    if(tDate.equals(accounts.getString("madeOn")) && amt == 1000.00 && !madeDeposit){
+                                        madeDeposit = true;
+                                        continue;
+                                    }
+                                    initBalance -= amt;
                                     accountInfo = accountInfo + "DEPOSIT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "TRANSFER":
@@ -199,98 +281,21 @@ public class Teller {
                                     accountInfo = accountInfo + "PAYFRIEND: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
                                     break;
                             }
-                        
+                        }
                         accountInfo = accountInfo + "\nINITIAL BALANCE: " + String.format("%.2f",Double.toString(initBalance)) + "\tFINAL BALANCE: " + String.format("%.2f",accounts.getDouble("balance"))+ "\n\n";
                         totalBalance+=accounts.getDouble("balance");
                         res.add(accountInfo);
-                        }
-                    } catch (Exception e){
-                        System.out.println("Failed get transactions");
-                        System.out.println(e);
-                    }
-                }
-            }
-             catch(Exception e){
-                System.out.println("Failed to get primary accounts");
-                System.out.println(e);
-            }
-            try {
-            System.out.println("Getting co-owned account info...");
-            sql = "SELECT * FROM AccountPrimarilyOwns,Owns WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = "+taxID ;
-            ResultSet accounts = stmt.executeQuery(sql);
-            while(accounts.next()){
-                String status=" (CLOSED)";
-                if(accounts.getInt("isClosed") == 0){
-                    status = " (OPEN)";
-                } 
-                String accountInfo = "\n-------------TRANSACTIONS OF MONTH "+ stringMonth + " FOR ACCOUNT " + accounts.getString("accountId") + status +"-------------\n";
-
-                try{
-                    double initBalance = accounts.getDouble("balance");
-                    sql = "SELECT * FROM TransactionBelongs WHERE aID = " + accounts.getString("accountID");
-                    ResultSet transactions = stmt2.executeQuery(sql);
-                    boolean madeDeposit = false;
-                    while(transactions.next()){
-                        String tDate = transactions.getString("transDate");
-                        String tMonth = "" + tDate.charAt(5) + tDate.charAt(6);
-                        String tYear = "" + tDate.charAt(0) + tDate.charAt(1) + tDate.charAt(2) + tDate.charAt(3);
-                        if(Integer.parseInt(stringMonth)!=month || Integer.parseInt(stringYear)!=year) {
-                            continue;
-                        }           
-                        double amt = transactions.getDouble("amount");
-                        switch(transactions.getString("transType")){
-                            case "DEPOSIT":
-                                if(tDate.equals(accounts.getString("madeOn")) && amt == 1000.00 && !madeDeposit){
-                                    madeDeposit = true;
-                                    continue;
-                                }
-                                initBalance -= amt;
-                                accountInfo = accountInfo + "DEPOSIT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
-                                break;
-                            case "TRANSFER":
-                                initBalance -= amt;
-                                accountInfo = accountInfo + "TRANSFER: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
-                                break;
-                            case "WITHDRAWAL":
-                                initBalance += amt;
-                                accountInfo = accountInfo + "WITHDRAWAL: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
-                                break;
-                            case "WIRE":
-                                initBalance -= amt;
-                                accountInfo = accountInfo + "WIRE: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
-                                break;
-                            case "WRITECHECK":
-                                initBalance += amt;
-                                accountInfo = accountInfo + "WRITECHECK: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
-                                break;
-                            case "ACCRUEINTEREST":
-                                initBalance -= amt;
-                                accountInfo = accountInfo + "ACCRUEINTEREST: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
-                                break;
-                            case "COLLECT":
-                                initBalance += amt;
-                                accountInfo = accountInfo + "COLLECT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
-                                break;
-                            case "PAYFRIEND":
-                                initBalance -= amt;
-                                accountInfo = accountInfo + "PAYFRIEND: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
-                                break;
+                        } catch (Exception e){
+                            System.out.println("Failed get transactions");
+                            System.out.println(e);
                         }
                     }
-                    accountInfo = accountInfo + "\nINITIAL BALANCE: " + String.format("%.2f",Double.toString(initBalance)) + "\tFINAL BALANCE: " + String.format("%.2f",accounts.getDouble("balance"))+ "\n\n";
-                    totalBalance+=accounts.getDouble("balance");
-                    res.add(accountInfo);
-                    } catch (Exception e){
-                        System.out.println("Failed get transactions");
-                        System.out.println(e);
-                    }
                 }
-            
-             }catch(Exception e){
-                System.out.println("Failed to get co-owned accounts");
-                System.out.println(e);
-            }
-        } catch(Exception e){
+                }catch(Exception e){
+                    System.out.println("Failed to get co-owned accounts");
+                    System.out.println(e);
+                }
+            } catch(Exception e){
             System.out.println("Failed to create statement");
             System.out.println(e);
         } 
@@ -360,7 +365,7 @@ public class Teller {
                             System.out.println(e);
                         }
                         try{
-                            System.out.println("Getting co-owned account info...");
+                            System.out.println("...");
                             sql = "SELECT * " + 
                                 "FROM AccountPrimarilyOwns, Owns " + 
                                 "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + customers.getString("taxID");
@@ -605,8 +610,22 @@ public class Teller {
     //delete from db accounts that have been closed
     //should only be called at the end of the month
     String deleteClosedAccounts(){
+        List<Integer> closedAccounts = new ArrayList<Integer>();
         try {
             Statement stmt = helper.getConnection().createStatement();
+            try {
+                String sql = "SELECT taxID " +
+                            "FROM AccountPrimarilyOwns " +
+                            "WHERE isclose = 1";
+                ResultSet closed = stmt.executeQuery(sql);
+                while(closed.next()){
+                    closedAccounts.add(closed.getInt("taxID"));
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to get accounts marked for closed into list");
+                System.out.println(e);
+                return "1";
+            }
             try {
                 String sql = "DELETE FROM AccountPrimarilyOwns " +
                             "WHERE isClosed = 1";
@@ -614,6 +633,17 @@ public class Teller {
                 System.out.println("Deleted closed accounts");
             } catch (Exception e) {
                 System.out.println("Failed to deleteClosedAccounts()");
+                System.out.println(e);
+                return "1";
+            }
+            try {
+                for(int i = 0; i < closedAccounts.size() - 1; i++){
+                    String delOwns = "DELETE FROM Owns " +
+                    "WHERE tID = " + closedAccounts.get(i);
+                    stmt.executeUpdate(delOwns);
+                }
+            } catch (Exception e) {
+                System.out.println("Failed to delete entry from owns table for closed accounts");
                 System.out.println(e);
                 return "1";
             }

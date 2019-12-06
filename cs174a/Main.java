@@ -38,12 +38,12 @@ public class Main
 			r = app.createTables();
 			app.setDate(2018, 2, 7);
 			r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
-			System.out.println(r);
+			// System.out.println(r);
 			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 1000.00, "4321", "Bob", "66 DP");
-			// r = app.createPocketAccount("1", "1234", 100.0, "4321");
-			// r = app.createPocketAccount("2", "1234", 100.0, "4321");
-			// r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
-			r = app.deposit("4321",1000.00);
+			r = app.createPocketAccount("1", "1234", 100.0, "4321");
+			r = app.createPocketAccount("2", "1234", 100.0, "4321");
+			r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
+			// r = app.deposit("1234",1000.00);
 			// atm.deposit(1234, 1000.00);
 			// atm.topUp(1, 200.0);
 			// atm.payFriend(1, 2, 50);
@@ -119,7 +119,7 @@ public class Main
 				System.out.println(res2.get(i));
 			}
 			// res2 = teller.generateMonthly(4321);
-			res2 = teller.generateMonthly(1234);
+			res2 = teller.generateMonthly(4321);
 			System.out.println(res2);
 			// for(int i=0;i<res2.size();i++){
 			// 	System.out.println(res2.get(i));

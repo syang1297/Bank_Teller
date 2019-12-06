@@ -32,3 +32,5 @@
 -move everything out of testable that wasn't given
 -detailed readme
 -make sure hash and unhash pin called
+-do we need to load data for presentation?
+-owns is updating correctly
