@@ -60,6 +60,20 @@ public class Helper{
         return this._connection;
     }
 
+    void setBranch(String accountID, String branch){
+        try {
+            Statement stmt = _connection.createStatement();
+            try{
+                String sql = "UPDATE AccountPrimarilyOwns SET bankBranch = "+branch+" WHERE accountID = "+accountID;
+            } catch(Exception e){
+                System.out.println("couldn't set branch");
+                System.out.println(e); 
+            }
+        } catch (Exception e) {
+            System.out.println(e); 
+        }
+    }
+
     String getDate(){
         String res="";
         try {

@@ -139,6 +139,67 @@ public class Main
 			// }
 			// List<List<String>> coOwners = new ArrayList<List<String>>();
 			// teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000,"12345","4321","0");
+			
+			//demo preload code
+
+			App.dropTables();
+			App.createTables();
+			app.setDate(2011, 3, 1);
+
+			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "17431", 1200.00, "344151573", "Joe Pepsi", "3210 State St");
+			helper.setBranch("17431","San Francisco");
+			ATM atm = ATM(17431);
+			atm.setPin(3692);
+
+			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "54321", 21000.00, "212431965", "Hurryson Ford ", "678 State St");
+			helper.setBranch("54321","Los Angeles");
+			 atm = ATM(54321);
+			atm.setPin(3532);
+
+			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "12121", 1200.00, "207843218", "David Copperfill", "1357 State St");
+			helper.setBranch("12121","Goleta");
+			 atm = ATM(12121);
+			atm.setPin(8582);
+			app.createPocketAccount("53027","12121",50,"207843218");
+
+			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "41725", 14000.00, "201674933", "George Brush", "5346 Foothill Av");
+			helper.setBranch("41725","Los Angeles");
+			 atm = ATM(41725);
+			atm.setPin(9824);
+
+			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "76543", 8456, "212116070", "Li Kung", "2 People's Rd Beijing");
+			helper.setBranch("76543","Santa Barbara");
+			atm = ATM(76543);
+			atm.setPin(9173);
+			
+			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "93156", 2000000, "209378521", "Kelvin Costner", "Santa Cruz #3579");
+			helper.setBranch("93156","Goleta");
+			atm = ATM(93156);
+			atm.setPin(4659);
+
+			app.createCheckingSavingsAccount(AccountType.SAVINGS, "43942", 1289, "361721022", "Alfred Hitchcock", "6667 El Colegio #40");
+			helper.setBranch("43942","Santa Barbara");
+			atm = ATM(43942);
+			atm.setPin(1234);
+
+			app.createCheckingSavingsAccount(AccountType.SAVINGS, "29107", 34000, "209378521", "Kelvin Costner", "Santa Cruz #3579");
+			helper.setBranch("29107","Los Angeles");
+			atm = ATM(29107);
+			atm.setPin(4659);
+			app.createPocketAccount("43947","29107",30,"400651982");
+
+			app.createCheckingSavingsAccount(AccountType.SAVINGS, "19023", 2300, "412231856", "Cindy Laugher", "7000 Hollister");
+			helper.setBranch("19023","San Francisco");
+			atm = ATM(19023);
+			atm.setPin(3764);
+			app.createPocketAccount("67521","19023",30,"401605312");
+
+			app.createCheckingSavingsAccount(AccountType.SAVINGS, "32156", 1000, "188212217", "Magic Jordon", "3852 Court Rd");
+			helper.setBranch("32156","Goleta");
+			atm = ATM(32156);
+			atm.setPin(7351);
+
+			
 
 			// start of GUI code
 			String input ="";
