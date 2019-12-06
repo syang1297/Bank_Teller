@@ -13,16 +13,13 @@ public class ATM {
     private Customer customer;
     private Helper helper;
     private App app;
-    //init atm with taxID argument for testing sake rn
+
     ATM(int taxID, App app){
-        //TODO: how should we init customer?
         customer = new Customer(taxID);
         helper = new Helper();
         this.app = app;
     }
 
-    //takes inserted pin and checks it against customer's getpin()
-    //TODO: make sure it's hashed
     boolean verifyPin(int pin){
         if(pin == customer.getPin()){
             return true;
@@ -55,7 +52,6 @@ public class ATM {
     }
 
     //subtracts amount from account associated w/ accountID
-    //TODO: check accountID belongs to customer and account is checkings or savings
     /* returns 1 if failed... if success, returns .1 oldBalance newBalance */
     String withdraw(String accountID, double amount){
         int aid = 0;
@@ -98,7 +94,7 @@ public class ATM {
 					rs.close();
 					if(amount <= 0.00){
 						System.out.println("Cannot withdraw negative amount");
-						result += String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",Double.toString(newBalance));
+						result += String.format("%.2f",oldBalance) + " " + String.format("%.2f",newBalance);
 						return result;					
 					}
 					if(acctType.equals("POCKET")){
@@ -121,12 +117,15 @@ public class ATM {
                                     "SET isClosed = 1 " +
                                     "WHERE accountId = " + dbID;
                             stmt.executeUpdate(sql); 
+                            sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = ("+
+                            "SELECT aID FROM PocketAccountLinkedWith WHERE otherAccountID = " + dbID + ")";
+                            stmt.executeUpdate(sql);
                         }
 						result = "0 " + Double.toString(oldBalance) + " " + Double.toString(newBalance);
 					} catch (Exception e) {
 						System.out.println("Failed to deposit and add new balance to table");
 						System.out.println(e);
-						result += String.format("%.2f",Double.toString(oldBalance)) + " " + String.format("%.2f",(newBalance));
+						result += String.format("%.2f",oldBalance) + " " + String.format("%.2f",newBalance);
 						return result;
 					}
 				}
@@ -151,7 +150,6 @@ public class ATM {
     //check accountID belongs to customer and is a pocket account
     //subtract amount from account balance
     //check if feepaid, if not, minus $5
-    //TODO: check if account belongs to customer, add to Transaction table
     /* return 1 if failed, return 0 oldBalance newBalance if success*/
     String purchase(String accountID, double amount){
         try {
@@ -210,10 +208,7 @@ public class ATM {
                     }
                 }
                 Double newBalance = oldBalance - amount;
-                if(newBalance <= 0.01 ){
-                    System.out.println("Purchase cannot be made bc not enough funds in pocket: "+newBalance);
-                    return "1";
-                }
+                
                 if(feePaid == 0){
                     try{
                          newBalance -= 5;
@@ -226,6 +221,11 @@ public class ATM {
                         System.out.println(e);
                         return "1";
                     }
+                }
+                newBalance = Double.parseDouble(String.format("%.2f",newBalance));
+                if(newBalance <= 0.01 ){
+                    sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = " + accountID;
+                    stmt.executeUpdate(sql);
                 }
                 
                 sql = "UPDATE AccountPrimarilyOwns " +
@@ -249,11 +249,6 @@ public class ATM {
         }
     }
 
-    //TODO: check both accounts belongs to customer and add fee, add to transactiion table
-    //check that both accounts are either checkings or savings
-    //check amount is able to be moved and mark account as closed if it needs to be
-    //also make sure init account is not marked for closed
-    //subtract amount from accountID and add to destination account
     //return 0 if successful or 1 if not successful
     String transfer(int accountID, int destinationID, double amount){
         boolean student0 = customer.acctBelongsToCustomer(accountID, customer.getTaxID(), AccountType.STUDENT_CHECKING);
@@ -300,22 +295,26 @@ public class ATM {
                             System.out.println("Destination account already marked for closed... Can't transer");
                             return "1";
                         }
-                        if(fromBalance2 <= 0.01){
-                            System.out.println("Can't transfer bc from account will have negative/0 balance");
-                            return "1";
-                        }
-                        else if(fromBalance2 <= 0.01){
+                        if(fromBalance2 <= 0.01 && fromBalance2 >=0){
                             sql = "UPDATE AccountPrimarilyOwns " +
                                     "SET isClosed = 1 " +
                                     "WHERE accountId = " + Integer.toString(accountID);
                             stmt.executeUpdate(sql);
+                            sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = ("+
+                            "SELECT aID FROM PocketAccountLinkedWith WHERE otherAccountID = " + Integer.toString(accountID) + ")";
+                            stmt.executeUpdate(sql);
+                        } else if(fromBalance2 <0){
+                            System.out.println("Can't transfer bc from account will have negative balance");
+                            return "1";
                         }
+                        fromBalance2 = Double.parseDouble(String.format("%.2f",fromBalance2));
                         sql = "UPDATE AccountPrimarilyOwns " +
                                 "SET balance = " + Double.toString(fromBalance2) +
                                 "WHERE accountId = " + Integer.toString(accountID);
                         stmt.executeUpdate(sql);
                         //destinationID
                         toBalance2 = toBalance1 + amount;
+                        toBalance2 = Double.parseDouble(String.format("%.2f",toBalance2));
                         sql = "UPDATE AccountPrimarilyOwns " +
                                 "SET balance = " + Double.toString(toBalance2) +
                                 "WHERE accountId = " + Integer.toString(destinationID);
@@ -342,7 +341,6 @@ public class ATM {
     //make sure account is the one linked w/ that pocket account
     //check amount is not more than pocket account balance
     //apply 3% fee
-    //TODO: what happens if pocket balance = 0, add to transaction table
     //return 0 if successful or 1 if not successful
     String collect(int accountID, int pocketID, double amount){
         System.out.println("Checking if account belongs to customer...");
@@ -420,7 +418,8 @@ public class ATM {
                                 pocketBalance2 = pocketBalance1 - amount;
                             }
                             fromBalance2 = fromBalance1 + (amount * .97);
-                            System.out.println("update balance: "+fromBalance2+"orig: "+fromBalance1);
+                            fromBalance2 = Double.parseDouble(String.format("%.2f",fromBalance2));
+                            pocketBalance2 = Double.parseDouble(String.format("%.2f",pocketBalance2));
                             //update balances for pocket and account
                             System.out.println("Updating balances...");
                             if(feePaid == 0){
@@ -437,6 +436,12 @@ public class ATM {
                                     "SET balance = " + Double.toString(fromBalance2) +
                                     " WHERE accountId = " + Integer.toString(accountID);
                             stmt.executeUpdate(sql);
+                            if(pocketBalance2<=0.01){
+                                sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1" +
+                                    " WHERE accountId = " + Integer.toString(pocketID);
+                                stmt.executeUpdate(sql);
+                            }
                             helper.addTransaction(amount,TransactionType.COLLECT,0,Integer.toString(pocketID), Integer.toString(accountID));
                             System.out.println("Collected from pocket account.");
                             return "0";
@@ -461,7 +466,6 @@ public class ATM {
         return "1";
     }
 
-    //TODO: make sure current customer owns accountID and both accounts are checkings/savings, add to transaction table
     //apply 2% fee
     //subtracts amount from accountID and adds to destinationId
     //close accountID if necessary
@@ -519,13 +523,18 @@ public class ATM {
                                     "SET isClosed = 1 " +
                                     "WHERE accountId = " + Integer.toString(accountID);
                             stmt.executeUpdate(sql);
+                            sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = ("+
+                            "SELECT aID FROM PocketAccountLinkedWith WHERE otherAccountID = " + Integer.toString(accountID) + ")";
+                            stmt.executeUpdate(sql);
                         }
+                        fromBalance2 = Double.parseDouble(String.format("%.2f",fromBalance2));
                         sql = "UPDATE AccountPrimarilyOwns " +
                                 "SET balance = " + Double.toString(fromBalance2) +
                                 "WHERE accountId = " + Integer.toString(accountID);
                         stmt.executeUpdate(sql);
                         //destinationID
                         toBalance2 = toBalance1 + (amount * .98);
+                        toBalance2 = Double.parseDouble(String.format("%.2f",toBalance2));
                         sql = "UPDATE AccountPrimarilyOwns " +
                                 "SET balance = " + Double.toString(toBalance2) +
                                 "WHERE accountId = " + Integer.toString(destinationID);

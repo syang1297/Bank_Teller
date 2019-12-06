@@ -33,7 +33,6 @@ public class Main
 		{
 			app.dropTables();
 			Helper helper= new Helper();
-			ATM atm = new ATM(4321, app);
 			//for testing app.java
 			r = app.createTables();
 			app.setDate(2018, 2, 7);
@@ -54,7 +53,6 @@ public class Main
 			// r = app.payFriend("1","2",50);
 			// r = app.listClosedAccounts();
 			//for testing customer.java
-			// Helper helper= new Helper();
 			// r = helper.getDate();
 			// System.out.println(r);
 			// r = helper.getDate();
@@ -78,34 +76,35 @@ public class Main
 			// System.out.println(helper.hashPin(1234));
 			// System.out.println(helper.unhashPin("\"#$%"));
 			// for testing ATM
-			// ATM atm = new ATM(4321,app);
+			ATM atm = new ATM(4321,app);
 			// System.out.println(atm.verifyPin(1717));
 			// System.out.println(atm.withdraw("1234",300));
 			// System.out.println(atm.purchase("1",10));
 			// System.out.println(atm.transfer(1234,1233,100));
 			System.out.println(atm.collect(1234,1,200));
 			// System.out.println(atm.wire(1234,1233,19));
+			
 			//for testing Teller
 			Teller teller = new Teller (4321,app);
-			// System.out.println(teller.customerOwnsAccount("4321","1234"));
-			// teller.changeInterestRate(1234,1.4);
-			// //teller.deleteTransactionHistory();
-			// String sql = "DELETE FROM Owns " +
-            //                     "WHERE tID = 1111";
-			// try{
-			// 	Statement stmt = helper.getConnection().createStatement();
-			// 	stmt.executeUpdate(sql);
+			System.out.println(teller.customerOwnsAccount("4321","1234"));
+			teller.changeInterestRate(1234,1.4);
+			//teller.deleteTransactionHistory();
+			String sql = "DELETE FROM Owns " +
+                                "WHERE tID = 1111";
+			try{
+				Statement stmt = helper.getConnection().createStatement();
+				stmt.executeUpdate(sql);
 				
-			// } catch (Exception e){
-			// 	System.out.println(e);
-			// }
-			// teller.deleteCustomers();
-			// sql = "UPDATE AccountPrimarilyOwns " +
-            //                         "SET isClosed = 1" + 
-            //                         " WHERE accountId = 1";
-			// try{
-			// 	Statement stmt = helper.getConnection().createStatement();
-			// 	stmt.executeUpdate(sql);
+			} catch (Exception e){
+				System.out.println(e);
+			}
+			teller.deleteCustomers();
+			sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1" + 
+                                    " WHERE accountId = 1";
+			try{
+				Statement stmt = helper.getConnection().createStatement();
+				stmt.executeUpdate(sql);
 				
 			// } catch (Exception e){
 			// 	System.out.println(e);
@@ -144,8 +143,27 @@ public class Main
 			// for(int i=0;i<res2.size();i++){
 			// 	System.out.println(res2.get(i));
 			// }
-			// teller.addInterest();
-			// teller.writeCheck(1234,100);
+			// System.out.println(teller.listClosedAccounts());
+			// app.setDate(2018, 2, 8);
+			// app.deposit("1233",10000.00);
+			// app.setDate(2018, 2, 10);
+			// app.deposit("1233",100.00);
+			// app.setDate(2018, 2, 14);
+			app.deposit("1233",10000.00);
+			app.setDate(2018, 2, 25);
+			app.deposit("1233",10000.00);
+			app.setDate(2018, 2, 28);
+			app.deposit("1233",3000.00);
+			res2 = teller.generateDTER();
+			for(int i=0;i<res2.size();i++){
+				System.out.println(res2.get(i));
+			}
+			teller.addInterest();
+			teller.writeCheck(1234,100.03);
+			// atm.withdraw("1234",1420.96);
+			// System.out.println(atm.collect(1234,2,244.99));
+			//atm.purchase("2",244.99);
+			atm.transfer(1234,1233,1420.96);
 		}
 	}
 	//!### FINALIZAMOS

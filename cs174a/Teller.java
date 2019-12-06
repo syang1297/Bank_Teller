@@ -5,7 +5,7 @@ import cs174a.Testable.*;
 import cs174a.App.*;
 import java.util.*;
 import cs174a.Helper.*;
-
+import java.lang.Math.*;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import oracle.jdbc.OracleConnection;
@@ -34,14 +34,29 @@ public class Teller {
             try {
                 sql = "SELECT * FROM AccountPrimarilyOwns WHERE accountID = "+accountID;
                 ResultSet rs =stmt.executeQuery(sql);
+                int closed=0;
                 while(rs.next()){
                     newBalance = rs.getDouble("balance")-amount;
+                    closed = rs.getInt("isClosed");
                 }
             } catch(Exception e){
                 System.out.println("Failed to get balance");
                 System.out.println(e);
             }
             try {
+                if(closed==1){
+                    System.out.println("Account closed, can't write check");
+                    return;
+                }
+                if(newBalance<=0.01){
+                    sql = "UPDATE AccountPrimarilyOwns " +
+                            "SET isClosed = 1 " +
+                            "WHERE accountId = " + Integer.toString(accountID);
+                    stmt.executeUpdate(sql);
+                    sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = ("+
+                    "SELECT aID FROM PocketAccountLinkedWith WHERE otherAccountID = " + Integer.toString(accountID) + ")";
+                    stmt.executeUpdate(sql);
+                }
                 sql = "UPDATE AccountPrimarilyOwns SET balance = " + newBalance +
                 " WHERE accountID = "+accountID;
                 stmt.executeUpdate(sql);
@@ -251,39 +266,39 @@ public class Teller {
                                         continue;
                                     }
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "DEPOSIT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "DEPOSIT: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "TRANSFER":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "TRANSFER: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "TRANSFER: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WITHDRAWAL":
                                     initBalance += amt;
-                                    accountInfo = accountInfo + "WITHDRAWAL: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WITHDRAWAL: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WIRE":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "WIRE: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WIRE: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "WRITECHECK":
                                     initBalance += amt;
-                                    accountInfo = accountInfo + "WRITECHECK: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "WRITECHECK: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "ACCRUEINTEREST":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "ACCRUEINTEREST: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "ACCRUEINTEREST: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "COLLECT":
                                     initBalance += amt;
-                                    accountInfo = accountInfo + "COLLECT: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "COLLECT: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                                 case "PAYFRIEND":
                                     initBalance -= amt;
-                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format("%.2f",Double.toString(amt)) + " | DATE: " + tDate + "\n"; 
+                                    accountInfo = accountInfo + "PAYFRIEND: " + String.format("%.2f",amt) + " | DATE: " + tDate + "\n"; 
                                     break;
                             }
                         }
-                        accountInfo = accountInfo + "\nINITIAL BALANCE: " + String.format("%.2f",Double.toString(initBalance)) + "\tFINAL BALANCE: " + String.format("%.2f",accounts.getDouble("balance"))+ "\n\n";
+                        accountInfo = accountInfo + "\nINITIAL BALANCE: " + String.format("%.2f",initBalance) + "\tFINAL BALANCE: " + String.format("%.2f",accounts.getDouble("balance"))+ "\n\n";
                         totalBalance+=accounts.getDouble("balance");
                         res.add(accountInfo);
                         } catch (Exception e){
@@ -352,7 +367,7 @@ public class Teller {
                                         case "DEPOSIT":
                                         case "TRANSFER":
                                         case "WIRE":
-                                            totalSum += amt;
+                                            totalSum += Math.abs(amt);
                                             break;
                                     }
                                 }
@@ -504,7 +519,6 @@ public class Teller {
                         ArrayList<Double> balances = new ArrayList<Double>();
                         String currAID = accounts.getString("accountID");
                         double initBalance = accounts.getDouble("balance");
-                        double avgBalance = 0.0;
                         //used to calculate avg daily balance
                         sql = "SELECT * " +
                                 "FROM TransactionBelongs " +
@@ -553,6 +567,7 @@ public class Teller {
                             newBalance = top/bot;
                         }
                         double interestAdded = newBalance * accounts.getDouble("interestRate")/100.0;
+                        interestAdded = Double.parseDouble(String.format("%.2f",interestAdded));
                         newBalance = accounts.getDouble("balance") + interestAdded;
                         try{
                             sql = "UPDATE AccountPrimarilyOwns " +

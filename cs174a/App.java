@@ -67,8 +67,8 @@ public class App implements Testable
 	{
 		// Some constants to connect to your DB.
 		final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -220,7 +220,7 @@ public class App implements Testable
 								"accountID INTEGER,"  +
 								"taxID INTEGER NOT NULL," +
 								"bankBranch VARCHAR(32)," +
-								"balance INTEGER," +
+								"balance REAL," +
 								"madeOn VARCHAR(32)," +
 								"isClosed NUMBER(1)," +
 								"interestRate REAL," +
@@ -505,11 +505,6 @@ public class App implements Testable
 				}
 				//update account table to reflect customer
 				try {
-					//TODO: balanceEndDate, balanceStartDate if necessary
-					// sql = "INSERT INTO AccountPrimarilyOwns " + 
-					// 			"VALUES (" + id + ", " + tin + ", bankBranch1, " + initialBalance +
-					// 			", 0000, 0000, " + "0, " + interestRate + ", " + accountType +
-					// 			", 0)";
 					String bankBranch="A&S";
 					sql = "INSERT INTO AccountPrimarilyOwns " + 
 								"VALUES (" + id + ", " + tin + ",'" + bankBranch + "', " + initialBalance +
@@ -604,7 +599,6 @@ public class App implements Testable
 					if(linkedAccountExists == false || linkedIsClosed == 1 || linkedAccountInitBalance - initialTopUp <= 0.01 || acctType.equals("POCKET")){
 						return "1 " + id + " POCKET " + String.format("%.2f",initialTopUp) + " " + tin;
 					}
-					//TODO: update startDate, endDate
 					try {
 						System.out.println("Updating balance of linkedWith account...");
 						sql = "UPDATE AccountPrimarilyOwns " +
@@ -834,11 +828,11 @@ public class App implements Testable
 							"SET balance = " + Double.toString(newBalance) + 
 							" " + "WHERE accountId = " + dbID;
 						stmt.executeUpdate(sql);
-						result = "0 " + String.format("%.2f",(oldBalance)) + " " + String.format("%.2f",(newBalance));
+						result = "0 " + String.format("%.2f",oldBalance) + " " + String.format("%.2f",newBalance);
 					} catch (Exception e) {
 						System.out.println("Failed to deposit and add new balance to table");
 						System.out.println(e);
-						result += String.format("%.2f",(oldBalance)) + " " +String.format("%.2f", (newBalance));
+						result += String.format("%.2f",oldBalance) + " " +String.format("%.2f", newBalance);
 						return result;
 					}
 				}
@@ -909,7 +903,7 @@ public class App implements Testable
 			return "1";
 		}
 		
-		return "0 " + String.format("%.2f",(balance));
+		return "0 " + String.format("%.2f",balance);
 	}
 
 	/**
@@ -988,14 +982,22 @@ public class App implements Testable
 					if(!linkedExists){
 						System.out.println("Linked account does not exist.");
 						rs.close();
-						return "1 " + String.format("%.2f",Double.toString(linkedBalance)) + " " + String.format("%.2f",Double.toString(pocketBalance));
+						return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 					}
 					else{
 						System.out.println("Linked account exists.");
-						if(amount <= 0 || (linkedBalance - amount) <= 0){
-							return "1 " + String.format("%.2f",Double.toString(linkedBalance)) + " " + String.format("%.2f",Double.toString(pocketBalance));
+						if(amount <= 0 || (linkedBalance - amount) < 0){
+							return "1 " + String.format("%.2f",linkedBalance) + " " + String.format("%.2f",pocketBalance);
 						}
 						linkedBalance -= amount;
+						if(linkedBalance<=0.01){
+							sql = "UPDATE AccountPrimarilyOwns " +
+                                    "SET isClosed = 1 " +
+                                    "WHERE accountId = " + linkedID;
+                            stmt.executeUpdate(sql);
+                            sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = "+ dbID;
+                            stmt.executeUpdate(sql);
+						}
 						try {
 							sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(linkedBalance) + 
@@ -1130,9 +1132,17 @@ public class App implements Testable
 					return "1";
 				}
 				System.out.println("Pocket accounts exist.");
-				if(fromBalance - 5 - amount<=0){
+				if(fromBalance - amount<0){
 					System.out.println("Not enough money in account.");
 					return "1";
+				} else if (fromBalance - amount<=0.01) {
+					try {
+						sql = "UPDATE AccountPrimarilyOwns SET isClosed = 1 WHERE accountID = "+ fromID;
+					} catch (Exception e ){
+						System.out.println("Could not close from account");
+						System.out.println(e);
+						return "1";
+					}
 				}
 				if(toFeePaid == 0){
 					System.out.println("Paying to account fee...");

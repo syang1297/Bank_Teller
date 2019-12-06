@@ -29,8 +29,8 @@ public class Helper{
     private OracleConnection _connection;
     Helper(){
         final String DB_URL = "jdbc:oracle:thin:@cs174a.cs.ucsb.edu:1521/orcl";
-		final String DB_USER = "c##syang01";
-		final String DB_PASSWORD = "4621538";
+		final String DB_USER = "c##andrewdoan";
+		final String DB_PASSWORD = "3772365";
 
 		// Initialize your system.  Probably setting up the DB connection.
 		Properties info = new Properties();
@@ -81,19 +81,6 @@ public class Helper{
             System.out.println(e); 
         }
         return res;
-    }
-    //verifies supplied taxID exists in database
-    boolean verifyTaxIDExists(int taxID){
-        // try {
-        //     OracleDataSource ods = new OracleDataSource();
-        //     OracleConnection _connection = (OracleConnection) ods.getConnection();
-        //     Statement stmt = _connection.createStatement();
-        // } catch (Exception e) {
-        //     System.out.println("Failed to connect to database....");
-        //     System.out.println(e);
-        //     return false;
-        // }
-        return false;
     }
     //checkNo = 0 means there's no check associated
     //return 0 means it failed (possibly due to incorrect accounttype with transaction type);
@@ -197,13 +184,7 @@ public class Helper{
         return "1";
     }
 
-    //TODO: creates new transaction id, using random rn
     String newTransactionID(){
-        // int max = 10000; 
-        // int min = 1; 
-        // int range = max - min + 1; 
-        // int rand = (int)(Math.random() * range) + min; 
-        // return Integer.toString(rand);
         int maxTID = 1;
         try {
             Statement stmt = _connection.createStatement();
@@ -240,11 +221,6 @@ public class Helper{
     }
 
     String newOwnsID(){
-        // int max = 10000; 
-        // int min = 1; 
-        // int range = max - min + 1; 
-        // int rand = (int)(Math.random() * range) + min; 
-        // return Integer.toString(rand);
         int maxNumKey = 1;
         try {
             Statement stmt = _connection.createStatement();
@@ -280,9 +256,6 @@ public class Helper{
         return Integer.toString(maxNumKey);
     }
 
-    boolean accountIdExists(String accountID, String table){
-        return false;
-    }
     String hashPin(int pin){
         String res="";
         while(pin>0){
