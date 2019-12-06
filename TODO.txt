@@ -1,6 +1,4 @@
 Andrew
--store balances as doubles in DB
--fix table default values
 -switch transaction switch cases due to toAccountId
 -when to close pocket accounts and what to do with them in that case
 -switch primary owner function
@@ -9,6 +7,7 @@ Andrew
 -check if a transaction will make a balance go below $0.01, not 0 (to update close account)
 -make sure check for transanction not allowed is 0 rather than 0.01
 -make sure all transactions check if account should be set as isClosed after the changing of balance
+-check not makign transactions on closed accoutns
 
 Shu
 -add toAccountId into TransactionBelongs table (still store twice)
@@ -39,13 +38,12 @@ After finished
 -check that return string amounts at %.2f
 -check that tables are updating correctly
 -set date doesn't set correctly
-<<<<<<< HEAD
 -seperate accrue interest and add interest so that add interest called accrue interest
 -update monthly statement after adding another var to transaction table
 -accrue interest transaction
 -figure out what the check to add interest is
 -check if a transaction will make a balance go below $0.01, not 0
 -make sure every pocket account is being checked if they paid fee yet
-=======
+-store balances as doubles in DB
 -make sure hash and unhash pin called
->>>>>>> sy_dev
+-fix table default values
