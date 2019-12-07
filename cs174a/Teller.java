@@ -531,7 +531,7 @@ public class Teller {
                             System.out.println(e);
                         }
                         try{
-                  ;
+                  
                             sql = "SELECT * " + 
                                 "FROM AccountPrimarilyOwns, Owns " + 
                                 "WHERE AccountPrimarilyOwns.accountID = Owns.aID AND Owns.tID = " + customers.getString("taxID");
@@ -699,6 +699,7 @@ public class Teller {
                             case "WRITECHECK":
                             case "WITHDRAWAL":
                             case "COLLECT":
+                            case "FEE":
                                 initBalance += amt;
                                 break;
                             }
