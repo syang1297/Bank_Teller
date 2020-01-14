@@ -282,7 +282,7 @@ public class App implements Testable
 								"PRIMARY KEY (aID, otherAccountID)," +
 								"FOREIGN KEY (aID, tID) REFERENCES " +
 								"AccountPrimarilyOwns(accountID, taxID) ON DELETE CASCADE," +
-								"FOREIGN KEY (otherAccountID, tID) REFERENCES " +
+								"FOREIGN KEY (otherAccountID, otherTaxID) REFERENCES " +
 								"AccountPrimarilyOwns(accountID, taxID) ON DELETE CASCADE)";			
 				stmt.executeUpdate(sql);			
 			} catch (Exception e) {
@@ -494,7 +494,7 @@ public class App implements Testable
 						String sqlValues = tin + ",'" + address + "','"+ hashedPin +"','" + name+"'";
 						sql = "INSERT INTO Customer " +
 								"VALUES (" + sqlValues + ")";
-
+						// System.out.println(sql);
 						stmt.executeUpdate(sql);
 					} catch (Exception e) {
 						System.out.println("Unable to write to customer table");
@@ -591,7 +591,6 @@ public class App implements Testable
 						aid = rs.getInt("accountID");
 						dbID = Integer.toString(aid);
 						if(linkedId.equals(dbID)){
-
 							linkedIsClosed = rs.getInt("isClosed");
 							linkedAccountInitBalance = rs.getDouble("balance");
 							acctType = rs.getString("accountType");
@@ -606,7 +605,6 @@ public class App implements Testable
 						return "1 " + id + " POCKET " + "0.0" + " " + tin;
 					}
 					try {
-	
 						sql = "UPDATE AccountPrimarilyOwns " +
 							"SET balance = " + Double.toString(linkedAccountInitBalance - initialTopUp) + 
 							" " + "WHERE accountId = " + dbID;
@@ -620,18 +618,16 @@ public class App implements Testable
 					}
 					// rs.close();
 					try {
-
-						
 						sql = "INSERT INTO AccountPrimarilyOwns " + 
 								"VALUES (" + id + ", " + tin + ", '" + bankBranch + "', " + initialTopUp +
 								", '" + helper.getDate() + "'," + "0, " + 0.0 + ", '" +  "POCKET" +
 								"', 0)";
 						stmt.executeQuery(sql);
 						try {
-	
 							sql = "INSERT INTO PocketAccountLinkedWith " +
 									"VALUES (" + id + ", " + tin + ", " + linkedId+", "+linkedTID+", 0)"; 
 							stmt.executeQuery(sql);
+							helper.addTransaction(initialTopUp, TransactionType.TOPUP,0,linkedId,id);
 						} catch (Exception e) {
 							System.out.println("Failed to add new pocketAccount to Pocket table");
 							System.out.println(e);
@@ -693,7 +689,6 @@ public class App implements Testable
 					aid = rs.getInt("accountID");
 					dbID = Integer.toString(aid);
 					if(accountId.equals(dbID)){
-	
 						accountExists = true;
 						// accountClosed = rs.getInt("isClosed");
 						break;
@@ -710,7 +705,6 @@ public class App implements Testable
 						return "1";
 					}
 					try {
-
 						sql = "SELECT * " +
 								"FROM Customer WHERE taxID = " + tin ;
 						rs = stmt.executeQuery(sql);
@@ -722,14 +716,15 @@ public class App implements Testable
 						try {
 							//Give newly made customer default pin of 1717
 							String hashedPin = helper.hashPin(1717);
-
 							sql = "INSERT INTO Customer " + 
 									"VALUES (" + tin + ",'" + address + "','" + hashedPin + "','" + name+"')";
+									// System.out.println(sql);
 							stmt.executeQuery(sql);
 							try {
 					
 								sql = "INSERT INTO Owns " + 
 										"VALUES (" + accountId + ", " + tin + ", " + helper.newOwnsID() +")";
+								
 								stmt.executeQuery(sql);
 							} catch (Exception e) {
 								System.out.println("Failed to add customer to Owns table");

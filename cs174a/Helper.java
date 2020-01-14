@@ -64,7 +64,8 @@ public class Helper{
         try {
             Statement stmt = _connection.createStatement();
             try{
-                String sql = "UPDATE AccountPrimarilyOwns SET bankBranch = "+branch+" WHERE accountID = "+accountID;
+                String sql = "UPDATE AccountPrimarilyOwns SET bankBranch = '"+branch+"' WHERE accountID = "+accountID;
+                stmt.executeUpdate(sql);
             } catch(Exception e){
                 System.out.println("couldn't set branch");
                 System.out.println(e); 
@@ -271,7 +272,7 @@ public class Helper{
         String res="";
         while(pin>0){
             int temp=pin%10;
-            temp=temp+33;
+            temp=temp+65;
             res=Character.toString ((char) temp)+res;
             pin=pin/10;
         }
@@ -312,4 +313,5 @@ public class Helper{
             System.out.println(e);
         }
     }
+    
 }

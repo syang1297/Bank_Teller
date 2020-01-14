@@ -31,180 +31,270 @@ public class Main
 		String r = app.initializeSystem( );          // We'll always call this function before testing your system.
 		if( r.equals( "0" ) )
 		{
-			app.dropTables();
-			// Helper helper= new Helper();
-			// //for testing app.java
-			// r = app.createTables();
-			// app.setDate(2018, 2, 7);
-			// r = app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "1234", 1000.00, "4321", "Bob", "66 DP");
-			// // System.out.println(r);
-			// r = app.createCheckingSavingsAccount(AccountType.SAVINGS, "1233", 0.0, "4321", "Bob", "66 DP");
-			// r = app.createPocketAccount("1", "1234", 500.0, "4321");
-			// r = app.createPocketAccount("2", "1234", 100.0, "4321");
-			// r = app.createCustomer("1234", "1111","Andrew","66 Sueno");
-			// r = app.deposit("1234",1000.00);
-			// r = app.topUp("1", 10.00);
-			// app.topUp("1", 4.0);
-			// r = app.topUp("2", 200.00);
-			// r = app.payFriend("1","2",50);
-			// r = app.listClosedAccounts();
-			// //for testing customer.java
-			// // r = helper.getDate();
-			// // System.out.println(r);
-			// // r = helper.getDate();
-			// // System.out.println(r);
-			// // r = Integer.toString(customer.getPin());
-			// // System.out.println(r);
-			// // r = customer.setPin(8888);
-			// // r = Integer.toString(customer.getPin());
-			// // System.out.println(r);
-			// // r = customer.setName("Bob");
-			// // r = customer.getName();
-			// // System.out.println(r);
-			// // r = customer.setName("Shu");
-			// // r = customer.getName();
-			// // System.out.println(r);
-			// // List<Integer> res=customer.getAccountIDs(customer.getTaxID(),AccountType.STUDENT_CHECKING);
-			// // for(int i =0;i<res.size();i++){
-			// // 	System.out.println("AccountID "+Integer.toString(i)+": "+res.get(i));
-			// // }
-			// // System.out.println(customer.acctBelongsToCustomer(1234,AccountType.STUDENT_CHECKING));
-			// // System.out.println(helper.hashPin(1234));
-			// // System.out.println(helper.unhashPin("\"#$%"));
-			// // for testing ATM
-			// ATM atm = new ATM(4321,app);
-			// System.out.println(atm.verifyPin(1717));
-			// System.out.println(atm.withdraw("1234",300));
-			// System.out.println(atm.purchase("1",10));
-			// System.out.println(atm.transfer(1234,1233,100));
-			// System.out.println(atm.collect(1234,1,200));
-			// System.out.println(atm.wire(1234,1233,19));
-			
-			// //for testing Teller
-			// Teller teller = new Teller (app);
-			// System.out.println(teller.customerOwnsAccount("4321","1234"));
-			// teller.changeInterestRate(1234,4321,1.4);
-			// //teller.deleteTransactionHistory();
-			// // String sql = "DELETE FROM Owns " +
-            // //                     "WHERE tID = 1111";
-			// // try{
-			// // 	Statement stmt = helper.getConnection().createStatement();
-			// // 	stmt.executeUpdate(sql);
-				
-			// // } catch (Exception e){
-			// // 	System.out.println(e);
-			// // }
-			// //teller.deleteCustomers();
-			// // sql = "UPDATE AccountPrimarilyOwns " +
-            // //                         "SET isClosed = 1" + 
-            // //                         " WHERE accountId = 1";
-			// // try{
-			// // 	Statement stmt = helper.getConnection().createStatement();
-			// // 	stmt.executeUpdate(sql);
-				
-			// // app.deposit("1233",100.00);
-			// // app.setDate(2018, 2, 14);
-			// app.deposit("1233",10000.00);
-			// app.setDate(2018, 2, 25);
-			// app.deposit("1233",10000.00);
-			// app.setDate(2018, 2, 28);
-			// app.deposit("1233",3000.00);
-			// app.setDate(2018, 2, 8);
-			// app.deposit("1233",10000.00);
-			// app.setDate(2018, 2, 10);
-			// app.deposit("1233",100.00);
-			// app.setDate(2018, 2, 14);
-			// app.deposit("1233",10000.00);
-			// app.setDate(2018, 2, 25);
-			// app.deposit("1233",10000.00);
-			// app.setDate(2018, 2, 28);
-			// app.deposit("1233",3000.00);
-			// //teller.addInterest();
-			// //teller.writeCheck(1234,100.03);
-			// //atm.withdraw("1234",1420.96);
-			// System.out.println(atm.collect(1234,2,244.99));
-			// atm.purchase("2",100);
-			// //atm.transfer(1233,1234,1420.96);
-			// List<String> res2 = teller.generateMonthly(4321);
-			// for(int i=0;i<res2.size();i++){
-			// 	System.out.println(res2.get(i));
-			// }
-			// res2 = teller.customerReport(4321);
-			// for(int i=0;i<res2.size();i++){
-			// 	System.out.println(res2.get(i));
-			// }
-			// res2 = teller.generateDTER();
-			// for(int i=0;i<res2.size();i++){
-			// 	System.out.println(res2.get(i));
-			// }
-			// List<List<String>> coOwners = new ArrayList<List<String>>();
-			// teller.createAccount(AccountType.INTEREST_CHECKING,coOwners,1000,"12345","4321","0");
-			
 			//demo preload code
-
-			App.dropTables();
-			App.createTables();
+			app.dropTables();
+			app.createTables();
 			app.setDate(2011, 3, 1);
+			Teller teller = new Teller(app);
+			Helper helper = new Helper();
+			ATM atm = new ATM(1111, app);
 
-			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "17431", 1200.00, "344151573", "Joe Pepsi", "3210 State St");
+			List<String> cindy = new ArrayList();
+			cindy.add("412231856");
+			cindy.add("Cindy Laugher");
+			cindy.add("7000 Hollister");
+
+
+			List<String> ivan = new ArrayList();
+			ivan.add("322175130");
+			ivan.add("Ivan Lendme");
+			ivan.add("1235 Johnson Dr");
+
+
+			List<List<String>> co = new ArrayList();
+			co.add(cindy);
+			co.add(ivan);
+			teller.createAccount(AccountType.STUDENT_CHECKING, co, 1200.00, "17431", "344151573", "-1", "Joe Pepsi", "3210 State St");
 			helper.setBranch("17431","San Francisco");
-			ATM atm = ATM(17431);
+			atm = new ATM(344151573, app);
 			atm.setPin(3692);
+			atm = new ATM(412231856, app);
+			atm.setPin(3764);
+			atm = new ATM(322175130, app);
+			atm.setPin(3764);
 
-			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "54321", 21000.00, "212431965", "Hurryson Ford ", "678 State St");
+			List<String> eliz = new ArrayList();
+			eliz.add("122219876");
+			eliz.add("Elizabeth Sailor");
+			eliz.add("4321 State St");
+
+
+			List<String> nam = new ArrayList();
+			nam.add("203491209");
+			nam.add("Nam-Hoi Chung");
+			nam.add("1997 Peoples St HK");
+
+
+			co.removeAll(co);
+			co.add(cindy);
+			co.add(eliz);
+			co.add(nam);
+			teller.createAccount(AccountType.STUDENT_CHECKING, co, 21000.00, "54321", "212431965", "-1", "Hurryson Ford ", "678 State St");
 			helper.setBranch("54321","Los Angeles");
-			 atm = ATM(54321);
+			atm = new ATM(212431965, app);
+			atm.setPin(3532);
+			atm = new ATM(122219876, app);
+			atm.setPin(3856);
+			atm = new ATM(203491209, app);
+			atm.setPin(5340);
+
+			co.removeAll(co);
+			teller.createAccount(AccountType.STUDENT_CHECKING, co, 1200.00, "12121", "207843218", "-1", "David Copperfill", "1357 State St");
+			helper.setBranch("12121","Goleta");
+			atm = new ATM(207843218, app);
+			atm.setPin(8582);
+
+			List<String> fatal = new ArrayList();
+			fatal.add("401605312");
+			fatal.add("Fatal Castro");
+			fatal.add("3756 La Cumbre Plaza");
+
+
+			List<String> billy = new ArrayList();
+			billy.add("231403227");
+			billy.add("Billy Clinton");
+			billy.add("5777 Hollister");
+
+			co.removeAll(co);
+			co.add(fatal);
+			co.add(billy);
+
+			teller.createAccount(AccountType.INTEREST_CHECKING, co, 15000.00, "41725", "201674933", "-1", "George Brush", "5346 Foothill Av");
+			helper.setBranch("41725","Los Angeles");
+			atm = new ATM(201674933, app);
+			atm.setPin(9824);
+			atm = new ATM(401605312, app);
+			atm.setPin(8193);
+			atm = new ATM(231403227, app);
+			atm.setPin(1468);
+
+
+			List<String> olive = new ArrayList();
+			olive.add("210389768");
+			olive.add("Olive Stoner");
+			olive.add("6689 El Colegio #151");
+
+
+			List<String> magic = new ArrayList();
+			magic.add("188212217");
+			magic.add("Magic Jordon");
+			magic.add("3852 Court Rd");
+
+
+			co.removeAll(co);
+			co.add(magic);
+
+			teller.createAccount(AccountType.INTEREST_CHECKING, co, 8456.00, "76543", "212116070", "-1", "Li Kung", "2 Peoples Rd Beijing");
+			helper.setBranch("76543","Santa Barbara");
+			atm = new ATM(212116070, app);
+			atm.setPin(9173);
+			atm = new ATM(188212217, app);
+			atm.setPin(7351);
+			
+			co.removeAll(co);
+			co.add(magic);
+			co.add(olive);
+			co.add(eliz);
+			co.add(nam);
+			teller.createAccount(AccountType.INTEREST_CHECKING, co, 2000000.00, "93156", "209378521", "-1", "Kelvin Costner", "Santa Cruz #3579");
+			helper.setBranch("93156","Goleta");
+			atm = new ATM(209378521, app);
+			atm.setPin(4659);
+
+			List<String> pit = new ArrayList();
+			pit.add("400651982");
+			pit.add("Pit Wilson");
+			pit.add("911 State St");
+
+
+			List<String> hurryson = new ArrayList();
+			hurryson.add("212431965");
+			hurryson.add("Hurryson Ford");
+			hurryson.add("678 State St");
+
+
+			co.removeAll(co);
+			co.add(pit);
+			co.add(hurryson);
+			co.add(ivan);
+
+			teller.createAccount(AccountType.SAVINGS, co, 1289.00, "43942", "361721022", "-1", "Alfred Hitchcock", "6667 El Colegio #40");
+			helper.setBranch("43942","Santa Barbara");
+			atm = new ATM(361721022, app);
+			atm.setPin(1234);
+			atm = new ATM(400651982 , app);
+			atm.setPin(1821);
+			atm = new ATM(212431965, app);
 			atm.setPin(3532);
 
-			app.createCheckingSavingsAccount(AccountType.STUDENT_CHECKING, "12121", 1200.00, "207843218", "David Copperfill", "1357 State St");
-			helper.setBranch("12121","Goleta");
-			 atm = ATM(12121);
-			atm.setPin(8582);
-			app.createPocketAccount("53027","12121",50,"207843218");
+			List<String> li = new ArrayList();
+			li.add("212116070");
+			li.add("Li Kung");
+			li.add("2 People's Rd Beijing");
 
-			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "41725", 14000.00, "201674933", "George Brush", "5346 Foothill Av");
-			helper.setBranch("41725","Los Angeles");
-			 atm = ATM(41725);
-			atm.setPin(9824);
+			co.removeAll(co);
+			co.add(li);
+			co.add(olive);
 
-			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "76543", 8456, "212116070", "Li Kung", "2 People's Rd Beijing");
-			helper.setBranch("76543","Santa Barbara");
-			atm = ATM(76543);
-			atm.setPin(9173);
-			
-			app.createCheckingSavingsAccount(AccountType.INTEREST_CHECKING, "93156", 2000000, "209378521", "Kelvin Costner", "Santa Cruz #3579");
-			helper.setBranch("93156","Goleta");
-			atm = ATM(93156);
-			atm.setPin(4659);
-
-			app.createCheckingSavingsAccount(AccountType.SAVINGS, "43942", 1289, "361721022", "Alfred Hitchcock", "6667 El Colegio #40");
-			helper.setBranch("43942","Santa Barbara");
-			atm = ATM(43942);
-			atm.setPin(1234);
-
-			app.createCheckingSavingsAccount(AccountType.SAVINGS, "29107", 34000, "209378521", "Kelvin Costner", "Santa Cruz #3579");
+			teller.createAccount(AccountType.SAVINGS, co, 34000.00, "29107", "209378521", "-1", "Kelvin Costner", "Santa Cruz #3579");
 			helper.setBranch("29107","Los Angeles");
-			atm = ATM(29107);
-			atm.setPin(4659);
-			app.createPocketAccount("43947","29107",30,"400651982");
+			atm = new ATM(210389768, app);
+			atm.setPin(8452);
 
-			app.createCheckingSavingsAccount(AccountType.SAVINGS, "19023", 2300, "412231856", "Cindy Laugher", "7000 Hollister");
+			List<String> george = new ArrayList();
+			george.add("201674933");
+			george.add("George Brush");
+			george.add("5346 Foothill Av");
+
+			co.removeAll(co);
+			co.add(george);
+			co.add(fatal);
+
+			teller.createAccount(AccountType.SAVINGS, co, 2300.00, "19023", "412231856", "-1", "Cindy Laugher", "7000 Hollister");
 			helper.setBranch("19023","San Francisco");
-			atm = ATM(19023);
-			atm.setPin(3764);
-			app.createPocketAccount("67521","19023",30,"401605312");
 
-			app.createCheckingSavingsAccount(AccountType.SAVINGS, "32156", 1000, "188212217", "Magic Jordon", "3852 Court Rd");
+
+			List<String> david = new ArrayList();
+			david.add("207843218");
+			david.add("David Copperfield");
+			david.add("1357 State St");
+
+
+			List<String> joe = new ArrayList();
+			joe.add("344151573");
+			joe.add("Joe Pepsi");
+			joe.add("3210 State St");
+
+			co.removeAll(co);
+			co.add(david);
+			co.add(eliz);
+			co.add(joe);
+			co.add(nam);
+			co.add(olive);
+
+			teller.createAccount(AccountType.SAVINGS, co, 1000.00, "32156", "188212217", "-1", "Magic Jordon", "3852 Court Rd");
 			helper.setBranch("32156","Goleta");
-			atm = ATM(32156);
-			atm.setPin(7351);
+			atm = new ATM(207843218, app);
+			atm.setPin(8582);
 
+			co.removeAll(co);
+			teller.createAccount(AccountType.POCKET, co, 100.00, "67521", "401605312", "19023", "Fatal Castro", "default");
+			helper.setBranch("67521", "Goleta");
+			teller.createAccount(AccountType.POCKET, co, 50.00, "53027", "207843218", "12121", "David", "default");
+			helper.setBranch("53027", "Isla Vista");
+			teller.createAccount(AccountType.POCKET, co, 20.00, "60413", "400651982", "43942", "Pit Wilson", "default");
+			helper.setBranch("60413", "Santa Cruz");
+			teller.createAccount(AccountType.POCKET, co, 30.00, "43947", "212116070", "29107", "Li Kung", "default");
+			helper.setBranch("43947", "Santa Barbara");
 			
+			//addint transactions
+			app.setDate(2011, 3, 2);
+			atm = new ATM(344151573, app);
+			atm.deposit(17431, 8800.00);
+			app.setDate(2011, 3, 3);
+			atm = new ATM(122219876, app);
+			atm.withdraw("54321", 3000.00);
+			app.setDate(2011, 3, 5);
+			atm = new ATM(212116070, app);
+			atm.withdraw("76543", 2000.00);
+			atm = new ATM(207843218, app);
+			atm.purchase("53027", 5.0);
+			app.setDate(2011, 3, 6);
+			atm = new ATM(188212217, app);
+			atm.withdraw("93156", 1000000);
+			teller.writeCheck(93156, 950000, 209378521);
+			atm = new ATM(212116070, app);
+			atm.withdraw("29107", 4000);
+			atm.collect(29107, 43947, 10);
+			atm.topUp(43947, 30);
+			app.setDate(2011, 3, 7);
+			atm = new ATM(322175130, app);
+			atm.transfer(43942, 17431, 289);
+			atm = new ATM(400651982, app);
+			atm.withdraw("43942", 289);
+			app.setDate(2011, 3, 8);
+			atm.payFriend(60413, 67521, 10);
+			atm = new ATM(210389768, app);
+			atm.deposit(93156, 50000);
+			teller.writeCheck(12121, 200, 207843218);
+			atm = new ATM(201674933, app);
+			atm.transfer(41725, 19023, 1000);
+			app.setDate(2011, 3, 9);
+			atm = new ATM(401605312, app);
+			atm.wire(41725, 32156, 4000);
+			atm = new ATM(207843218, app);
+			atm.payFriend(53027, 60413, 10);
+			app.setDate(2011, 3, 10);
+			atm = new ATM(400651982, app);
+			atm.purchase("60413", 15);
+			app.setDate(2011, 3, 12);
+			atm = new ATM(203491209, app);
+			atm.withdraw("93156", 20000);
+			teller.writeCheck(76543, 456, 188212217);
+			atm = new ATM(401605312, app);
+			atm.topUp(67521, 50);
+			app.setDate(2011, 3, 14);
+			atm.payFriend(67521, 53027, 20);
+			atm = new ATM(212116070, app);
+			atm.collect(29107, 43947, 15);
 
-			// start of GUI code
+
+
+
+			// // start of GUI code
 			String input ="";
-			Teller teller = new Teller (app);
-			Helper helper = new Helper();
+			// Teller teller = new Teller (app);
+			// Helper helper = new Helper();
 			//drop tables
 			//load in their data/create tables
 
@@ -217,7 +307,7 @@ public class Main
 							System.out.println("\n--------------Welcome to the ATM Interface-------------");
 							System.out.println("\nPlease enter your taxID");
 							String taxID = System.console().readLine();
-							ATM atm = new ATM(Integer.parseInt(taxID),app);
+							atm = new ATM(Integer.parseInt(taxID),app);
 							while(true){
 								System.out.println("\nPlease enter your PIN or enter 0 to exit");
 								input = System.console().readLine();
@@ -350,11 +440,10 @@ public class Main
 								}
 								break;
 							case 2: //closed accounts
-								System.out.println("Listing closed acounts..........");
 								System.out.println(teller.listClosedAccounts());
 								break;
 							case 3: //DTER
-								System.out.println("generateDTER");
+
 								List<String> dter = teller.generateDTER();
 								for(int i = 0; i < dter.size(); i++){
 									System.out.println(dter.get(i));
@@ -420,11 +509,11 @@ public class Main
 											String addr = System.console().readLine();
 											System.out.println("Enter co-owner name");
 											String name = System.console().readLine();
-											List<String> co = new ArrayList();
-											co.add(coID);
-											co.add(addr);
-											co.add(name);
-											coOwners.add(co);
+											List<String> coOwn = new ArrayList();
+											coOwn.add(coID);
+											coOwn.add(addr);
+											coOwn.add(name);
+											coOwners.add(coOwn);
 										}
 										System.out.println("\nDone adding co-owners");
 										break;
@@ -437,7 +526,11 @@ public class Main
 								String acctId = System.console().readLine();
 								System.out.println("Enter primary owner taxID");
 								String primID = System.console().readLine();
-								teller.createAccount(type, coOwners, Double.parseDouble(amt), acctId, primID, linked);
+								System.out.println("Enter primary owner name");
+								String name = System.console().readLine();
+								System.out.println("Enter primary owner address");
+								String addr = System.console().readLine();
+								teller.createAccount(type, coOwners, Double.parseDouble(amt), acctId, primID, linked,name,addr);
 								System.out.println("Added account...................");
 								break;
 							case 7: //delete accounts
@@ -497,24 +590,6 @@ public class Main
 						if(inp.equals("11")){
 							break;
 						}
-					}
-					break;
-
-					case "2":
-					while(true){
-						String in = "";
-						System.out.println("Welcome to set date");
-						System.out.println("Enter year");
-						in = System.console().readLine();
-						String year = in;
-						System.out.println("Enter month");
-						in = System.console().readLine();
-						String month = in;
-						System.out.println("Enter day");
-						in = System.console().readLine();
-						String day = in;
-						app.setDate(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
-						break;
 					}
 					break;
 					case "3":
