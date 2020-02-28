@@ -1,7 +1,5 @@
-RESUBMITTED BC FORGOT PERM NUMBERS FIRST TIME
-
 Authors:
-Andrew Doan (3772365) and Shu Yang (4621538)
+Andrew Doan and Shu Yang
 
 We were able to complete all of the basic requirements in the project spec. 
 We implemented every function in the Testable interface, and to the best of our knowledge, they all work.
